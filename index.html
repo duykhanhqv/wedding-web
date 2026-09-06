@@ -17,17 +17,46 @@
         href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;1,300&amp;family=DM+Mono:wght@300;400;500&amp;display=swap"
         rel="stylesheet">
       <style>
-        body {
+        html, body {
           margin: 0;
-          background: #F2EFE9
+          padding: 0;
+          background: #F2EFE9;
+          overflow-x: hidden;
+          width: 100%;
         }
 
         a {
-          color: #c9a24a
+          color: #c9a24a;
         }
 
         a:hover {
-          color: #e6c477
+          color: #e6c477;
+        }
+
+        @media (max-width: 640px) {
+          .mobile-section {
+            padding-left: 20px !important;
+            padding-right: 20px !important;
+          }
+          .mobile-album-cell {
+            padding: 12px !important;
+          }
+          .mobile-countdown-grid {
+            gap: 8px !important;
+          }
+          .mobile-countdown-cell {
+            padding: 14px 4px 12px !important;
+          }
+          .mobile-countdown-num {
+            font-size: 28px !important;
+          }
+          .mobile-heading {
+            font-size: 22px !important;
+            letter-spacing: .02em !important;
+          }
+          .mobile-thanks {
+            font-size: 36px !important;
+          }
         }
       </style>
       <script src="./image-slot.js"></script>
@@ -50,34 +79,34 @@
           Cùng đếm ngược</div>
         <div style="width:44px;height:1px;background:rgba(109,15,24,.4);margin:26px 0 34px"></div>
 
-        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:100%;max-width:520px">
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:100%;max-width:520px" class="mobile-countdown-grid">
           <div
-            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
-            <div style="font:300 40px/1 Cormorant,Georgia,serif;color:#f2efe9;font-variant-numeric:tabular-nums">{{ dd
+            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)" class="mobile-countdown-cell">
+            <div style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums" class="mobile-countdown-num">{{ dd
               }}</div>
             <div
               style="font:400 9.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:rgba(109,15,24,.7)">
               Ngày</div>
           </div>
           <div
-            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
-            <div style="font:300 40px/1 Cormorant,Georgia,serif;color:#f2efe9;font-variant-numeric:tabular-nums">{{ hh
+            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)" class="mobile-countdown-cell">
+            <div style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums" class="mobile-countdown-num">{{ hh
               }}</div>
             <div
               style="font:400 9.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:rgba(109,15,24,.7)">
               Giờ</div>
           </div>
           <div
-            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
-            <div style="font:300 40px/1 Cormorant,Georgia,serif;color:#f2efe9;font-variant-numeric:tabular-nums">{{ mm
+            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)" class="mobile-countdown-cell">
+            <div style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums" class="mobile-countdown-num">{{ mm
               }}</div>
             <div
               style="font:400 9.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:rgba(109,15,24,.7)">
               Phút</div>
           </div>
           <div
-            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
-            <div style="font:300 40px/1 Cormorant,Georgia,serif;color:#f2efe9;font-variant-numeric:tabular-nums">{{ ss
+            style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)" class="mobile-countdown-cell">
+            <div style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums" class="mobile-countdown-num">{{ ss
               }}</div>
             <div
               style="font:400 9.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:rgba(109,15,24,.7)">
@@ -91,7 +120,7 @@
 
         <div style="display:flex;justify-content:center;margin-top:34px">
           <button type="button" onClick="{{ addIcs }}"
-            style="appearance:none;cursor:pointer;background:#f2efe9;color:#f6efe4;border:1px solid #f2efe9;padding:15px 30px;font:500 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;transition:background .18s ease,color .18s ease"
+            style="appearance:none;cursor:pointer;background:#6d0f18;color:#f6efe4;border:1px solid #6d0f18;padding:15px 30px;font:500 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;transition:background .18s ease,color .18s ease"
             style-hover="background:#82121c;border-color:#82121c">Thêm vào lịch</button>
         </div>
       </section>
@@ -102,12 +131,12 @@
       </div>
 
       <section
-        style="width:100%;box-sizing:border-box;padding:76px 40px 84px;display:flex;flex-direction:column;align-items:center;background:#f2efe9">
+        style="width:100%;box-sizing:border-box;padding:76px 40px 84px;display:flex;flex-direction:column;align-items:center;background:#f2efe9" class="mobile-section">
         <div
           style="font:400 11px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.34em;text-transform:uppercase;color:rgba(60,40,40,.62);text-align:center">
           Album cưới</div>
         <h2
-          style="margin:26px 0 0;font:300 30px/1.2 Cormorant,Georgia,serif;letter-spacing:.06em;text-transform:uppercase;color:#3c2828;text-align:center">
+          style="margin:26px 0 0;font:300 30px/1.2 Cormorant,Georgia,serif;letter-spacing:.06em;text-transform:uppercase;color:#3c2828;text-align:center" class="mobile-heading">
           Những khoảnh khắc của chúng mình</h2>
 
         <div
@@ -118,19 +147,19 @@
           </div>
           <div
             style="grid-area:stack;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;grid-template-areas:'c1 c2' 'c3 c4';transition:opacity .5s ease">
-            <div style="grid-area:c1;display:flex;align-items:center;justify-content:center;padding:26px">
+            <div style="grid-area:c1;display:flex;align-items:center;justify-content:center;padding:26px" class="mobile-album-cell">
               <div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-1" shape="rect"
                   placeholder="Ảnh 1"></image-slot></div>
             </div>
-            <div style="grid-area:c2;display:flex;align-items:center;justify-content:center;padding:26px">
+            <div style="grid-area:c2;display:flex;align-items:center;justify-content:center;padding:26px" class="mobile-album-cell">
               <div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-2" shape="rect"
                   placeholder="Ảnh 2"></image-slot></div>
             </div>
-            <div style="grid-area:c3;display:flex;align-items:center;justify-content:center;padding:26px">
+            <div style="grid-area:c3;display:flex;align-items:center;justify-content:center;padding:26px" class="mobile-album-cell">
               <div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-3" shape="rect"
                   placeholder="Ảnh 3"></image-slot></div>
             </div>
-            <div style="grid-area:c4;display:flex;align-items:center;justify-content:center;padding:26px">
+            <div style="grid-area:c4;display:flex;align-items:center;justify-content:center;padding:26px" class="mobile-album-cell">
               <div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-4" shape="rect"
                   placeholder="Ảnh 4"></image-slot></div>
             </div>
@@ -141,7 +170,7 @@
       </section>
 
       <section
-        style="width:100%;box-sizing:border-box;background:#f2efe9;padding:72px 0 84px;display:flex;flex-direction:column;align-items:center">
+        style="width:100%;box-sizing:border-box;background:#f2efe9;padding:72px 0 84px;display:flex;flex-direction:column;align-items:center" class="mobile-section">
         <div style="position:relative;width:100%;display:grid;grid-template-areas:'stack'">
           <div ref="{{ sref0 }}"
             style="grid-area:stack;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease">
@@ -210,7 +239,7 @@
         style="width:100%;box-sizing:border-box;background:#ffffff;padding:80px 24px 76px;display:flex;flex-direction:column;align-items:center">
         <div style="position:relative;width:100%;aspect-ratio:1200/1500">
           <div ref="{{ cref0 }}" style="position:absolute;inset:0;transition:opacity .55s ease">
-            <div style="position:absolute;left:48%;top:0;width:54%;aspect-ratio:3/4;background:#efece6"><image-slot
+            <div style="position:absolute;left:48%;top:0;width:52%;aspect-ratio:3/4;background:#efece6"><image-slot
                 id="collage-1" shape="rect" placeholder="Ảnh 1"></image-slot></div>
             <div style="position:absolute;left:4%;top:27%;width:36%;aspect-ratio:3/4;background:#efece6"><image-slot
                 id="collage-2" shape="rect" placeholder="Ảnh 2"></image-slot></div>
@@ -218,7 +247,7 @@
                 id="collage-3" shape="rect" placeholder="Ảnh 3"></image-slot></div>
           </div>
           <div ref="{{ cref1 }}" style="position:absolute;inset:0;transition:opacity .55s ease">
-            <div style="position:absolute;left:48%;top:0;width:54%;aspect-ratio:3/4;background:#efece6"><image-slot
+            <div style="position:absolute;left:48%;top:0;width:52%;aspect-ratio:3/4;background:#efece6"><image-slot
                 id="collage-4" shape="rect" placeholder="Ảnh 4"></image-slot></div>
             <div style="position:absolute;left:4%;top:27%;width:36%;aspect-ratio:3/4;background:#efece6"><image-slot
                 id="collage-5" shape="rect" placeholder="Ảnh 5"></image-slot></div>
@@ -250,7 +279,7 @@
       </section>
 
       <section
-        style="width:100%;box-sizing:border-box;background:#fdfbf6;padding:88px 40px 92px;display:flex;flex-direction:column;align-items:center;text-align:center">
+        style="width:100%;box-sizing:border-box;background:#fdfbf6;padding:88px 40px 92px;display:flex;flex-direction:column;align-items:center;text-align:center" class="mobile-section">
         <div
           style="font:400 11px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.34em;text-transform:uppercase;color:rgba(60,40,40,.62)">
           Sổ lưu bút</div>
@@ -261,12 +290,12 @@
         <div style="width:100%;max-width:460px;display:flex;flex-direction:column;gap:14px">
           <input type="text" value="{{ wishName }}" onChange="{{ onName }}" placeholder="Tên của bạn"
             style="width:100%;box-sizing:border-box;appearance:none;background:transparent;border:1px solid rgba(60,40,40,.25);padding:15px 16px;font:400 12px/1.4 'DM Mono',ui-monospace,monospace;letter-spacing:.06em;color:#3c2828;outline:none"
-            style-focus="border-color:#f2efe9">
+            style-focus="border-color:#6d0f18">
           <textarea rows="4" value="{{ wishText }}" onChange="{{ onText }}" placeholder="Lời chúc của bạn…"
             style="width:100%;box-sizing:border-box;appearance:none;resize:vertical;background:transparent;border:1px solid rgba(60,40,40,.25);padding:15px 16px;font:400 12px/1.7 'DM Mono',ui-monospace,monospace;letter-spacing:.04em;color:#3c2828;outline:none"
-            style-focus="border-color:#f2efe9"></textarea>
+            style-focus="border-color:#6d0f18"></textarea>
           <button type="button" onClick="{{ sendWish }}"
-            style="appearance:none;cursor:pointer;background:#f2efe9;color:#f6efe4;border:1px solid #f2efe9;padding:15px 30px;font:500 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;transition:background .18s ease"
+            style="appearance:none;cursor:pointer;background:#6d0f18;color:#f6efe4;border:1px solid #6d0f18;padding:15px 30px;font:500 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;transition:background .18s ease"
             style-hover="background:#82121c;border-color:#82121c">Gửi lời chúc</button>
         </div>
 
@@ -284,9 +313,9 @@
       </section>
 
       <section
-        style="width:100%;box-sizing:border-box;background:#f2efe9;padding:96px 40px 104px;display:flex;flex-direction:column;align-items:center;text-align:center">
+        style="width:100%;box-sizing:border-box;background:#f2efe9;padding:96px 40px 104px;display:flex;flex-direction:column;align-items:center;text-align:center" class="mobile-section">
         <h2
-          style="margin:0;font:300 52px/1 Cormorant,Georgia,serif;letter-spacing:.14em;text-transform:uppercase;color:#f2efe9">
+          style="margin:0;font:300 52px/1 Cormorant,Georgia,serif;letter-spacing:.14em;text-transform:uppercase;color:#6d0f18" class="mobile-thanks">
           Cảm Ơn</h2>
         <div style="width:44px;height:1px;background:rgba(109,15,24,.4);margin:30px 0 28px"></div>
         <div
