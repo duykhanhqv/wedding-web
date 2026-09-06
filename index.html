@@ -33,6 +33,14 @@
           color: #e6c477;
         }
 
+        /* Fallback so photo slots keep their box even if the custom
+           element or its script is slow/blocked (Messenger in-app browser). */
+        image-slot {
+          display: block;
+          width: 100%;
+          height: 100%;
+        }
+
         @media (max-width: 640px) {
           .mobile-section {
             padding-left: 20px !important;
@@ -73,7 +81,7 @@
           style="display:block;width:100%;height:100%;object-fit:cover">
       </div>
       <section
-        style="width: 100%; box-sizing: border-box; color: #f2efe9; padding: 88px 40px 96px; display: flex; flex-direction: column; align-items: center; text-align: center; background-color: #F2EFE9">
+        style="width: 100%; box-sizing: border-box; color: #6d0f18; padding: 88px 40px 96px; display: flex; flex-direction: column; align-items: center; text-align: center; background-color: #F2EFE9">
         <div
           style="font:400 12px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.34em;text-transform:uppercase;color:rgba(109,15,24,.75)">
           Cùng đếm ngược</div>
@@ -140,13 +148,13 @@
           Những khoảnh khắc của chúng mình</h2>
 
         <div
-          style="position:relative;width:100%;max-width:620px;margin:44px 0 0;display:grid;grid-template-areas:'stack'">
-          <div style="grid-area:stack;position:relative;pointer-events:none;z-index:2">
+          style="position:relative;width:100%;max-width:620px;margin:44px 0 0">
+          <div style="position:absolute;inset:0;pointer-events:none;z-index:2">
             <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(60,40,40,.22)"></div>
             <div style="position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(60,40,40,.22)"></div>
           </div>
           <div
-            style="grid-area:stack;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;grid-template-areas:'c1 c2' 'c3 c4';transition:opacity .5s ease">
+            style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;grid-template-areas:'c1 c2' 'c3 c4';transition:opacity .5s ease">
             <div style="grid-area:c1;display:flex;align-items:center;justify-content:center;padding:26px" class="mobile-album-cell">
               <div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-1" shape="rect"
                   placeholder="Ảnh 1"></image-slot></div>
@@ -171,9 +179,9 @@
 
       <section
         style="width:100%;box-sizing:border-box;background:#f2efe9;padding:72px 0 84px;display:flex;flex-direction:column;align-items:center" class="mobile-section">
-        <div style="position:relative;width:100%;display:grid;grid-template-areas:'stack'">
+        <div style="position:relative;width:100%">
           <div ref="{{ sref0 }}"
-            style="grid-area:stack;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease">
+            style="position:relative;width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease;opacity:1;z-index:1">
             <figure style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:none">
               <figcaption
                 style="font:400 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.18em;color:#3c2828;text-align:center">
@@ -199,7 +207,7 @@
             </figure>
           </div>
           <div ref="{{ sref1 }}"
-            style="grid-area:stack;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease">
+            style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease;opacity:0;z-index:0;pointer-events:none">
             <figure style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:none">
               <figcaption
                 style="font:400 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.18em;color:#3c2828;text-align:center">
@@ -238,7 +246,7 @@
       <section
         style="width:100%;box-sizing:border-box;background:#ffffff;padding:80px 24px 76px;display:flex;flex-direction:column;align-items:center">
         <div style="position:relative;width:100%;aspect-ratio:1200/1500">
-          <div ref="{{ cref0 }}" style="position:absolute;inset:0;transition:opacity .55s ease">
+          <div ref="{{ cref0 }}" style="position:absolute;inset:0;transition:opacity .55s ease;opacity:1;z-index:1">
             <div style="position:absolute;left:48%;top:0;width:52%;aspect-ratio:3/4;background:#efece6"><image-slot
                 id="collage-1" shape="rect" placeholder="Ảnh 1"></image-slot></div>
             <div style="position:absolute;left:4%;top:27%;width:36%;aspect-ratio:3/4;background:#efece6"><image-slot
@@ -246,7 +254,7 @@
             <div style="position:absolute;left:32%;top:58%;width:36%;aspect-ratio:3/4;background:#efece6"><image-slot
                 id="collage-3" shape="rect" placeholder="Ảnh 3"></image-slot></div>
           </div>
-          <div ref="{{ cref1 }}" style="position:absolute;inset:0;transition:opacity .55s ease">
+          <div ref="{{ cref1 }}" style="position:absolute;inset:0;transition:opacity .55s ease;opacity:0;z-index:0;pointer-events:none">
             <div style="position:absolute;left:48%;top:0;width:52%;aspect-ratio:3/4;background:#efece6"><image-slot
                 id="collage-4" shape="rect" placeholder="Ảnh 4"></image-slot></div>
             <div style="position:absolute;left:4%;top:27%;width:36%;aspect-ratio:3/4;background:#efece6"><image-slot
@@ -261,14 +269,14 @@
       <section
         style="width:100%;box-sizing:border-box;background:#F2EFE9;padding:0;display:flex;flex-direction:column;align-items:center">
         <div style="position:relative;width:100%;aspect-ratio:1080/1350;overflow:hidden">
-          <div ref="{{ lref0 }}" style="position:absolute;inset:0;transition:opacity .55s ease">
+          <div ref="{{ lref0 }}" style="position:absolute;inset:0;transition:opacity .55s ease;opacity:1;z-index:1">
             <div style="position:absolute;inset:0;filter:grayscale(1) contrast(1.02);background:#dedbd5"><image-slot
                 id="layer-bg-1" shape="rect" placeholder="Ảnh nền 1"></image-slot></div>
             <div
               style="position:absolute;left:20%;top:13%;width:62%;aspect-ratio:2/3;box-shadow:0 24px 60px rgba(20,16,14,.28);background:#efece6">
               <image-slot id="layer-front-1" shape="rect" placeholder="Ảnh chính 1"></image-slot></div>
           </div>
-          <div ref="{{ lref1 }}" style="position:absolute;inset:0;transition:opacity .55s ease">
+          <div ref="{{ lref1 }}" style="position:absolute;inset:0;transition:opacity .55s ease;opacity:0;z-index:0;pointer-events:none">
             <div style="position:absolute;inset:0;filter:grayscale(1) contrast(1.02);background:#dedbd5"><image-slot
                 id="layer-bg-2" shape="rect" placeholder="Ảnh nền 2"></image-slot></div>
             <div
