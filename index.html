@@ -46,9 +46,6 @@
             padding-left: 20px !important;
             padding-right: 20px !important;
           }
-          .mobile-album-cell {
-            padding: 12px !important;
-          }
           .mobile-countdown-grid {
             gap: 8px !important;
           }
@@ -64,6 +61,55 @@
           }
           .mobile-thanks {
             font-size: 36px !important;
+          }
+
+          /* Album: the 2x2 grid squeezes each 4:5 photo far too small on a
+             phone, and the centre crosshair no longer lines up once the cells
+             stop being equal squares. Stack to one column and drop the rules. */
+          .mobile-album-grid {
+            grid-template-columns: 1fr !important;
+            grid-template-areas: 'c1' 'c2' 'c3' 'c4' !important;
+          }
+          .mobile-album-cell {
+            padding: 0 0 14px !important;
+          }
+          .mobile-album-rules {
+            display: none !important;
+          }
+
+          /* Strip: 3 columns leaves ~100px-wide photos, and the second slide is
+             absolutely positioned over the first, so the section has no height
+             of its own. Two columns keeps the pairing and the fade intact. */
+          .mobile-strip {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            row-gap: 22px;
+          }
+          .mobile-strip figure {
+            gap: 14px !important;
+          }
+          /* Item 3 wraps onto its own row, so its divider would hang in
+             empty space; the divider belongs only to item 2. */
+          .mobile-strip figure:nth-child(3) {
+            border-left: none !important;
+          }
+          .mobile-strip figure:nth-child(2) {
+            border-left: 1px solid rgba(60, 40, 40, .2) !important;
+          }
+        }
+
+        /* The overlapping slides (strip / collage / layered hero) are absolutely
+           positioned, so their parents need an explicit ratio to reserve height.
+           Without it the sections collapse into each other on narrow screens. */
+        .mobile-strip-wrap {
+          aspect-ratio: auto;
+        }
+
+        @media (max-width: 640px) {
+          .mobile-collage {
+            aspect-ratio: 1000/1500 !important;
+          }
+          .mobile-layer {
+            aspect-ratio: 1080/1420 !important;
           }
         }
       </style>
@@ -149,12 +195,12 @@
 
         <div
           style="position:relative;width:100%;max-width:620px;margin:44px 0 0">
-          <div style="position:absolute;inset:0;pointer-events:none;z-index:2">
+          <div style="position:absolute;inset:0;pointer-events:none;z-index:2" class="mobile-album-rules">
             <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(60,40,40,.22)"></div>
             <div style="position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(60,40,40,.22)"></div>
           </div>
-          <div
-            style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;grid-template-areas:'c1 c2' 'c3 c4';transition:opacity .5s ease">
+          <div class="mobile-album-grid"
+            style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;grid-template-areas:'c1 c2' 'c3 c4';transition:opacity .5s ease">
             <div style="grid-area:c1;display:flex;align-items:center;justify-content:center;padding:26px" class="mobile-album-cell">
               <div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-1" shape="rect"
                   placeholder="Ảnh 1"></image-slot></div>
@@ -179,8 +225,8 @@
 
       <section
         style="width:100%;box-sizing:border-box;background:#f2efe9;padding:72px 0 84px;display:flex;flex-direction:column;align-items:center" class="mobile-section">
-        <div style="position:relative;width:100%">
-          <div ref="{{ sref0 }}"
+        <div style="position:relative;width:100%" class="mobile-strip-wrap">
+          <div ref="{{ sref0 }}" class="mobile-strip"
             style="position:relative;width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease;opacity:1;z-index:1">
             <figure style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:none">
               <figcaption
@@ -206,7 +252,7 @@
                   placeholder="Ảnh 3"></image-slot></div>
             </figure>
           </div>
-          <div ref="{{ sref1 }}"
+          <div ref="{{ sref1 }}" class="mobile-strip"
             style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease;opacity:0;z-index:0;pointer-events:none">
             <figure style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:none">
               <figcaption
@@ -245,7 +291,7 @@
 
       <section
         style="width:100%;box-sizing:border-box;background:#ffffff;padding:80px 24px 76px;display:flex;flex-direction:column;align-items:center">
-        <div style="position:relative;width:100%;aspect-ratio:1200/1500">
+        <div style="position:relative;width:100%;aspect-ratio:1200/1500" class="mobile-collage">
           <div ref="{{ cref0 }}" style="position:absolute;inset:0;transition:opacity .55s ease;opacity:1;z-index:1">
             <div style="position:absolute;left:48%;top:0;width:52%;aspect-ratio:3/4;background:#efece6"><image-slot
                 id="collage-1" shape="rect" placeholder="Ảnh 1"></image-slot></div>
@@ -268,7 +314,7 @@
 
       <section
         style="width:100%;box-sizing:border-box;background:#F2EFE9;padding:0;display:flex;flex-direction:column;align-items:center">
-        <div style="position:relative;width:100%;aspect-ratio:1080/1350;overflow:hidden">
+        <div style="position:relative;width:100%;aspect-ratio:1080/1350;overflow:hidden" class="mobile-layer">
           <div ref="{{ lref0 }}" style="position:absolute;inset:0;transition:opacity .55s ease;opacity:1;z-index:1">
             <div style="position:absolute;inset:0;filter:grayscale(1) contrast(1.02);background:#dedbd5"><image-slot
                 id="layer-bg-1" shape="rect" placeholder="Ảnh nền 1"></image-slot></div>
