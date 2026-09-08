@@ -1,0 +1,114 @@
+/* ------------------------------------------------------------------
+   Bìa phong bì — màn hình mở đầu, phủ kín màn hình.
+   Ảnh phong bì làm nền (background cover), chữ đặt lên trên: tên cô dâu
+   chú rể bằng font chữ ký ở nắp thư, dòng "Thân mời" và "Chạm để mở
+   thiệp" ở đáy.
+   Bấm vào bất kỳ đâu để vào trang chính (js/envelope.js).
+   ------------------------------------------------------------------ */
+
+/* Font chữ ký cho tên cô dâu chú rể. Bản .ttf này (iCiel Brittany
+   Signature) có đủ bộ tiếng Việt nên "Khánh" giữ được dấu sắc — bản .otf
+   trước đó thì không. */
+@font-face{
+  font-family:'Brittany Signature';
+  font-style:normal;
+  font-weight:400;
+  font-display:swap;
+  src:url('../assets/fonts/Brittany-Signature.ttf') format('truetype');
+}
+
+html.env-lock, html.env-lock body{overflow:hidden !important;height:100%}
+
+#env-cover{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  cursor:pointer;
+  overscroll-behavior:contain;
+  -webkit-tap-highlight-color:transparent;
+  background:#4a0b13 url('../assets/img/envelope.webp') center center / cover no-repeat;
+  opacity:1;
+  transition:opacity .7s ease;
+}
+#env-cover.is-open{opacity:0}
+#env-cover.is-done{display:none}
+
+/* Tên cô dâu chú rể nằm trong phần nắp thư, phía trên con dấu sáp. */
+.env-top{
+  position:absolute;
+  left:0;right:0;
+  top:12%;
+  padding:0 6vw;
+  text-align:center;
+  color:#f3e6d6;
+  animation:envIn 1.1s ease .15s backwards;
+}
+.env-names{
+  font:400 clamp(40px,7.4vw,104px)/1.12 'Brittany Signature',Cormorant,Georgia,serif;
+  white-space:nowrap;
+  color:#f6ead9;
+  text-shadow:0 3px 20px rgba(30,4,8,.5);
+}
+
+
+/* Khối chữ ở đáy phong bì: lời mời rồi tới dòng gợi ý chạm để mở. */
+.env-bottom{
+  position:absolute;
+  left:0;right:0;
+  bottom:8%;
+  padding:0 6vw;
+  text-align:center;
+  text-shadow:0 2px 14px rgba(30,4,8,.55);
+  animation:envIn 1.1s ease .45s backwards;
+}
+.env-lead{
+  font:400 clamp(12px,1.5vw,20px)/1.5 Cormorant,Georgia,serif;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:rgba(244,231,215,.92);
+}
+.env-open{
+  margin-top:clamp(12px,1.5vw,20px);
+  font:400 clamp(10.5px,1.25vw,17px)/1.4 Cormorant,Georgia,serif;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:rgba(244,231,215,.78);
+  animation:envBreathe 3.4s ease-in-out 1.6s infinite;
+}
+.env-open span{
+  display:inline-block;
+  padding-bottom:7px;
+  border-bottom:1px solid rgba(244,231,215,.32);
+  transition:border-color .25s ease,color .25s ease;
+}
+#env-cover:hover .env-open span{border-color:rgba(244,231,215,.75);color:#fbf1e4}
+#env-cover:focus-visible{outline:2px solid rgba(244,231,215,.7);outline-offset:-8px}
+
+@keyframes envIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes envBreathe{0%,100%{opacity:1}50%{opacity:.62}}
+
+/* Nội dung trang hiện lên nhẹ nhàng sau khi bìa mờ đi. */
+@keyframes envReveal{from{opacity:0}to{opacity:1}}
+html.env-opening #dc-root{animation:envReveal .7s ease backwards}
+
+/* Màn hình dọc: ảnh bị cắt hai bên nên chữ cần nhỏ và sát mép hơn. */
+@media (max-aspect-ratio:1/1){
+  .env-top{top:10%;padding:0 9vw}
+  .env-names{font-size:clamp(28px,9.6vw,58px)}
+  .env-bottom{bottom:7%;padding:0 8vw}
+  .env-lead{font-size:clamp(11px,3vw,16px);letter-spacing:.2em}
+  .env-open{margin-top:12px;font-size:clamp(10px,2.7vw,15px);letter-spacing:.18em}
+}
+
+/* Cửa sổ ngang và thấp: ảnh bị cắt bớt trên dưới nên con dấu tụt xuống gần
+   đáy — kéo khối chữ sát mép dưới để không đè lên con dấu. */
+@media (min-aspect-ratio:9/5){
+  .env-top{top:9%}
+  .env-bottom{bottom:4%}
+  .env-open{margin-top:10px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .env-top,.env-bottom,.env-open{animation:none}
+  html.env-opening #dc-root{animation:none}
+}

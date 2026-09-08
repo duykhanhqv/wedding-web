@@ -1,0 +1,81 @@
+html,body{margin:0;padding:0;background:#F2EFE9;overflow-x:hidden;width:100%}a{color:#c9a24a}a:hover{color:#e6c477}
+/* Fallback so photo slots keep their box even if the custom
+   element or its script is slow/blocked (Messenger in-app browser). */
+image-slot{display:block;width:100%;height:100%}
+@media (max-width:640px){
+.mobile-section{padding-left:20px !important;padding-right:20px !important}
+.mobile-countdown-grid{gap:8px !important}
+.mobile-countdown-cell{padding:14px 4px 12px !important}
+.mobile-countdown-num{font-size:28px !important}
+.mobile-heading{font-size:22px !important;letter-spacing:.02em !important}
+.mobile-thanks{font-size:36px !important}
+/* Album: the 2x2 grid squeezes each 4:5 photo far too small on a phone, and
+   the centre crosshair no longer lines up once the cells stop being equal
+   squares. Stack to one column and drop the rules. */
+.mobile-album-grid{grid-template-columns:1fr !important;grid-template-areas:'c1' 'c2' 'c3' 'c4' !important}
+.mobile-album-cell{padding:0 0 14px !important}
+.mobile-album-rules{display:none !important}
+/* Strip: 3 columns leaves ~100px-wide photos on a phone. Two columns keeps
+   the pairing readable; the slides share a grid area so height self-sizes. */
+.mobile-strip{grid-template-columns:repeat(2,minmax(0,1fr)) !important;row-gap:22px}
+.mobile-strip figure{gap:14px !important}
+/* Item 3 wraps onto its own row, so its divider would hang in empty space;
+   the divider belongs only to item 2. */
+.mobile-strip figure:nth-child(3){border-left:none !important}
+.mobile-strip figure:nth-child(2){border-left:1px solid rgba(60,40,40,.2) !important}
+.mobile-collage{aspect-ratio:1000/1500 !important}
+.mobile-layer{aspect-ratio:1080/1420 !important}
+}
+
+/* Tên cô dâu chú rể viết tay đè lên ảnh thiệp trang 1. Kích thước tính theo
+   bề ngang của khung ảnh (cqi) nên tỉ lệ giữ nguyên ở mọi màn hình.
+   Khi bìa phong bì còn che (html.env-lock, xem js/envelope.js) chữ ẩn đi;
+   mở thiệp xong thì chữ được "viết" ra bằng cách trượt lớp mask chéo từ
+   trái sang phải. Trình duyệt không hỗ trợ mask thì chữ chỉ mờ dần hiện ra,
+   còn JS không chạy thì chữ hiện sẵn ngay. */
+.hero-shot{container-type:inline-size}
+.hero-names{
+  position:absolute;
+  top:2%;
+  right:3%;
+  /* Nét chữ ký tràn khá nhiều ra ngoài hộp chữ — riêng đuôi chữ g thõng
+     xuống tới 0.81em dưới đường chân chữ. Phải đệm rộng ra, nhất là phía
+     dưới, thì lớp mask mới phủ hết nét, nếu không đuôi g bị cắt cụt.
+     top/right đã trừ lại phần đệm để chữ vẫn nằm đúng chỗ. */
+  padding:5cqi 4cqi 14cqi 5cqi;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  font-family:'Brittany Signature',Cormorant,Georgia,serif;
+  color:#7a1220;
+  line-height:.78;
+  pointer-events:none;
+  opacity:1;
+  -webkit-mask-image:linear-gradient(100deg,#000 0 55%,rgba(0,0,0,.45) 61%,transparent 68%);
+  mask-image:linear-gradient(100deg,#000 0 55%,rgba(0,0,0,.45) 61%,transparent 68%);
+  -webkit-mask-size:230% 100%;
+  mask-size:230% 100%;
+  -webkit-mask-repeat:no-repeat;
+  mask-repeat:no-repeat;
+  -webkit-mask-position:0 0;
+  mask-position:0 0;
+  transition:opacity .9s ease .25s,
+             -webkit-mask-position 1.8s cubic-bezier(.4,0,.3,1) .35s,
+             mask-position 1.8s cubic-bezier(.4,0,.3,1) .35s;
+}
+.hn-name{font-size:12cqi}
+.hn-name:first-child{margin-right:9cqi}
+.hn-amp{font-size:7cqi;margin-right:12cqi}
+
+/* Trạng thái ẩn khi bìa phong bì còn che. */
+html.env-lock .hero-names{
+  opacity:0;
+  -webkit-mask-position:100% 0;
+  mask-position:100% 0;
+  transition:none;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .hero-names{transition:opacity .3s ease}
+  html.env-lock .hero-names{-webkit-mask-position:0 0;mask-position:0 0}
+}
