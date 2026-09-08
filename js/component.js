@@ -1,3 +1,17 @@
+/* Logic của thiệp (đếm ngược, chuyển ảnh, lời chúc...).
+
+   Runtime dc đọc mã từ textContent của thẻ <script data-dc-script> trong
+   index.html, nên file này tự nạp mã vào thẻ đó. Trước đây index.html lấy
+   file bằng XHR đồng bộ, nhưng trình duyệt chặn XHR khi mở bằng file://
+   (mở thẳng file, không qua web server) — khi đó toàn bộ phần chạy được của
+   thiệp im lặng chết: hai lớp ảnh của carousel chồng lên nhau, đếm ngược
+   đứng yên, gửi lời chúc không ăn. Nạp bằng thẻ <script src> thì chạy được
+   cả file:// lẫn http://.
+
+   String.raw để giữ nguyên các chuỗi thoát trong mã (ví dụ "\r\n" khi tạo
+   file .ics). Khi sửa mã bên dưới, tránh dùng dấu ` và ${ vì cả khối nằm
+   trong một chuỗi template. */
+document.getElementById('dc-component').textContent = String.raw`
 class Component extends DCLogic {
   state = { now: Date.now(), added: false, active: 0, strip: 0, collage: 0, layer: 0, wishName: "", wishText: "", wishes: [{ name: "Minh & Trang", text: "Chúc hai bạn trăm năm hạnh phúc, mãi bên nhau như ngày đầu." }] };
 
@@ -98,3 +112,4 @@ class Component extends DCLogic {
     });
   }
 }
+`;

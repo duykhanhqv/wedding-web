@@ -26,48 +26,63 @@
 <script src="js/envelope.js"></script>
 
 <x-dc>
-<helmet data-dc-atomics=""><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><script src="js/image-slot.js"></script><script type="text/x-dc" data-dc-script data-props="{&quot;gap&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:64,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;}}" id="dc-component"></script><script>
-// The dc runtime parses the component from this tag's textContent (see
-// parseDcDocument in support.js), so the file has to be inlined before boot
-// rather than loaded with src=. Kept as js/component.js so it stays editable.
-(function () {
-  var xhr = new XMLHttpRequest();
-  xhr.open('GET', 'js/component.js', false);
-  xhr.send(null);
-  document.getElementById('dc-component').textContent = xhr.responseText;
-})();
-</script></helmet>
+<helmet data-dc-atomics=""><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><script src="js/image-slot.js"></script><script type="text/x-dc" data-dc-script data-props="{&quot;gap&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:64,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;}}" id="dc-component"></script><script src="js/component.js"></script></helmet>
+<!-- ===================================================================
+     BẢN ĐỒ CÁC PHẦN CỦA THIỆP
+     Mỗi phần có một id riêng; style của phần nào nằm đúng khối mang tên
+     id đó trong css/style.css. Bìa phong bì nằm ngoài <x-dc>, style ở
+     css/envelope.css. Logic (đếm ngược, đổi lớp ảnh) ở js/component.js.
+
+       #sec-page-1    Ảnh thiệp trang 1 + tên viết tay Khánh & Nhung
+       #sec-page-2    Ảnh thiệp trang 2
+       #sec-countdown Đếm ngược + nút thêm vào lịch
+       #sec-page-3    Ảnh thiệp trang 3
+       #sec-album     Album cưới — lưới 2×2 (album-1..4)
+       #sec-strip     Dải ảnh ( 01 )( 02 )( 03 ) — 2 lớp (strip-1..6)
+       #sec-collage   Collage 3 ảnh xếp lệch — 2 lớp (collage-1..6)
+       #sec-layer     Ảnh lồng lớp — 2 lớp (layer-bg/front 1..2)
+       #sec-wishes    Sổ lưu bút
+       #sec-thanks    Cảm ơn
+
+     Các phần "2 lớp" là carousel: lớp 1 và lớp 2 chồng lên nhau,
+     js/component.js đổi opacity giữa hai lớp qua ref (sref/cref/lref).
+     Đổi ảnh: sửa thuộc tính src của <image-slot> tương ứng.
+     ================================================================== -->
 <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:760px;margin:0 auto;background:#0e0a0a" data-gap="{{ gapPx }}">
-  <div class="hero-shot" style="position:relative;width:100%;aspect-ratio:3875/5463;overflow:hidden">
+
+  <!-- ══ #sec-page-1 · ẢNH THIỆP TRANG 1 + TÊN VIẾT TAY ══════════════ -->
+  <div id="sec-page-1" class="page-shot" style="position:relative;width:100%;aspect-ratio:3875/5463;overflow:hidden">
     <img src="assets/img/invite-1.png" alt="Thiệp mời — trang 1" style="display:block;width:100%;height:100%;object-fit:cover">
     <div class="hero-names">
       <span class="hn-name">Khánh</span>
       <span class="hn-amp">&amp;</span>
-      <span class="hn-name hn-last">Nhung</span>
+      <span class="hn-name">Nhung</span>
     </div>
   </div>
-  <div style="width:100%;aspect-ratio:3875/5462;overflow:hidden;margin-top:{{ gapPx }}">
+  <!-- ══ #sec-page-2 · ẢNH THIỆP TRANG 2 ═════════════════════════════ -->
+  <div id="sec-page-2" class="page-shot" style="width:100%;aspect-ratio:3875/5462;overflow:hidden;margin-top:{{ gapPx }}">
     <img src="assets/img/invite-2.png" alt="Thiệp mời — trang 2" style="display:block;width:100%;height:100%;object-fit:cover">
   </div>
-  <section class="mobile-section" style="width:100%;box-sizing:border-box;background:#f2efe9;color:#6d0f18;padding:88px 40px 96px;display:flex;flex-direction:column;align-items:center;text-align:center">
+  <!-- ══ #sec-countdown · ĐẾM NGƯỢC + NÚT THÊM VÀO LỊCH ══════════════ -->
+  <section id="sec-countdown" class="sec-pad" style="width:100%;box-sizing:border-box;background:#f2efe9;color:#6d0f18;padding:88px 40px 96px;display:flex;flex-direction:column;align-items:center;text-align:center">
     <div style="font:400 12px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.34em;text-transform:uppercase;color:rgba(109,15,24,.75)">Cùng đếm ngược</div>
     <div style="width:44px;height:1px;background:rgba(109,15,24,.4);margin:26px 0 34px"></div>
 
-    <div class="mobile-countdown-grid" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:100%;max-width:520px">
-      <div class="mobile-countdown-cell" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
-        <div class="mobile-countdown-num" style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums">{{ dd }}</div>
+    <div class="cd-grid" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:100%;max-width:520px">
+      <div class="cd-cell" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
+        <div class="cd-num" style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums">{{ dd }}</div>
         <div style="font:400 9.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:rgba(109,15,24,.7)">Ngày</div>
       </div>
-      <div class="mobile-countdown-cell" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
-        <div class="mobile-countdown-num" style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums">{{ hh }}</div>
+      <div class="cd-cell" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
+        <div class="cd-num" style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums">{{ hh }}</div>
         <div style="font:400 9.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:rgba(109,15,24,.7)">Giờ</div>
       </div>
-      <div class="mobile-countdown-cell" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
-        <div class="mobile-countdown-num" style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums">{{ mm }}</div>
+      <div class="cd-cell" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
+        <div class="cd-num" style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums">{{ mm }}</div>
         <div style="font:400 9.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:rgba(109,15,24,.7)">Phút</div>
       </div>
-      <div class="mobile-countdown-cell" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
-        <div class="mobile-countdown-num" style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums">{{ ss }}</div>
+      <div class="cd-cell" style="display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 6px 18px;border:1px solid rgba(109,15,24,.28)">
+        <div class="cd-num" style="font:300 40px/1 Cormorant,Georgia,serif;color:#6d0f18;font-variant-numeric:tabular-nums">{{ ss }}</div>
         <div style="font:400 9.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.22em;text-transform:uppercase;color:rgba(109,15,24,.7)">Giây</div>
       </div>
     </div>
@@ -79,56 +94,65 @@
     </div>
   </section>
 
-  <div style="width:100%;aspect-ratio:3875/5462;overflow:hidden;margin-top:{{ gapPx }}">
+  <!-- ══ #sec-page-3 · ẢNH THIỆP TRANG 3 ═════════════════════════════ -->
+  <div id="sec-page-3" class="page-shot" style="width:100%;aspect-ratio:3875/5462;overflow:hidden;margin-top:{{ gapPx }}">
     <img src="assets/img/invite-3.png" alt="Thiệp mời — trang 3" style="display:block;width:100%;height:100%;object-fit:cover">
   </div>
 
-<section class="mobile-section" style="width:100%;box-sizing:border-box;padding:76px 40px 84px;display:flex;flex-direction:column;align-items:center;background:#f2efe9">
+<!-- ══ #sec-album · ALBUM CƯỚI — lưới 2×2, ảnh album-1..4 ═══════════ -->
+  <section id="sec-album" class="sec-pad" style="width:100%;box-sizing:border-box;padding:76px 40px 84px;display:flex;flex-direction:column;align-items:center;background:#f2efe9">
     <div style="font:400 11px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.34em;text-transform:uppercase;color:rgba(60,40,40,.62);text-align:center">Album cưới</div>
-    <h2 class="mobile-heading" style="margin:26px 0 0;font:300 30px/1.2 Cormorant,Georgia,serif;letter-spacing:.06em;text-transform:uppercase;color:#3c2828;text-align:center">Những khoảnh khắc của chúng mình</h2>
+    <h2 class="album-title" style="margin:26px 0 0;font:300 30px/1.2 Cormorant,Georgia,serif;letter-spacing:.06em;text-transform:uppercase;color:#3c2828;text-align:center">Những khoảnh khắc của chúng mình</h2>
 
     <div style="position:relative;width:100%;max-width:620px;margin:44px 0 0;display:grid;grid-template-areas:'stack'">
-      <div class="mobile-album-rules" style="grid-area:stack;position:relative;pointer-events:none;z-index:2">
+      <div class="album-rules" style="grid-area:stack;position:relative;pointer-events:none;z-index:2">
         <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(60,40,40,.22)"></div>
         <div style="position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(60,40,40,.22)"></div>
       </div>
-      <div class="mobile-album-grid" style="grid-area:stack;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;grid-template-areas:'c1 c2' 'c3 c4';transition:opacity .5s ease">
-<div class="mobile-album-cell" style="grid-area:c1;display:flex;align-items:center;justify-content:center;padding:26px"><div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-1" shape="rect" placeholder="Ảnh 1" src="assets/img/album-1.webp"></image-slot></div></div>
-<div class="mobile-album-cell" style="grid-area:c2;display:flex;align-items:center;justify-content:center;padding:26px"><div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-2" shape="rect" placeholder="Ảnh 2" src="assets/img/album-2.webp"></image-slot></div></div>
-<div class="mobile-album-cell" style="grid-area:c3;display:flex;align-items:center;justify-content:center;padding:26px"><div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-3" shape="rect" placeholder="Ảnh 3" src="assets/img/album-3.webp"></image-slot></div></div>
-<div class="mobile-album-cell" style="grid-area:c4;display:flex;align-items:center;justify-content:center;padding:26px"><div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-4" shape="rect" placeholder="Ảnh 4" src="assets/img/album-4.webp"></image-slot></div></div>
+      <div class="album-grid" style="grid-area:stack;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;grid-template-areas:'c1 c2' 'c3 c4';transition:opacity .5s ease">
+<div class="album-cell" style="grid-area:c1;display:flex;align-items:center;justify-content:center;padding:26px"><div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-1" shape="rect" placeholder="Ảnh 1" src="assets/img/album-1.webp"></image-slot></div></div>
+<div class="album-cell" style="grid-area:c2;display:flex;align-items:center;justify-content:center;padding:26px"><div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-2" shape="rect" placeholder="Ảnh 2" src="assets/img/album-2.webp"></image-slot></div></div>
+<div class="album-cell" style="grid-area:c3;display:flex;align-items:center;justify-content:center;padding:26px"><div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-3" shape="rect" placeholder="Ảnh 3" src="assets/img/album-3.webp"></image-slot></div></div>
+<div class="album-cell" style="grid-area:c4;display:flex;align-items:center;justify-content:center;padding:26px"><div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-4" shape="rect" placeholder="Ảnh 4" src="assets/img/album-4.webp"></image-slot></div></div>
       </div>
           </div>
 
 
   </section>
 
-  <section class="mobile-section" style="width:100%;box-sizing:border-box;background:#f2efe9;padding:72px 0 84px;display:flex;flex-direction:column;align-items:center">
-    <div style="position:relative;width:100%;display:grid;grid-template-areas:'stack'">
-      <div ref="{{ sref0 }}" class="mobile-strip" style="grid-area:stack;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease">
-        <figure style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:none">
+  <!-- ══ #sec-strip · DẢI ẢNH ( 01 )( 02 )( 03 ) ═════════════════════
+       Carousel 2 lớp: .strip-track[data-slide="1"] và [data-slide="2"]
+       chồng lên nhau trong cùng ô lưới 'stack'; component.js đổi opacity
+       giữa hai lớp qua sref0/sref1. Trên điện thoại mỗi lớp thành dải
+       vuốt ngang (xem khối #sec-strip trong css/style.css). -->
+  <section id="sec-strip" class="sec-pad" style="width:100%;box-sizing:border-box;background:#f2efe9;padding:72px 0 84px;display:flex;flex-direction:column;align-items:center">
+    <div class="strip-stage" style="position:relative;width:100%;display:grid;grid-template-areas:'stack'">
+      <!-- lớp 1: ảnh 01–03 -->
+      <div ref="{{ sref0 }}" class="strip-track" data-slide="1" style="grid-area:stack;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease">
+        <figure class="strip-item" style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:none">
           <figcaption style="font:400 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.18em;color:#3c2828;text-align:center">( 01 )</figcaption>
           <div style="width:100%;aspect-ratio:3/4;background:#e7e3db"><image-slot id="strip-1" shape="rect" placeholder="Ảnh 1" src="assets/img/strip-1.webp"></image-slot></div>
         </figure>
-        <figure style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:1px solid rgba(60,40,40,.2)">
+        <figure class="strip-item" style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:1px solid rgba(60,40,40,.2)">
           <figcaption style="font:400 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.18em;color:#3c2828;text-align:center">( 02 )</figcaption>
           <div style="width:100%;aspect-ratio:3/4;background:#e7e3db"><image-slot id="strip-2" shape="rect" placeholder="Ảnh 2" src="assets/img/strip-2.webp"></image-slot></div>
         </figure>
-        <figure style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:1px solid rgba(60,40,40,.2)">
+        <figure class="strip-item" style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:1px solid rgba(60,40,40,.2)">
           <figcaption style="font:400 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.18em;color:#3c2828;text-align:center">( 03 )</figcaption>
           <div style="width:100%;aspect-ratio:3/4;background:#e7e3db"><image-slot id="strip-3" shape="rect" placeholder="Ảnh 3" src="assets/img/strip-3.webp"></image-slot></div>
         </figure>
       </div>
-      <div ref="{{ sref1 }}" class="mobile-strip" style="grid-area:stack;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease">
-        <figure style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:none">
+      <!-- lớp 2: ảnh 04–06 (chưa gán ảnh) -->
+      <div ref="{{ sref1 }}" class="strip-track" data-slide="2" style="grid-area:stack;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease">
+        <figure class="strip-item" style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:none">
           <figcaption style="font:400 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.18em;color:#3c2828;text-align:center">( 04 )</figcaption>
           <div style="width:100%;aspect-ratio:3/4;background:#e7e3db"><image-slot id="strip-4" shape="rect" placeholder="Ảnh 4"></image-slot></div>
         </figure>
-        <figure style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:1px solid rgba(60,40,40,.2)">
+        <figure class="strip-item" style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:1px solid rgba(60,40,40,.2)">
           <figcaption style="font:400 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.18em;color:#3c2828;text-align:center">( 05 )</figcaption>
           <div style="width:100%;aspect-ratio:3/4;background:#e7e3db"><image-slot id="strip-5" shape="rect" placeholder="Ảnh 5"></image-slot></div>
         </figure>
-        <figure style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:1px solid rgba(60,40,40,.2)">
+        <figure class="strip-item" style="margin:0;display:flex;flex-direction:column;gap:26px;border-left:1px solid rgba(60,40,40,.2)">
           <figcaption style="font:400 10.5px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.18em;color:#3c2828;text-align:center">( 06 )</figcaption>
           <div style="width:100%;aspect-ratio:3/4;background:#e7e3db"><image-slot id="strip-6" shape="rect" placeholder="Ảnh 6"></image-slot></div>
         </figure>
@@ -140,14 +164,19 @@
     <div style="margin-top:120px;font:300 26px/1 Cormorant,Georgia,serif;letter-spacing:.22em;text-transform:uppercase;color:#3c2828">Khánh &amp; Nhung</div>
   </section>
 
-  <section style="width:100%;box-sizing:border-box;background:#ffffff;padding:80px 24px 76px;display:flex;flex-direction:column;align-items:center">
-    <div class="mobile-collage" style="position:relative;width:100%;aspect-ratio:1200/1500">
-      <div ref="{{ cref0 }}" style="position:absolute;inset:0;transition:opacity .55s ease">
+  <!-- ══ #sec-collage · COLLAGE 3 ẢNH XẾP LỆCH ═══════════════════════
+       Carousel 2 lớp (cref0/cref1), ảnh đặt tuyệt đối theo % nên đổi
+       bố cục thì sửa left/top/width ngay trên từng ô. -->
+  <section id="sec-collage" style="width:100%;box-sizing:border-box;background:#ffffff;padding:80px 24px 76px;display:flex;flex-direction:column;align-items:center">
+    <div class="collage-stage" style="position:relative;width:100%;aspect-ratio:1200/1500">
+      <!-- lớp 1: ảnh 01–03 -->
+      <div ref="{{ cref0 }}" class="collage-slide" data-slide="1" style="position:absolute;inset:0;transition:opacity .55s ease">
         <div style="position:absolute;left:48%;top:0;width:54%;aspect-ratio:3/4;background:#efece6"><image-slot id="collage-1" shape="rect" placeholder="Ảnh 1" src="assets/img/collage-1.webp"></image-slot></div>
         <div style="position:absolute;left:4%;top:27%;width:36%;aspect-ratio:3/4;background:#efece6"><image-slot id="collage-2" shape="rect" placeholder="Ảnh 2" src="assets/img/collage-2.webp"></image-slot></div>
         <div style="position:absolute;left:32%;top:58%;width:36%;aspect-ratio:3/4;background:#efece6"><image-slot id="collage-3" shape="rect" placeholder="Ảnh 3" src="assets/img/collage-3.webp"></image-slot></div>
       </div>
-      <div ref="{{ cref1 }}" style="position:absolute;inset:0;transition:opacity .55s ease">
+      <!-- lớp 2: ảnh 04–06 (chưa gán ảnh) -->
+      <div ref="{{ cref1 }}" class="collage-slide" data-slide="2" style="position:absolute;inset:0;transition:opacity .55s ease">
         <div style="position:absolute;left:48%;top:0;width:54%;aspect-ratio:3/4;background:#efece6"><image-slot id="collage-4" shape="rect" placeholder="Ảnh 4"></image-slot></div>
         <div style="position:absolute;left:4%;top:27%;width:36%;aspect-ratio:3/4;background:#efece6"><image-slot id="collage-5" shape="rect" placeholder="Ảnh 5"></image-slot></div>
         <div style="position:absolute;left:32%;top:58%;width:36%;aspect-ratio:3/4;background:#efece6"><image-slot id="collage-6" shape="rect" placeholder="Ảnh 6"></image-slot></div>
@@ -156,20 +185,26 @@
 
   </section>
 
-  <section style="width:100%;box-sizing:border-box;background:#0e0a0a;padding:0;display:flex;flex-direction:column;align-items:center">
-    <div class="mobile-layer" style="position:relative;width:100%;aspect-ratio:1080/1350;overflow:hidden">
-      <div ref="{{ lref0 }}" style="position:absolute;inset:0;transition:opacity .55s ease">
+  <!-- ══ #sec-layer · ẢNH LỒNG LỚP (nền trắng đen + ảnh chính) ═══════
+       Carousel 2 lớp (lref0/lref1). Mỗi lớp gồm 1 ảnh nền phủ kín và 1
+       ảnh chính nổi ở giữa. -->
+  <section id="sec-layer" style="width:100%;box-sizing:border-box;background:#0e0a0a;padding:0;display:flex;flex-direction:column;align-items:center">
+    <div class="layer-stage" style="position:relative;width:100%;aspect-ratio:1080/1350;overflow:hidden">
+      <!-- lớp 1 -->
+      <div ref="{{ lref0 }}" class="layer-slide" data-slide="1" style="position:absolute;inset:0;transition:opacity .55s ease">
         <div style="position:absolute;inset:0;filter:grayscale(1) contrast(1.02);background:#dedbd5"><image-slot id="layer-bg-1" shape="rect" placeholder="Ảnh nền 1" src="assets/img/layer-bg.webp"></image-slot></div>
         <div style="position:absolute;left:20%;top:13%;width:62%;aspect-ratio:2/3;box-shadow:0 24px 60px rgba(20,16,14,.28);background:#efece6"><image-slot id="layer-front-1" shape="rect" placeholder="Ảnh chính 1" src="assets/img/layer-front.webp"></image-slot></div>
       </div>
-      <div ref="{{ lref1 }}" style="position:absolute;inset:0;transition:opacity .55s ease">
+      <!-- lớp 2 (chưa gán ảnh) -->
+      <div ref="{{ lref1 }}" class="layer-slide" data-slide="2" style="position:absolute;inset:0;transition:opacity .55s ease">
         <div style="position:absolute;inset:0;filter:grayscale(1) contrast(1.02);background:#dedbd5"><image-slot id="layer-bg-2" shape="rect" placeholder="Ảnh nền 2"></image-slot></div>
         <div style="position:absolute;left:20%;top:13%;width:62%;aspect-ratio:2/3;box-shadow:0 24px 60px rgba(20,16,14,.28);background:#efece6"><image-slot id="layer-front-2" shape="rect" placeholder="Ảnh chính 2"></image-slot></div>
       </div>
     </div>
   </section>
 
-  <section class="mobile-section" style="width:100%;box-sizing:border-box;background:#fdfbf6;padding:88px 40px 92px;display:flex;flex-direction:column;align-items:center;text-align:center">
+  <!-- ══ #sec-wishes · SỔ LƯU BÚT ════════════════════════════════════ -->
+  <section id="sec-wishes" class="sec-pad" style="width:100%;box-sizing:border-box;background:#fdfbf6;padding:88px 40px 92px;display:flex;flex-direction:column;align-items:center;text-align:center">
     <div style="font:400 11px/1 'DM Mono',ui-monospace,monospace;letter-spacing:.34em;text-transform:uppercase;color:rgba(60,40,40,.62)">Sổ lưu bút</div>
     <h2 style="margin:22px 0 0;font:300 34px/1.2 Cormorant,Georgia,serif;letter-spacing:.05em;color:#3c2828">Gửi lời chúc tới cô dâu &amp; chú rể</h2>
     <div style="width:44px;height:1px;background:rgba(109,15,24,.35);margin:28px 0 36px"></div>
@@ -190,8 +225,9 @@
     </div>
   </section>
 
-  <section class="mobile-section" style="width:100%;box-sizing:border-box;background:#f2efe9;padding:96px 40px 104px;display:flex;flex-direction:column;align-items:center;text-align:center">
-    <h2 class="mobile-thanks" style="margin:0;font:300 52px/1 Cormorant,Georgia,serif;letter-spacing:.14em;text-transform:uppercase;color:#6d0f18">Cảm Ơn</h2>
+  <!-- ══ #sec-thanks · CẢM ƠN ════════════════════════════════════════ -->
+  <section id="sec-thanks" class="sec-pad" style="width:100%;box-sizing:border-box;background:#f2efe9;padding:96px 40px 104px;display:flex;flex-direction:column;align-items:center;text-align:center">
+    <h2 class="thanks-title" style="margin:0;font:300 52px/1 Cormorant,Georgia,serif;letter-spacing:.14em;text-transform:uppercase;color:#6d0f18">Cảm Ơn</h2>
     <div style="width:44px;height:1px;background:rgba(109,15,24,.4);margin:30px 0 28px"></div>
     <div style="font:400 11px/1.8 'DM Mono',ui-monospace,monospace;letter-spacing:.24em;text-transform:uppercase;color:rgba(60,40,40,.72)">Rất hân hạnh được đón tiếp</div>
   </section>
