@@ -67,6 +67,17 @@ html.env-lock, html.env-lock body{overflow:hidden !important;height:100%}
   text-transform:uppercase;
   color:rgba(244,231,215,.92);
 }
+/* Tên khách mời — chỉ hiện khi đường dẫn có ?k=<mã> hoặc ?ten=<tên>
+   (xem js/envelope.js và danh sách ở js/khach-moi.js). Dùng chữ serif để
+   không tranh với chữ ký "Khánh & Nhung" ở nắp thư. */
+.env-guest{
+  margin-top:clamp(8px,1vw,14px);
+  font:400 clamp(19px,2.5vw,34px)/1.25 Cormorant,Georgia,serif;
+  letter-spacing:.04em;
+  color:#f6ead9;
+  text-wrap:balance;
+}
+
 .env-open{
   margin-top:clamp(12px,1.5vw,20px);
   font:400 clamp(10.5px,1.25vw,17px)/1.4 Cormorant,Georgia,serif;
@@ -93,10 +104,14 @@ html.env-opening #dc-root{animation:envReveal .7s ease backwards}
 
 /* Màn hình dọc: ảnh bị cắt hai bên nên chữ cần nhỏ và sát mép hơn. */
 @media (max-aspect-ratio:1/1){
-  .env-top{top:10%;padding:0 9vw}
-  .env-names{font-size:clamp(28px,9.6vw,58px)}
+  /* Chữ ký to hơn và hạ xuống một chút cho cân với nắp thư. Cỡ chữ tối đa
+     giữ ở 12.5vw: với lề 7vw thì "Khánh & Nhung" rộng 6.31 lần cỡ chữ, vừa
+     khít chỗ trống mà vẫn còn dư một chút, không lo tràn hay xuống dòng. */
+  .env-top{top:13.5%;padding:0 7vw}
+  .env-names{font-size:clamp(34px,12.5vw,72px)}
   .env-bottom{bottom:7%;padding:0 8vw}
   .env-lead{font-size:clamp(11px,3vw,16px);letter-spacing:.2em}
+  .env-guest{font-size:clamp(17px,5.4vw,28px);margin-top:8px}
   .env-open{margin-top:12px;font-size:clamp(10px,2.7vw,15px);letter-spacing:.18em}
 }
 
@@ -104,8 +119,13 @@ html.env-opening #dc-root{animation:envReveal .7s ease backwards}
    đáy — kéo khối chữ sát mép dưới để không đè lên con dấu. */
 @media (min-aspect-ratio:9/5){
   .env-top{top:9%}
-  .env-bottom{bottom:4%}
-  .env-open{margin-top:10px}
+  /* Khoảng trống dưới con dấu chỉ còn khoảng 110px ở cửa sổ ngang thấp
+     (1280×620), mà khối chữ giờ có thêm dòng tên khách — thu chữ và kéo sát
+     mép dưới để không đè lên con dấu. */
+  .env-bottom{bottom:2.5%}
+  .env-lead{font-size:11px}
+  .env-guest{font-size:clamp(16px,1.7vw,22px);margin-top:5px}
+  .env-open{margin-top:8px;font-size:10.5px}
 }
 
 @media (prefers-reduced-motion:reduce){

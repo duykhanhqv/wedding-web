@@ -10,19 +10,11 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/envelope.css">
   <link rel="preload" as="image" href="assets/img/envelope.webp">
-  <noscript><style>#env-cover{display:none !important}</style></noscript>
 </head>
 <body>
-<!-- Bìa phong bì: bấm để vào thiệp chính (js/envelope.js) -->
-<div id="env-cover" role="button" tabindex="0" aria-label="Mở thiệp cưới Khánh và Nhung">
-  <div class="env-top">
-    <div class="env-names">Khánh &amp; Nhung</div>
-  </div>
-  <div class="env-bottom">
-    <div class="env-lead">Thân mời</div>
-    <div class="env-open"><span>Chạm để mở thiệp</span></div>
-  </div>
-</div>
+<!-- Bìa phong bì. Markup nằm trong js/envelope.js để mỗi khách mời thấy tên
+     riêng của mình (đường dẫn ?k=<mã>); danh sách tên ở js/khach-moi.js. -->
+<script src="js/khach-moi.js"></script>
 <script src="js/envelope.js"></script>
 
 <x-dc>
