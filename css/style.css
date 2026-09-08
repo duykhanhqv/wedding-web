@@ -119,41 +119,23 @@ html.env-lock #sec-page-1 .hero-names{
 
 @media (max-width:640px){
   #sec-album .album-title{font-size:22px !important;letter-spacing:.02em !important}
-  /* Lưới 2×2 làm mỗi ảnh 4:5 bé lại quá trên điện thoại, và đường kẻ chữ thập
-     cũng không còn khớp khi các ô hết vuông. Xếp dọc một cột và bỏ đường kẻ. */
-  #sec-album .album-grid{grid-template-columns:1fr !important;grid-template-areas:'c1' 'c2' 'c3' 'c4' !important}
-  #sec-album .album-cell{padding:0 0 14px !important}
-  #sec-album .album-rules{display:none !important}
+  /* Giữ nguyên lưới 2×2 như trên máy tính. Chỉ thu lề trong mỗi ô (26px trên
+     máy tính là quá rộng khi khung chỉ còn ~176px) để ảnh to ra; bốn ô vẫn
+     bằng nhau nên hai đường kẻ chữ thập ở giữa vẫn rơi đúng khe giữa các ảnh. */
+  #sec-album .album-cell{padding:10px !important}
 }
 
 
 /* ══ 04 · #sec-strip · DẢI ẢNH ( 01 )( 02 )( 03 ) ═════════════════════════
    Carousel 2 lớp: .strip-track[data-slide="1"] và [data-slide="2"] chồng nhau,
-   component.js đổi opacity giữa hai lớp. Máy tính: 3 cột bằng nhau. */
+   component.js đổi opacity giữa hai lớp. Ba cột bằng nhau, ảnh 3:4, giữa các
+   tấm có đường kẻ dọc. Phần này chạy hết bề ngang (không nằm trong .sec-pad). */
 
 @media (max-width:640px){
-  /* 3 cột trên điện thoại thì mỗi ảnh chỉ còn ~130px, còn xếp 2 cột thì tấm
-     thứ ba trơ trọi một mình ở hàng dưới. Chuyển thành dải vuốt ngang: mỗi tấm
-     chiếm 76% bề ngang và dừng đúng vị trí khi vuốt, tấm kế lấp ló bên phải để
-     khách biết là còn vuốt được. */
-  #sec-strip .strip-track{
-    display:flex !important;
-    grid-template-columns:none !important;
-    overflow-x:auto;
-    scroll-snap-type:x mandatory;
-    scroll-padding:0 16px;
-    padding:0 16px;
-    box-sizing:border-box;
-    scrollbar-width:none;
-    -webkit-overflow-scrolling:touch;
-    overscroll-behavior-x:contain;
-  }
-  #sec-strip .strip-track::-webkit-scrollbar{display:none}
-  #sec-strip .strip-item{flex:0 0 76%;scroll-snap-align:center;gap:14px !important}
-  #sec-strip .strip-item:nth-child(n+2){
-    border-left:1px solid rgba(60,40,40,.2) !important;
-    padding-left:14px;
-  }
+  /* Giữ nguyên 3 cột như máy tính để nhìn thấy đủ cả ba tấm. Chỉ thu khoảng
+     cách giữa số thứ tự và ảnh, cùng cỡ chữ số, cho vừa màn hình hẹp. */
+  #sec-strip .strip-item{gap:12px !important}
+  #sec-strip .strip-item figcaption{font-size:9.5px !important;letter-spacing:.14em !important}
 }
 
 

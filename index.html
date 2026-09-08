@@ -125,7 +125,7 @@
        chồng lên nhau trong cùng ô lưới 'stack'; component.js đổi opacity
        giữa hai lớp qua sref0/sref1. Trên điện thoại mỗi lớp thành dải
        vuốt ngang (xem khối #sec-strip trong css/style.css). -->
-  <section id="sec-strip" class="sec-pad" style="width:100%;box-sizing:border-box;background:#f2efe9;padding:72px 0 84px;display:flex;flex-direction:column;align-items:center">
+  <section id="sec-strip" style="width:100%;box-sizing:border-box;background:#f2efe9;padding:72px 0 84px;display:flex;flex-direction:column;align-items:center">
     <div class="strip-stage" style="position:relative;width:100%;display:grid;grid-template-areas:'stack'">
       <!-- lớp 1: ảnh 01–03 -->
       <div ref="{{ sref0 }}" class="strip-track" data-slide="1" style="grid-area:stack;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;transition:opacity .55s ease">
