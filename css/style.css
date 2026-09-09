@@ -115,7 +115,15 @@ html.env-lock #sec-page-1 .hero-names{
 
 
 /* ══ 03 · #sec-album · ALBUM CƯỚI ═════════════════════════════════════════
-   Lưới 2×2 (album-1..4) với hai đường kẻ chữ thập ở giữa. */
+   Lưới 2×2 (album-1..4) với hai đường kẻ chữ thập ở giữa.
+
+   Hai cột của .album-grid phải viết là minmax(0,1fr), KHÔNG được viết 1fr.
+   Viết 1fr thì cột có bề rộng tối thiểu tự động bằng nội dung bên trong; nội
+   dung ở đây là <image-slot>, mà Safari (iPhone) tính bề rộng tối thiểu của
+   shadow DOM trong slot rất lớn, nên cột phình ra hàng chục nghìn px và cả
+   phần album vỡ tung, đẩy các phần bên dưới đi mất. Chrome không bị nên trên
+   máy tính nhìn vẫn bình thường. minmax(0,...) bỏ mức tối thiểu đó đi.
+   Dải ảnh #sec-strip và ô đếm ngược vốn đã viết minmax(0,1fr) nên không dính. */
 
 @media (max-width:640px){
   #sec-album .album-title{font-size:22px !important;letter-spacing:.02em !important}

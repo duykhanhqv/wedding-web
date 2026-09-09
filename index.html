@@ -2,6 +2,7 @@
 <html><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thiệp Cưới | Duy Khánh &amp; Hồng Nhung</title>
 <script src="js/react.production.min.js"></script>
 <script src="js/react-dom.production.min.js"></script>
 <script src="js/support.js"></script>
@@ -9,7 +10,6 @@
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/envelope.css">
-  <link rel="preload" as="image" href="assets/img/envelope.webp">
 </head>
 <body>
 <!-- Bìa phong bì. Markup nằm trong js/envelope.js để mỗi khách mời thấy tên
@@ -101,7 +101,7 @@
         <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(60,40,40,.22)"></div>
         <div style="position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(60,40,40,.22)"></div>
       </div>
-      <div class="album-grid" style="grid-area:stack;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;grid-template-areas:'c1 c2' 'c3 c4';transition:opacity .5s ease">
+      <div class="album-grid" style="grid-area:stack;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto;grid-template-areas:'c1 c2' 'c3 c4';transition:opacity .5s ease">
 <div class="album-cell" style="grid-area:c1;display:flex;align-items:center;justify-content:center;padding:26px"><div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-1" shape="rect" placeholder="Ảnh 1" src="assets/img/album-1.webp"></image-slot></div></div>
 <div class="album-cell" style="grid-area:c2;display:flex;align-items:center;justify-content:center;padding:26px"><div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-2" shape="rect" placeholder="Ảnh 2" src="assets/img/album-2.webp"></image-slot></div></div>
 <div class="album-cell" style="grid-area:c3;display:flex;align-items:center;justify-content:center;padding:26px"><div style="width:100%;aspect-ratio:4/5;background:#e7e3db"><image-slot id="album-3" shape="rect" placeholder="Ảnh 3" src="assets/img/album-3.webp"></image-slot></div></div>
