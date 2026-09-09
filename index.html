@@ -10,12 +10,20 @@
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/envelope.css">
+  <link rel="stylesheet" href="css/reveal.css">
 </head>
 <body>
 <!-- Bìa phong bì. Markup nằm trong js/envelope.js để mỗi khách mời thấy tên
      riêng của mình (đường dẫn ?k=<mã>); danh sách tên ở js/khach-moi.js. -->
 <script src="js/khach-moi.js"></script>
 <script src="js/envelope.js"></script>
+<!-- Hiệu ứng ảnh bay vào khi cuộn tới; hình dáng hiệu ứng ở css/reveal.css.
+     Nạp ở đây, trước phần thân thiệp, để ảnh sinh ra là đã ở sẵn trạng thái
+     chờ (không loé lên rồi mới ẩn đi).
+     LƯU Ý: đừng viết tên thẻ gốc của thiệp vào chú thích nào nằm phía trên
+     thẻ đó — support.js dò chuỗi mở thẻ ngay trong mã nguồn để cắt template,
+     gặp chữ trong chú thích trước là cắt nhầm và cả thiệp trắng trang. -->
+<script src="js/reveal.js"></script>
 
 <x-dc>
 <helmet data-dc-atomics=""><meta name="design_doc_mode" content="canvas"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><script src="js/image-slot.js"></script><script type="text/x-dc" data-dc-script data-props="{&quot;gap&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:0,&quot;min&quot;:0,&quot;max&quot;:64,&quot;step&quot;:2,&quot;unit&quot;:&quot;px&quot;,&quot;tsType&quot;:&quot;number&quot;}}" id="dc-component"></script><script src="js/component.js"></script></helmet>
@@ -39,6 +47,9 @@
      Các phần "2 lớp" là carousel: lớp 1 và lớp 2 chồng lên nhau,
      js/component.js đổi opacity giữa hai lớp qua ref (sref/cref/lref).
      Đổi ảnh: sửa thuộc tính src của <image-slot> tương ứng.
+
+     Ảnh của bốn phần album/strip/collage/layer bay vào khi cuộn tới:
+     js/reveal.js + css/reveal.css (bỏ hai file đó là hết hiệu ứng).
      ================================================================== -->
 <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:760px;margin:0 auto;background:#0e0a0a" data-gap="{{ gapPx }}">
 

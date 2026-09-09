@@ -36,11 +36,17 @@ class Component extends DCLogic {
     this.fade(this.lrefs, this.state.layer);
   }
 
-  componentDidUpdate() { this.applyStrip(); }
+  /* Hiệu ứng ảnh bay vào khi cuộn tới (js/reveal.js). Phải gọi từ đây vì
+     runtime dựng lại trang sau khi reveal.js chạy, nên nó không tự gắn được;
+     gọi lặp lại vô hại, phần nào gắn rồi thì bỏ qua. */
+  moHieuUngCuon() { if (window.hieuUngCuon) window.hieuUngCuon(); }
+
+  componentDidUpdate() { this.applyStrip(); this.moHieuUngCuon(); }
 
   componentDidMount() {
     this.t = setInterval(() => this.setState({ now: Date.now() }), 1000);
     this.applyStrip();
+    this.moHieuUngCuon();
   }
   componentWillUnmount() { clearInterval(this.t); }
 
