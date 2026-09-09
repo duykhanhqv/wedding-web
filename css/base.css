@@ -1,0 +1,164 @@
+/* ============================================================================
+   NỀN CHUNG — biến màu, biến chữ và vài lớp dùng lại ở nhiều phần.
+
+   Đọc file này trước tiên: mọi màu và font của thiệp đều khai báo ở đây một
+   lần, các file khác chỉ gọi lại bằng var(--ten-bien). Muốn đổi tông màu cả
+   thiệp thì sửa trong khối :root bên dưới, không phải đi dò từng chỗ.
+
+   Thứ tự nạp CSS (xem index.html):
+     fonts.css     tải font chữ
+     base.css      file này — biến + nền chung
+     sections.css  giao diện từng phần của thiệp
+     envelope.css  bìa phong bì mở đầu
+     reveal.css    hiệu ứng ảnh bay vào khi cuộn
+   ========================================================================== */
+
+
+/* ══ 1. BẢNG MÀU VÀ FONT ══════════════════════════════════════════════════ */
+
+:root{
+  /* --- Màu nền --- */
+  --mau-kem:        #f2efe9;   /* nền chính của thiệp */
+  --mau-kem-nhat:   #fdfbf6;   /* nền phần sổ lưu bút */
+  --mau-trang:      #ffffff;   /* nền phần collage */
+  --mau-toi:        #0e0a0a;   /* nền phần ảnh lồng lớp */
+
+  /* --- Màu chữ --- */
+  --mau-do:         #6d0f18;   /* đỏ mận: tiêu đề, nút, số đếm ngược */
+  --mau-do-dam:     #82121c;   /* đỏ đậm hơn, dùng khi rê chuột lên nút */
+  --mau-chu-tren-do:#f6efe4;   /* chữ nằm trên nền đỏ */
+  --mau-nau:        #3c2828;   /* nâu đậm: chữ thường của thiệp */
+
+  /* --- Màu ô ảnh (thấy được khi ảnh chưa tải xong) --- */
+  --mau-o-anh:      #e7e3db;
+  --mau-o-anh-nhat: #efece6;
+  --mau-o-anh-dam:  #dedbd5;
+
+  /* --- Màu đường kẻ mảnh --- */
+  --ke-nau:  rgba(60, 40, 40, .22);
+  --ke-do:   rgba(109, 15, 24, .28);
+
+  /* --- Chữ mờ (dùng cho nhãn nhỏ) --- */
+  --nau-mo:  rgba(60, 40, 40, .62);
+  --do-mo:   rgba(109, 15, 24, .75);
+
+  /* --- Font --- */
+  --serif: Cormorant, Georgia, serif;              /* chữ lớn, mềm */
+  --mono:  'DM Mono', ui-monospace, monospace;     /* chữ nhỏ, giãn cách rộng */
+
+  /* --- Bề ngang tối đa của thiệp trên màn hình lớn --- */
+  --be-ngang-thiep: 760px;
+
+  /* --- Lề trái/phải của các phần: máy tính 40px, điện thoại 20px
+         (đổi ở cuối file này, trong khối @media) --- */
+  --le-ngang: 40px;
+}
+
+
+/* ══ 2. NỀN TRANG ═════════════════════════════════════════════════════════ */
+
+html, body{
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  background: var(--mau-kem);
+  /* Chặn cuộn ngang: vài phần có ảnh tràn mép, không chặn thì điện thoại
+     kéo qua trái phải được và nhìn như bị vỡ. */
+  overflow-x: hidden;
+}
+
+img{
+  /* Ảnh không bao giờ rộng hơn khung chứa nó. */
+  max-width: 100%;
+}
+
+a{ color: #c9a24a; }
+a:hover{ color: #e6c477; }
+
+
+/* ══ 3. KHUNG THIỆP ═══════════════════════════════════════════════════════
+   Toàn bộ nội dung nằm trong <main class="thiep">, xếp dọc và canh giữa. */
+
+.thiep{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: var(--be-ngang-thiep);
+  margin: 0 auto;
+  background: var(--mau-toi);
+}
+
+
+/* ══ 4. LỚP DÙNG LẠI Ở NHIỀU PHẦN ═════════════════════════════════════════ */
+
+/* Khung của một tấm ảnh. Luôn dùng cặp:
+       <div class="khung-anh"> <img src="..." alt=""> </div>
+   Khung lo tỉ lệ và màu nền, ảnh bên trong tự phủ kín khung.
+   Tỉ lệ (aspect-ratio) đặt riêng ở từng phần trong sections.css. */
+.khung-anh{
+  background: var(--mau-o-anh);
+  overflow: hidden;
+}
+.khung-anh > img{
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* cover = phóng ảnh cho phủ kín khung, phần thừa bị cắt bớt (không méo). */
+  object-fit: cover;
+}
+
+/* Ô ảnh chưa gán ảnh: hiện chữ gợi ý mờ mờ ở giữa. */
+.khung-anh > .chua-co-anh{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font: 400 11px/1 var(--mono);
+  letter-spacing: .18em;
+  color: var(--nau-mo);
+}
+
+/* Nhãn nhỏ in hoa nằm trên tiêu đề, ví dụ "ALBUM CƯỚI", "SỔ LƯU BÚT". */
+.nhan-nho{
+  font: 400 11px/1 var(--mono);
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--nau-mo);
+  text-align: center;
+}
+
+/* Gạch ngang mảnh ngăn cách. */
+.gach-ngan{
+  width: 44px;
+  height: 1px;
+  background: rgba(109, 15, 24, .4);
+}
+
+/* Nút bấm (Thêm vào lịch / Gửi lời chúc). */
+.nut{
+  appearance: none;
+  cursor: pointer;
+  background: var(--mau-do);
+  color: var(--mau-chu-tren-do);
+  border: 1px solid var(--mau-do);
+  padding: 15px 30px;
+  font: 500 10.5px/1 var(--mono);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  transition: background .18s ease, border-color .18s ease;
+}
+.nut:hover{
+  background: var(--mau-do-dam);
+  border-color: var(--mau-do-dam);
+}
+
+
+/* ══ 5. ĐIỆN THOẠI ════════════════════════════════════════════════════════
+   Mốc dùng chung cho cả thiệp: màn hình rộng tối đa 640px.
+   Chỉ cần thu lề chung ở đây, mọi phần có lớp .co-le đều hẹp lại theo. */
+
+@media (max-width: 640px){
+  :root{ --le-ngang: 20px; }
+}

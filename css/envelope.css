@@ -100,7 +100,7 @@ html.env-lock, html.env-lock body{overflow:hidden !important;height:100%}
 
 /* Nội dung trang hiện lên nhẹ nhàng sau khi bìa mờ đi. */
 @keyframes envReveal{from{opacity:0}to{opacity:1}}
-html.env-opening #dc-root{animation:envReveal .7s ease backwards}
+html.env-opening .thiep{animation:envReveal .7s ease backwards}
 
 /* Màn hình dọc: ảnh bị cắt hai bên nên chữ cần nhỏ và sát mép hơn. */
 @media (max-aspect-ratio:1/1){
@@ -130,5 +130,5 @@ html.env-opening #dc-root{animation:envReveal .7s ease backwards}
 
 @media (prefers-reduced-motion:reduce){
   .env-top,.env-bottom,.env-open{animation:none}
-  html.env-opening #dc-root{animation:none}
+  html.env-opening .thiep{animation:none}
 }

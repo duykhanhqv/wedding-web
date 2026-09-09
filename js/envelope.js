@@ -6,8 +6,8 @@
    tra trong js/khach-moi.js — sửa danh sách khách ở file đó, không cần đụng
    vào đây.
 
-   Bìa nằm ngoài <x-dc> nên runtime dc không đụng tới. Trang bị khoá cuộn cho
-   tới khi khách chạm mở, sau đó bìa mờ dần rồi bị gỡ khỏi trang.
+   Trang bị khoá cuộn cho tới khi khách chạm mở, sau đó bìa mờ dần rồi bị gỡ
+   khỏi trang.
    Giao diện của bìa: css/envelope.css
    ========================================================================== */
 (function () {

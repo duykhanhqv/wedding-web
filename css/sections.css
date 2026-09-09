@@ -1,0 +1,544 @@
+/* ============================================================================
+   GIAO DIỆN TỪNG PHẦN CỦA THIỆP
+
+   Các khối bên dưới xếp ĐÚNG THỨ TỰ khách nhìn thấy khi cuộn từ trên xuống,
+   và mỗi khối gọi đúng id của phần đó trong index.html. Muốn sửa một phần thì
+   mở đúng khối mang tên nó, không phải dò cả file.
+
+     1 · #sec-page-1..3  Ba trang ảnh thiệp (+ tên viết tay ở trang 1)
+     2 · #sec-countdown  Đếm ngược + nút thêm vào lịch
+     3 · #sec-album      Album cưới, lưới 2×2
+     4 · #sec-strip      Dải ảnh ( 01 )( 02 )( 03 )
+     5 · #sec-collage    Collage 3 ảnh xếp lệch
+     6 · #sec-layer      Ảnh lồng lớp
+     7 · #sec-wishes     Sổ lưu bút
+     8 · #sec-thanks     Cảm ơn
+
+   Màu và font lấy từ biến khai báo ở css/base.css.
+   Lề trái/phải dùng var(--le-ngang) — biến này tự nhỏ lại trên điện thoại,
+   nên KHÔNG cần viết thêm @media chỉ để thu lề.
+   ========================================================================== */
+
+
+/* ══ 1 · #sec-page-1..3 · BA TRANG ẢNH THIỆP ══════════════════════════════
+   Mỗi trang là một tấm ảnh chiếm trọn bề ngang. Tỉ lệ (aspect-ratio) lấy
+   đúng theo kích thước file ảnh để trang không bị giật khi ảnh tải xong. */
+
+.page-shot{
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+.page-shot > img{
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#sec-page-1{ aspect-ratio: 3875 / 5463; }
+#sec-page-2{ aspect-ratio: 3875 / 5462; }
+#sec-page-3{ aspect-ratio: 3875 / 5462; }
+
+
+/* --- Tên viết tay "Khánh & Nhung" đè lên ảnh trang 1 ---------------------
+   Cỡ chữ và vị trí tính theo BỀ NGANG KHUNG ẢNH (đơn vị cqi) chứ không theo
+   màn hình, nên chữ luôn cân với ảnh ở mọi cỡ máy.
+
+   Khi bìa phong bì còn che (html.env-lock) thì chữ ẩn; mở thiệp xong chữ được
+   "viết" ra bằng cách trượt một lớp mask chéo từ trái sang phải. Trình duyệt
+   không hỗ trợ mask thì chữ chỉ hiện mờ dần; JS không chạy thì chữ hiện sẵn. */
+
+#sec-page-1{ container-type: inline-size; }
+
+#sec-page-1 .hero-names{
+  position: absolute;
+  top: 2%;
+  right: 3%;
+  /* Nét chữ ký tràn khá nhiều ra ngoài hộp chữ — riêng đuôi chữ g thõng
+     xuống tới 0.81em dưới đường chân chữ. Phải đệm rộng ra, nhất là phía
+     dưới, thì lớp mask mới phủ hết nét, nếu không đuôi g bị cắt cụt.
+     top/right đã trừ lại phần đệm để chữ vẫn nằm đúng chỗ. */
+  padding: 5cqi 4cqi 14cqi 5cqi;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-family: 'Brittany Signature', Cormorant, Georgia, serif;
+  color: #7a1220;
+  line-height: .78;
+  pointer-events: none;
+  opacity: 1;
+  -webkit-mask-image: linear-gradient(100deg, #000 0 55%, rgba(0,0,0,.45) 61%, transparent 68%);
+          mask-image: linear-gradient(100deg, #000 0 55%, rgba(0,0,0,.45) 61%, transparent 68%);
+  -webkit-mask-size: 230% 100%;
+          mask-size: 230% 100%;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: 0 0;
+          mask-position: 0 0;
+  transition: opacity .9s ease .25s,
+              -webkit-mask-position 1.8s cubic-bezier(.4,0,.3,1) .35s,
+              mask-position 1.8s cubic-bezier(.4,0,.3,1) .35s;
+}
+#sec-page-1 .hn-name{ font-size: 12cqi; }
+#sec-page-1 .hn-name:first-child{ margin-right: 9cqi; }
+#sec-page-1 .hn-amp{ font-size: 7cqi; margin-right: 12cqi; }
+
+/* Trạng thái ẩn khi bìa phong bì còn che. */
+html.env-lock #sec-page-1 .hero-names{
+  opacity: 0;
+  -webkit-mask-position: 100% 0;
+          mask-position: 100% 0;
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce){
+  #sec-page-1 .hero-names{ transition: opacity .3s ease; }
+  html.env-lock #sec-page-1 .hero-names{
+    -webkit-mask-position: 0 0;
+            mask-position: 0 0;
+  }
+}
+
+
+/* ══ 2 · #sec-countdown · ĐẾM NGƯỢC ═══════════════════════════════════════
+   Bốn ô Ngày / Giờ / Phút / Giây. Số do js/countdown.js cập nhật mỗi giây. */
+
+#sec-countdown{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 88px var(--le-ngang) 96px;
+  background: var(--mau-kem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+#sec-countdown .nhan-nho{
+  font-size: 12px;
+  color: var(--do-mo);
+}
+#sec-countdown .gach-ngan{ margin: 26px 0 34px; }
+
+#sec-countdown .cd-grid{
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  max-width: 520px;
+}
+#sec-countdown .cd-cell{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 6px 18px;
+  border: 1px solid var(--ke-do);
+}
+#sec-countdown .cd-num{
+  font: 300 40px/1 var(--serif);
+  color: var(--mau-do);
+  /* Mọi chữ số rộng bằng nhau, nhờ vậy số giây nhảy mà ô không bị co giật. */
+  font-variant-numeric: tabular-nums;
+}
+#sec-countdown .cd-label{
+  font: 400 9.5px/1 var(--mono);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: rgba(109, 15, 24, .7);
+}
+#sec-countdown .cd-date{
+  margin-top: 40px;
+  font: 400 11px/1.7 var(--mono);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: rgba(109, 15, 24, .8);
+}
+#sec-countdown .nut{ margin-top: 34px; }
+
+@media (max-width: 640px){
+  /* Bốn ô nằm sát nhau hơn và số nhỏ lại cho vừa màn hình hẹp. */
+  #sec-countdown .cd-grid{ gap: 8px; }
+  #sec-countdown .cd-cell{ padding: 14px 4px 12px; }
+  #sec-countdown .cd-num{ font-size: 28px; }
+}
+
+
+/* ══ 3 · #sec-album · ALBUM CƯỚI ══════════════════════════════════════════
+   Lưới 2×2 (ảnh album-1..4) với hai đường kẻ chữ thập ở giữa.
+   Hai đường kẻ là một lớp riêng (.album-rules) nằm CHỒNG lên lưới ảnh: cả hai
+   cùng đặt vào ô lưới tên 'stack' nên luôn khít nhau. */
+
+#sec-album{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 76px var(--le-ngang) 84px;
+  background: var(--mau-kem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#sec-album .album-title{
+  margin: 26px 0 0;
+  font: 300 30px/1.2 var(--serif);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--mau-nau);
+  text-align: center;
+}
+
+#sec-album .album-stage{
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  margin: 44px 0 0;
+  display: grid;
+  grid-template-areas: 'stack';
+}
+
+/* Lớp hai đường kẻ chữ thập, nằm đè lên ảnh. */
+#sec-album .album-rules{
+  grid-area: stack;
+  position: relative;
+  pointer-events: none;   /* không chắn chuột, để còn bấm vào ảnh */
+  z-index: 2;
+}
+#sec-album .album-rules span{
+  position: absolute;
+  background: var(--ke-nau);
+}
+#sec-album .album-rules .ke-ngang{ left: 0; right: 0; top: 50%; height: 1px; }
+#sec-album .album-rules .ke-doc  { top: 0; bottom: 0; left: 50%; width: 1px; }
+
+#sec-album .album-grid{
+  grid-area: stack;
+  display: grid;
+  /* PHẢI viết minmax(0,1fr), KHÔNG được viết 1fr.
+     Viết 1fr thì cột có bề rộng tối thiểu tự động bằng nội dung bên trong;
+     ảnh to sẽ đẩy cột phình ra và cả phần album vỡ tung trên Safari/iPhone.
+     minmax(0,...) bỏ mức tối thiểu đó đi. Quy tắc này áp dụng cho MỌI lưới
+     chứa ảnh trong thiệp. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  grid-template-areas: 'c1 c2' 'c3 c4';
+}
+#sec-album .album-cell{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px;
+}
+#sec-album .album-cell:nth-child(1){ grid-area: c1; }
+#sec-album .album-cell:nth-child(2){ grid-area: c2; }
+#sec-album .album-cell:nth-child(3){ grid-area: c3; }
+#sec-album .album-cell:nth-child(4){ grid-area: c4; }
+
+#sec-album .khung-anh{
+  width: 100%;
+  aspect-ratio: 4 / 5;
+}
+
+/* Hai tấm này đã được canh lại khung hình cho vừa mặt người. */
+#sec-album .khung-anh img.canh-tren{ object-position: 50% 0%; }
+#sec-album .khung-anh img.canh-duoi{ object-position: 50% 89%; }
+
+@media (max-width: 640px){
+  #sec-album .album-title{ font-size: 22px; letter-spacing: .02em; }
+  /* Giữ nguyên lưới 2×2 như trên máy tính, chỉ thu lề trong mỗi ô (26px là
+     quá rộng khi khung chỉ còn khoảng 176px) để ảnh to ra. Bốn ô vẫn bằng
+     nhau nên hai đường kẻ chữ thập vẫn rơi đúng khe giữa các ảnh. */
+  #sec-album .album-cell{ padding: 10px; }
+}
+
+
+/* ══ 4 · #sec-strip · DẢI ẢNH ( 01 )( 02 )( 03 ) ══════════════════════════
+   Ba tấm ảnh bằng nhau, giữa các tấm có đường kẻ dọc.
+   Phần này chạy hết bề ngang, cố ý KHÔNG có lề trái/phải.
+
+   Có hai lớp ảnh chồng lên nhau (xem khối "carousel" ở cuối file). */
+
+#sec-strip{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 72px 0 84px;
+  background: var(--mau-kem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#sec-strip .strip-stage{
+  position: relative;
+  width: 100%;
+  display: grid;
+  grid-template-areas: 'stack';
+}
+#sec-strip .strip-track{
+  grid-area: stack;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+}
+#sec-strip .strip-item{
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  border-left: 1px solid rgba(60, 40, 40, .2);
+}
+/* Tấm đầu tiên không cần kẻ vì bên trái nó là mép trang. */
+#sec-strip .strip-item:first-child{ border-left: none; }
+
+#sec-strip figcaption{
+  font: 400 10.5px/1 var(--mono);
+  letter-spacing: .18em;
+  color: var(--mau-nau);
+  text-align: center;
+}
+#sec-strip .khung-anh{
+  width: 100%;
+  aspect-ratio: 3 / 4;
+}
+
+#sec-strip .loi-nhan{
+  margin-top: 64px;
+  padding: 0 var(--le-ngang);
+  font: 500 11px/1.7 var(--mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--mau-nau);
+  text-align: center;
+  text-wrap: pretty;
+}
+#sec-strip .ten-doi{
+  margin-top: 120px;
+  font: 300 26px/1 var(--serif);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--mau-nau);
+}
+
+@media (max-width: 640px){
+  /* Giữ nguyên 3 cột để nhìn thấy đủ cả ba tấm; chỉ thu khoảng cách giữa số
+     thứ tự và ảnh, cùng cỡ chữ số, cho vừa màn hình hẹp. */
+  #sec-strip .strip-item{ gap: 12px; }
+  #sec-strip figcaption{ font-size: 9.5px; letter-spacing: .14em; }
+}
+
+
+/* ══ 5 · #sec-collage · COLLAGE 3 ẢNH XẾP LỆCH ════════════════════════════
+   Ba ảnh đặt chồng lệch nhau. Vị trí tính bằng PHẦN TRĂM của khung, nên bố
+   cục giữ nguyên hình dáng ở mọi cỡ màn hình.
+   Muốn xê dịch một tấm: sửa left/top/width của .anh-1 / .anh-2 / .anh-3. */
+
+#sec-collage{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 80px 24px 76px;
+  background: var(--mau-trang);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#sec-collage .collage-stage{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1200 / 1500;
+}
+#sec-collage .collage-slide{
+  position: absolute;
+  inset: 0;
+}
+#sec-collage .khung-anh{
+  position: absolute;
+  aspect-ratio: 3 / 4;
+  background: var(--mau-o-anh-nhat);
+}
+#sec-collage .anh-1{ left: 48%; top:  0;   width: 54%; }
+#sec-collage .anh-2{ left:  4%; top: 27%;  width: 36%; }
+#sec-collage .anh-3{ left: 32%; top: 58%;  width: 36%; }
+
+@media (max-width: 640px){
+  /* Khung cao hơn một chút cho vừa ba ảnh xếp lệch trên màn hình hẹp. */
+  #sec-collage .collage-stage{ aspect-ratio: 1000 / 1500; }
+}
+
+
+/* ══ 6 · #sec-layer · ẢNH LỒNG LỚP ════════════════════════════════════════
+   Một ảnh nền trắng đen phủ kín khung, một ảnh chính nổi ở giữa có đổ bóng. */
+
+#sec-layer{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  background: var(--mau-toi);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#sec-layer .layer-stage{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1080 / 1350;
+  overflow: hidden;
+}
+#sec-layer .layer-slide{
+  position: absolute;
+  inset: 0;
+}
+#sec-layer .anh-nen{
+  position: absolute;
+  inset: 0;
+  background: var(--mau-o-anh-dam);
+  filter: grayscale(1) contrast(1.02);
+}
+#sec-layer .anh-chinh{
+  position: absolute;
+  left: 20%;
+  top: 13%;
+  width: 62%;
+  aspect-ratio: 2 / 3;
+  background: var(--mau-o-anh-nhat);
+  box-shadow: 0 24px 60px rgba(20, 16, 14, .28);
+}
+
+@media (max-width: 640px){
+  #sec-layer .layer-stage{ aspect-ratio: 1080 / 1420; }
+}
+
+
+/* ══ 7 · #sec-wishes · SỔ LƯU BÚT ═════════════════════════════════════════
+   Khách nhập tên + lời chúc rồi bấm gửi; lời chúc hiện ngay bên dưới.
+   Xử lý ở js/wishes.js. */
+
+#sec-wishes{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 88px var(--le-ngang) 92px;
+  background: var(--mau-kem-nhat);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+#sec-wishes h2{
+  margin: 22px 0 0;
+  font: 300 34px/1.2 var(--serif);
+  letter-spacing: .05em;
+  color: var(--mau-nau);
+}
+#sec-wishes .gach-ngan{
+  margin: 28px 0 36px;
+  background: rgba(109, 15, 24, .35);
+}
+
+#sec-wishes .wish-form{
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+#sec-wishes input,
+#sec-wishes textarea{
+  width: 100%;
+  box-sizing: border-box;
+  appearance: none;
+  background: transparent;
+  border: 1px solid rgba(60, 40, 40, .25);
+  padding: 15px 16px;
+  font: 400 12px/1.4 var(--mono);
+  letter-spacing: .06em;
+  color: var(--mau-nau);
+  outline: none;
+}
+#sec-wishes textarea{
+  resize: vertical;
+  line-height: 1.7;
+  letter-spacing: .04em;
+}
+#sec-wishes input:focus,
+#sec-wishes textarea:focus{ border-color: var(--mau-nau); }
+
+/* Danh sách lời chúc đã gửi. */
+#sec-wishes .wish-list{
+  width: 100%;
+  max-width: 460px;
+  margin-top: 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+#sec-wishes .wish-item{
+  border-top: 1px solid rgba(60, 40, 40, .18);
+  padding: 20px 2px 0;
+  text-align: left;
+}
+#sec-wishes .wish-name{
+  font: 400 9.5px/1 var(--mono);
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--do-mo);
+}
+#sec-wishes .wish-msg{
+  margin-top: 10px;
+  font: 300 20px/1.45 var(--serif);
+  color: var(--mau-nau);
+  text-wrap: pretty;
+}
+
+
+/* ══ 8 · #sec-thanks · CẢM ƠN ═════════════════════════════════════════════ */
+
+#sec-thanks{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 96px var(--le-ngang) 104px;
+  background: var(--mau-kem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+#sec-thanks .thanks-title{
+  margin: 0;
+  font: 300 52px/1 var(--serif);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mau-do);
+}
+#sec-thanks .gach-ngan{ margin: 30px 0 28px; }
+#sec-thanks .loi-cuoi{
+  font: 400 11px/1.8 var(--mono);
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: rgba(60, 40, 40, .72);
+}
+
+@media (max-width: 640px){
+  #sec-thanks .thanks-title{ font-size: 36px; }
+}
+
+
+/* ══ CAROUSEL — ba phần strip / collage / layer đều có HAI LỚP ẢNH ════════
+   Mỗi phần chứa hai thẻ .lop-anh chồng khít lên nhau: lớp 1 là ảnh 01–03,
+   lớp 2 là ảnh 04–06. Chỉ một lớp hiện tại một thời điểm.
+
+   js/carousel.js chỉ làm một việc: gắn thuộc tính data-hien="1" hoặc "0" cho
+   từng lớp. Việc mờ/hiện do CSS dưới đây lo.
+
+   Hiện tại thiệp chưa có nút chuyển lớp nên lúc nào cũng hiện lớp 1. Muốn bật
+   chuyển lớp: xem hướng dẫn ở đầu js/carousel.js. */
+
+.lop-anh{
+  transition: opacity .55s ease;
+}
+.lop-anh[data-hien="1"]{
+  opacity: 1;
+  z-index: 1;
+  pointer-events: auto;
+}
+.lop-anh[data-hien="0"]{
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+}

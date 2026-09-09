@@ -1,102 +1,98 @@
 /* ============================================================================
-   HIỆU ỨNG "BAY VÀO" KHI CUỘN TỚI
+   HIỆU ỨNG ẢNH BAY VÀO KHI CUỘN TỚI
 
-   Ảnh của bốn phần #sec-album, #sec-strip, #sec-collage, #sec-layer nằm sẵn
-   hơi lệch và mờ; khi cuộn tới thì trôi về đúng chỗ và hiện rõ dần.
+   Cách hoạt động, gọn trong ba ý:
 
-   Bật/tắt: js/reveal.js gắn class .reveal-on lên thẻ <html>. Không có class
-   đó thì TOÀN BỘ khối này không áp dụng, ảnh hiện bình thường — nên nếu JS
-   hỏng hay bị chặn, thiệp vẫn xem được đầy đủ, không bao giờ mất ảnh.
+     1. js/reveal.js gắn .reveal-on lên thẻ <html>  → ảnh vào trạng thái CHỜ
+        (mờ và lệch đi một chút).
+     2. Cuộn tới phần nào, js/reveal.js gắn .da-hien lên đúng <section> đó.
+     3. Khối "ĐÃ CUỘN TỚI" bên dưới kéo ảnh về đúng chỗ, transition lo phần
+        chuyển động mượt.
 
-   js/reveal.js chỉ làm đúng một việc: khi một phần lọt vào màn hình thì gắn
-   class .rv-album / .rv-strip / .rv-collage / .rv-layer lên thẻ <html>. Mọi
-   thứ còn lại (độ trễ từng ảnh, hướng bay) nằm hết ở file này.
+   KHÔNG có .reveal-on thì toàn bộ file này không áp dụng gì cả — ảnh hiện
+   bình thường. Nhờ vậy JS hỏng hay bị chặn thì thiệp vẫn xem được đầy đủ.
 
-   Cờ gắn lên <html> chứ không gắn lên chính <section>, vì <section> nằm trong
-   phần trang do runtime dc (React) dựng và quản lý — class gắn thêm vào đó
-   không chắc còn nguyên sau mỗi lần vẽ lại. Thẻ <html> nằm ngoài tầm đó.
-
-   KHÔNG được đặt hiệu ứng lên .strip-track / .collage-slide / .layer-slide:
-   ba lớp đó đang được js/component.js điều khiển opacity để đổi ảnh carousel,
-   đụng vào là hai lớp ảnh chồng lên nhau. Vì vậy hiệu ứng đặt lên phần tử CON
-   bên trong chúng.
+   Chỉnh hiệu ứng: sửa bốn biến bên dưới, không cần đụng vào JS.
+       --rv-x  lệch ngang lúc chờ (dương = nằm bên phải, bay từ phải vào)
+       --rv-y  lệch dọc lúc chờ  (dương = nằm thấp hơn, nổi từ dưới lên)
+       --rv-s  cỡ ảnh lúc chờ    (1 = đúng cỡ, .97 = nhỏ hơn 3%)
+       --rv-d  chờ bao lâu rồi mới bay (để các ảnh vào lần lượt, không cùng lúc)
    ========================================================================== */
 
 
-/* ══ Trạng thái chờ: lệch đi và mờ ════════════════════════════════════════
-   --rv-x/--rv-y: lệch ngang/dọc lúc chờ.  --rv-s: cỡ lúc chờ.
-   --rv-d: trễ bao lâu rồi mới bay (để các ảnh vào lần lượt, không cùng lúc). */
+/* ══ TRẠNG THÁI CHỜ — lệch đi và mờ ═══════════════════════════════════════ */
 
 html.reveal-on #sec-album   .album-cell,
 html.reveal-on #sec-strip   .strip-item,
-html.reveal-on #sec-collage .collage-slide > div,
-html.reveal-on #sec-layer   .layer-slide   > div{
-  opacity:0;
-  transform:translate3d(var(--rv-x,0),var(--rv-y,38px),0) scale(var(--rv-s,.97));
-  transition:opacity   .80s cubic-bezier(.22,.68,.34,1) var(--rv-d,0s),
-             transform .95s cubic-bezier(.22,.68,.34,1) var(--rv-d,0s);
-}
-
-/* ══ Đã cuộn tới: về đúng chỗ ═════════════════════════════════════════════ */
-
-html.reveal-on.rv-album   #sec-album   .album-cell,
-html.reveal-on.rv-strip   #sec-strip   .strip-item,
-html.reveal-on.rv-collage #sec-collage .collage-slide > div,
-html.reveal-on.rv-layer   #sec-layer   .layer-slide   > div{
-  opacity:1;
-  transform:translate3d(0,0,0) scale(1);
+html.reveal-on #sec-collage .collage-slide .khung-anh,
+html.reveal-on #sec-layer   .layer-slide   .khung-anh{
+  opacity: 0;
+  transform: translate3d(var(--rv-x, 0), var(--rv-y, 38px), 0) scale(var(--rv-s, .97));
+  transition: opacity   .80s cubic-bezier(.22, .68, .34, 1) var(--rv-d, 0s),
+              transform .95s cubic-bezier(.22, .68, .34, 1) var(--rv-d, 0s);
 }
 
 
-/* ══ #sec-album — bốn ô nổi lên lần lượt theo hình chữ Z ══════════════════ */
+/* ══ ĐÃ CUỘN TỚI — về đúng chỗ ════════════════════════════════════════════ */
 
-html.reveal-on #sec-album .album-cell{--rv-y:42px}
-html.reveal-on #sec-album .album-cell:nth-child(1){--rv-d:0s}
-html.reveal-on #sec-album .album-cell:nth-child(2){--rv-d:.10s}
-html.reveal-on #sec-album .album-cell:nth-child(3){--rv-d:.20s}
-html.reveal-on #sec-album .album-cell:nth-child(4){--rv-d:.30s}
+html.reveal-on #sec-album.da-hien   .album-cell,
+html.reveal-on #sec-strip.da-hien   .strip-item,
+html.reveal-on #sec-collage.da-hien .collage-slide .khung-anh,
+html.reveal-on #sec-layer.da-hien   .layer-slide   .khung-anh{
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+
+/* ══ #sec-album — bốn ô nổi lên lần lượt ══════════════════════════════════ */
+
+html.reveal-on #sec-album .album-cell{ --rv-y: 42px; }
+html.reveal-on #sec-album .album-cell:nth-child(1){ --rv-d: 0s;   }
+html.reveal-on #sec-album .album-cell:nth-child(2){ --rv-d: .10s; }
+html.reveal-on #sec-album .album-cell:nth-child(3){ --rv-d: .20s; }
+html.reveal-on #sec-album .album-cell:nth-child(4){ --rv-d: .30s; }
 
 
 /* ══ #sec-strip — ba tấm nổi lên từ trái sang phải ════════════════════════ */
 
-html.reveal-on #sec-strip .strip-item{--rv-y:48px}
-html.reveal-on #sec-strip .strip-item:nth-child(1){--rv-d:0s}
-html.reveal-on #sec-strip .strip-item:nth-child(2){--rv-d:.12s}
-html.reveal-on #sec-strip .strip-item:nth-child(3){--rv-d:.24s}
+html.reveal-on #sec-strip .strip-item{ --rv-y: 48px; }
+html.reveal-on #sec-strip .strip-item:nth-child(1){ --rv-d: 0s;   }
+html.reveal-on #sec-strip .strip-item:nth-child(2){ --rv-d: .12s; }
+html.reveal-on #sec-strip .strip-item:nth-child(3){ --rv-d: .24s; }
 
 
-/* ══ #sec-collage — ba ảnh xếp lệch, mỗi ảnh bay vào từ phía của nó ═══════
+/* ══ #sec-collage — mỗi ảnh bay vào từ phía của nó ════════════════════════
    Ảnh 1 nằm bên phải nên bay từ phải vào, ảnh 2 bên trái bay từ trái vào,
-   ảnh 3 nằm dưới nên nổi lên. */
+   ảnh 3 nằm dưới cùng nên nổi lên. */
 
-html.reveal-on #sec-collage .collage-slide > div:nth-child(1){--rv-x:34px;--rv-y:22px;--rv-d:0s}
-html.reveal-on #sec-collage .collage-slide > div:nth-child(2){--rv-x:-34px;--rv-y:18px;--rv-d:.14s}
-html.reveal-on #sec-collage .collage-slide > div:nth-child(3){--rv-x:0;--rv-y:46px;--rv-d:.28s}
+html.reveal-on #sec-collage .anh-1{ --rv-x:  34px; --rv-y: 22px; --rv-d: 0s;   }
+html.reveal-on #sec-collage .anh-2{ --rv-x: -34px; --rv-y: 18px; --rv-d: .14s; }
+html.reveal-on #sec-collage .anh-3{ --rv-x:    0;  --rv-y: 46px; --rv-d: .28s; }
 
 
 /* ══ #sec-layer — ảnh nền thu nhẹ về, ảnh chính nổi lên sau ═══════════════
-   Ảnh nền phủ kín khung (inset:0) nên phải phóng TO lúc chờ rồi thu về 1;
-   nếu để nhỏ hơn 1 sẽ hở mép khung. */
+   Ảnh nền phủ kín khung nên lúc chờ phải phóng TO rồi thu về; để nhỏ hơn 1
+   sẽ hở mép khung. */
 
-html.reveal-on #sec-layer .layer-slide > div:nth-child(1){--rv-x:0;--rv-y:0;--rv-s:1.07;--rv-d:0s}
-html.reveal-on #sec-layer .layer-slide > div:nth-child(2){--rv-y:50px;--rv-s:.96;--rv-d:.18s}
+html.reveal-on #sec-layer .anh-nen  { --rv-x: 0; --rv-y:  0;   --rv-s: 1.07; --rv-d: 0s;   }
+html.reveal-on #sec-layer .anh-chinh{            --rv-y: 50px; --rv-s: .96;  --rv-d: .18s; }
 
 
 /* ══ Máy đặt chế độ hạn chế chuyển động ═══════════════════════════════════
-   Bỏ phần trôi/phóng, chỉ còn hiện rõ dần thật nhanh. */
+   Bỏ phần trôi và phóng to thu nhỏ, chỉ còn hiện rõ dần thật nhanh. */
 
-@media (prefers-reduced-motion:reduce){
+@media (prefers-reduced-motion: reduce){
   html.reveal-on #sec-album   .album-cell,
   html.reveal-on #sec-strip   .strip-item,
-  html.reveal-on #sec-collage .collage-slide > div,
-  html.reveal-on #sec-layer   .layer-slide   > div{
-    transform:none;
-    transition:opacity .30s linear var(--rv-d,0s);
+  html.reveal-on #sec-collage .collage-slide .khung-anh,
+  html.reveal-on #sec-layer   .layer-slide   .khung-anh{
+    transform: none;
+    transition: opacity .30s linear var(--rv-d, 0s);
   }
-  html.reveal-on.rv-album   #sec-album   .album-cell,
-  html.reveal-on.rv-strip   #sec-strip   .strip-item,
-  html.reveal-on.rv-collage #sec-collage .collage-slide > div,
-  html.reveal-on.rv-layer   #sec-layer   .layer-slide   > div{
-    transform:none;
+  html.reveal-on #sec-album.da-hien   .album-cell,
+  html.reveal-on #sec-strip.da-hien   .strip-item,
+  html.reveal-on #sec-collage.da-hien .collage-slide .khung-anh,
+  html.reveal-on #sec-layer.da-hien   .layer-slide   .khung-anh{
+    transform: none;
   }
 }
