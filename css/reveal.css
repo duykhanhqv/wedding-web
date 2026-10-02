@@ -54,7 +54,7 @@ html.reveal-on .sec-album .nhan-nho{
 }
 html.reveal-on .sec-album .album-stage > .khung-anh{
   --rv-y: 44px;
-  --rv-s: 1.02;
+  --rv-s: 1;
   --rv-d: .10s;
 }
 

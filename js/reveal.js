@@ -18,8 +18,22 @@
 
   var CAC_PHAN = ['.sec-album', '#sec-strip', '#sec-collage', '#sec-layer'];
   var root = document.documentElement;
+  var cacPhanTheoDoi = [];
 
   if (!('IntersectionObserver' in window)) return;
+
+  CAC_PHAN.forEach(function (ten) {
+    var cacPhan = document.querySelectorAll(ten);
+    Array.prototype.forEach.call(cacPhan, function (phan) {
+      cacPhanTheoDoi.push(phan);
+    });
+  });
+
+  cacPhanTheoDoi.forEach(function (phan) {
+    var hop = phan.getBoundingClientRect();
+    var dangTrongManHinh = hop.top < window.innerHeight * 0.92 && hop.bottom > 0;
+    if (dangTrongManHinh) phan.classList.add('da-hien');
+  });
 
   /* Bật khối CSS: từ giờ ảnh của bốn phần trên nằm ở trạng thái chờ. */
   root.classList.add('reveal-on');
@@ -38,10 +52,7 @@
     rootMargin: '0px 0px -8% 0px'
   });
 
-  CAC_PHAN.forEach(function (ten) {
-    var cacPhan = document.querySelectorAll(ten);
-    Array.prototype.forEach.call(cacPhan, function (phan) {
-      theoDoi.observe(phan);
-    });
+  cacPhanTheoDoi.forEach(function (phan) {
+    if (!phan.classList.contains('da-hien')) theoDoi.observe(phan);
   });
 })();
