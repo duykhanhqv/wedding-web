@@ -98,8 +98,8 @@
   </div>
 
   <!-- ══ #sec-album · ALBUM CƯỚI — MỘT ẢNH TOÀN CHIỀU NGANG ══════════════ -->
-  <section id="sec-album">
-    <p class="nhan-nho">Album cưới</p>
+  <section id="sec-album" class="sec-album" aria-labelledby="album-heading">
+    <p class="nhan-nho" id="album-heading">Album cưới</p>
 
     <div class="album-stage">
       <div class="khung-anh">
@@ -128,27 +128,16 @@
         </figure>
       </div>
 
-      <!-- Lớp 2 — ảnh 04–06, CHƯA GÁN ẢNH.
-           Thêm ảnh: thay <span class="chua-co-anh">…</span> bằng
-           <img src="assets/img/strip-4.webp" alt="Khoảnh khắc 4"> -->
-      <div class="strip-track lop-anh" data-lop="strip" data-hien="0">
-        <figure class="strip-item">
-          <figcaption>( 04 )</figcaption>
-          <div class="khung-anh"><span class="chua-co-anh">Ảnh 4</span></div>
-        </figure>
-        <figure class="strip-item">
-          <figcaption>( 05 )</figcaption>
-          <div class="khung-anh"><span class="chua-co-anh">Ảnh 5</span></div>
-        </figure>
-        <figure class="strip-item">
-          <figcaption>( 06 )</figcaption>
-          <div class="khung-anh"><span class="chua-co-anh">Ảnh 6</span></div>
-        </figure>
-      </div>
-
     </div>
   </section>
-
+  <section id="sec-album-2" class="sec-album" aria-label="Album cưới — ảnh thứ hai">
+    <div class="album-stage">
+      <div class="khung-anh">
+        <img src="assets/img/album-full-2.webp" alt="Ảnh cưới của Khánh và Nhung"
+             width="2178" height="3268" loading="lazy" decoding="async">
+      </div>
+    </div>
+  </section>
   <!-- ══ #sec-collage · COLLAGE 3 ẢNH XẾP LỆCH ═══════════════════════════
        Vị trí ba ảnh (.anh-1/.anh-2/.anh-3) đặt trong css/sections.css. -->
   <section id="sec-collage">

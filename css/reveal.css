@@ -22,7 +22,8 @@
 
 /* ══ TRẠNG THÁI CHỜ — lệch đi và mờ ═══════════════════════════════════════ */
 
-html.reveal-on #sec-album   .album-stage > .khung-anh,
+html.reveal-on .sec-album .nhan-nho,
+html.reveal-on .sec-album .album-stage > .khung-anh,
 html.reveal-on #sec-strip   .strip-item,
 html.reveal-on #sec-collage .collage-slide .khung-anh,
 html.reveal-on #sec-layer   .layer-slide   .khung-anh{
@@ -35,7 +36,8 @@ html.reveal-on #sec-layer   .layer-slide   .khung-anh{
 
 /* ══ ĐÃ CUỘN TỚI — về đúng chỗ ════════════════════════════════════════════ */
 
-html.reveal-on #sec-album.da-hien   .album-stage > .khung-anh,
+html.reveal-on .sec-album.da-hien .nhan-nho,
+html.reveal-on .sec-album.da-hien .album-stage > .khung-anh,
 html.reveal-on #sec-strip.da-hien   .strip-item,
 html.reveal-on #sec-collage.da-hien .collage-slide .khung-anh,
 html.reveal-on #sec-layer.da-hien   .layer-slide   .khung-anh{
@@ -43,10 +45,18 @@ html.reveal-on #sec-layer.da-hien   .layer-slide   .khung-anh{
   transform: translate3d(0, 0, 0) scale(1);
 }
 
+/* ══ .sec-album — tiêu đề hiện trước, ảnh full nổi nhẹ từ dưới lên ═══════ */
 
-/* ══ #sec-album — ảnh nổi nhẹ lên khi cuộn tới ════════════════════════════ */
-
-html.reveal-on #sec-album .album-stage > .khung-anh{ --rv-y: 42px; --rv-d: 0s; }
+html.reveal-on .sec-album .nhan-nho{
+  --rv-y: 20px;
+  --rv-s: 1;
+  --rv-d: 0s;
+}
+html.reveal-on .sec-album .album-stage > .khung-anh{
+  --rv-y: 44px;
+  --rv-s: 1.02;
+  --rv-d: .10s;
+}
 
 
 /* ══ #sec-strip — ba tấm nổi lên từ trái sang phải ════════════════════════ */
@@ -78,14 +88,16 @@ html.reveal-on #sec-layer .anh-chinh{            --rv-y: 50px; --rv-s: .96;  --r
    Bỏ phần trôi và phóng to thu nhỏ, chỉ còn hiện rõ dần thật nhanh. */
 
 @media (prefers-reduced-motion: reduce){
-  html.reveal-on #sec-album   .album-stage > .khung-anh,
+  html.reveal-on .sec-album .nhan-nho,
+  html.reveal-on .sec-album .album-stage > .khung-anh,
   html.reveal-on #sec-strip   .strip-item,
   html.reveal-on #sec-collage .collage-slide .khung-anh,
   html.reveal-on #sec-layer   .layer-slide   .khung-anh{
     transform: none;
     transition: opacity .30s linear var(--rv-d, 0s);
   }
-  html.reveal-on #sec-album.da-hien   .album-stage > .khung-anh,
+  html.reveal-on .sec-album.da-hien .nhan-nho,
+  html.reveal-on .sec-album.da-hien .album-stage > .khung-anh,
   html.reveal-on #sec-strip.da-hien   .strip-item,
   html.reveal-on #sec-collage.da-hien .collage-slide .khung-anh,
   html.reveal-on #sec-layer.da-hien   .layer-slide   .khung-anh{

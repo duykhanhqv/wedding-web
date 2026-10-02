@@ -16,7 +16,7 @@
 (function () {
   'use strict';
 
-  var CAC_PHAN = ['#sec-album', '#sec-strip', '#sec-collage', '#sec-layer'];
+  var CAC_PHAN = ['.sec-album', '#sec-strip', '#sec-collage', '#sec-layer'];
   var root = document.documentElement;
 
   if (!('IntersectionObserver' in window)) return;
@@ -39,7 +39,9 @@
   });
 
   CAC_PHAN.forEach(function (ten) {
-    var phan = document.querySelector(ten);
-    if (phan) theoDoi.observe(phan);
+    var cacPhan = document.querySelectorAll(ten);
+    Array.prototype.forEach.call(cacPhan, function (phan) {
+      theoDoi.observe(phan);
+    });
   });
 })();

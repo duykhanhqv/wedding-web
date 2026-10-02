@@ -164,43 +164,37 @@ html.env-lock #sec-page-1 .hero-names{
 }
 
 
-/* ══ 3 · #sec-album · ALBUM CƯỚI ══════════════════════════════════════════
+/* ══ 3 · .sec-album · ALBUM CƯỚI ══════════════════════════════════════════
    Một ảnh dọc phủ toàn bộ chiều ngang khả dụng của phần album. */
 
-#sec-album{
+.sec-album{
   width: 100%;
   box-sizing: border-box;
-  padding: 76px var(--le-ngang) 84px;
+  padding: 0;
   background: var(--mau-kem);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  overflow: hidden;
 }
-#sec-album .album-title{
-  margin: 26px 0 0;
-  font: 300 30px/1.2 var(--serif);
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--mau-nau);
+
+.sec-album .nhan-nho{
+  margin: 0;
+  padding: 72px var(--le-ngang) 42px;
   text-align: center;
 }
 
-#sec-album .album-stage{
+.sec-album .album-stage{
   position: relative;
   width: 100%;
-  margin: 44px 0 0;
+  margin: 0;
 }
 
-#sec-album .album-stage > .khung-anh{
+.sec-album .album-stage > .khung-anh{
   width: 100%;
 }
-#sec-album .album-stage > .khung-anh img{
+.sec-album .album-stage > .khung-anh img{
+  display: block;
+  width: 100%;
   height: auto;
   object-fit: contain;
-}
-
-@media (max-width: 640px){
-  #sec-album .album-title{ font-size: 22px; letter-spacing: .02em; }
 }
 
 
