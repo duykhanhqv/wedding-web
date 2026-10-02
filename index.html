@@ -29,7 +29,7 @@
        #sec-page-2     Ảnh thiệp trang 2
        #sec-countdown  Đếm ngược + nút thêm vào lịch      → js/countdown.js
        #sec-page-3     Ảnh thiệp trang 3
-       #sec-album      Album cưới, lưới 2×2
+       #sec-album      Album cưới, một ảnh toàn chiều ngang
        #sec-strip      Dải ảnh ( 01 )( 02 )( 03 )
        #sec-collage    Collage 3 ảnh xếp lệch
        #sec-layer      Ảnh lồng lớp
@@ -97,36 +97,14 @@
     <img src="assets/img/invite-3.webp" alt="Thiệp mời — trang 3">
   </div>
 
-  <!-- ══ #sec-album · ALBUM CƯỚI — lưới 2×2 ══════════════════════════════
-       .album-rules là lớp hai đường kẻ chữ thập, nằm ĐÈ lên lưới ảnh. -->
+  <!-- ══ #sec-album · ALBUM CƯỚI — MỘT ẢNH TOÀN CHIỀU NGANG ══════════════ -->
   <section id="sec-album">
     <p class="nhan-nho">Album cưới</p>
 
     <div class="album-stage">
-      <div class="album-rules">
-        <span class="ke-ngang"></span>
-        <span class="ke-doc"></span>
-      </div>
-
-      <div class="album-grid">
-        <div class="album-cell">
-          <div class="khung-anh">
-            <!-- canh-duoi: ảnh này lấy phần dưới khung hình cho vừa mặt người -->
-            <img src="assets/img/album-1.webp" alt="Ảnh cưới 1" class="canh-duoi">
-          </div>
-        </div>
-        <div class="album-cell">
-          <div class="khung-anh"><img src="assets/img/album-2.webp" alt="Ảnh cưới 2"></div>
-        </div>
-        <div class="album-cell">
-          <div class="khung-anh"><img src="assets/img/album-3.webp" alt="Ảnh cưới 3"></div>
-        </div>
-        <div class="album-cell">
-          <div class="khung-anh">
-            <!-- canh-tren: ảnh này lấy phần trên khung hình -->
-            <img src="assets/img/album-4.webp" alt="Ảnh cưới 4" class="canh-tren">
-          </div>
-        </div>
+      <div class="khung-anh">
+        <img src="assets/img/album-full.webp" alt="Ảnh cưới của Khánh và Nhung"
+             width="1600" height="2400" loading="lazy" decoding="async">
       </div>
     </div>
   </section>

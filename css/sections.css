@@ -7,7 +7,7 @@
 
      1 · #sec-page-1..3  Ba trang ảnh thiệp (+ tên viết tay ở trang 1)
      2 · #sec-countdown  Đếm ngược + nút thêm vào lịch
-     3 · #sec-album      Album cưới, lưới 2×2
+     3 · #sec-album      Album cưới, một ảnh toàn chiều ngang
      4 · #sec-strip      Dải ảnh ( 01 )( 02 )( 03 )
      5 · #sec-collage    Collage 3 ảnh xếp lệch
      6 · #sec-layer      Ảnh lồng lớp
@@ -165,9 +165,7 @@ html.env-lock #sec-page-1 .hero-names{
 
 
 /* ══ 3 · #sec-album · ALBUM CƯỚI ══════════════════════════════════════════
-   Lưới 2×2 (ảnh album-1..4) với hai đường kẻ chữ thập ở giữa.
-   Hai đường kẻ là một lớp riêng (.album-rules) nằm CHỒNG lên lưới ảnh: cả hai
-   cùng đặt vào ô lưới tên 'stack' nên luôn khít nhau. */
+   Một ảnh dọc phủ toàn bộ chiều ngang khả dụng của phần album. */
 
 #sec-album{
   width: 100%;
@@ -190,64 +188,19 @@ html.env-lock #sec-page-1 .hero-names{
 #sec-album .album-stage{
   position: relative;
   width: 100%;
-  max-width: 620px;
   margin: 44px 0 0;
-  display: grid;
-  grid-template-areas: 'stack';
 }
 
-/* Lớp hai đường kẻ chữ thập, nằm đè lên ảnh. */
-#sec-album .album-rules{
-  grid-area: stack;
-  position: relative;
-  pointer-events: none;   /* không chắn chuột, để còn bấm vào ảnh */
-  z-index: 2;
-}
-#sec-album .album-rules span{
-  position: absolute;
-  background: var(--ke-nau);
-}
-#sec-album .album-rules .ke-ngang{ left: 0; right: 0; top: 50%; height: 1px; }
-#sec-album .album-rules .ke-doc  { top: 0; bottom: 0; left: 50%; width: 1px; }
-
-#sec-album .album-grid{
-  grid-area: stack;
-  display: grid;
-  /* PHẢI viết minmax(0,1fr), KHÔNG được viết 1fr.
-     Viết 1fr thì cột có bề rộng tối thiểu tự động bằng nội dung bên trong;
-     ảnh to sẽ đẩy cột phình ra và cả phần album vỡ tung trên Safari/iPhone.
-     minmax(0,...) bỏ mức tối thiểu đó đi. Quy tắc này áp dụng cho MỌI lưới
-     chứa ảnh trong thiệp. */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  grid-template-rows: auto auto;
-  grid-template-areas: 'c1 c2' 'c3 c4';
-}
-#sec-album .album-cell{
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 26px;
-}
-#sec-album .album-cell:nth-child(1){ grid-area: c1; }
-#sec-album .album-cell:nth-child(2){ grid-area: c2; }
-#sec-album .album-cell:nth-child(3){ grid-area: c3; }
-#sec-album .album-cell:nth-child(4){ grid-area: c4; }
-
-#sec-album .khung-anh{
+#sec-album .album-stage > .khung-anh{
   width: 100%;
-  aspect-ratio: 4 / 5;
 }
-
-/* Hai tấm này đã được canh lại khung hình cho vừa mặt người. */
-#sec-album .khung-anh img.canh-tren{ object-position: 50% 0%; }
-#sec-album .khung-anh img.canh-duoi{ object-position: 50% 89%; }
+#sec-album .album-stage > .khung-anh img{
+  height: auto;
+  object-fit: contain;
+}
 
 @media (max-width: 640px){
   #sec-album .album-title{ font-size: 22px; letter-spacing: .02em; }
-  /* Giữ nguyên lưới 2×2 như trên máy tính, chỉ thu lề trong mỗi ô (26px là
-     quá rộng khi khung chỉ còn khoảng 176px) để ảnh to ra. Bốn ô vẫn bằng
-     nhau nên hai đường kẻ chữ thập vẫn rơi đúng khe giữa các ảnh. */
-  #sec-album .album-cell{ padding: 10px; }
 }
 
 
