@@ -477,6 +477,23 @@ html.env-lock #sec-page-1 .hero-names{
 #sec-wishes input:focus,
 #sec-wishes textarea:focus{ border-color: var(--mau-nau); }
 
+/* Dòng trạng thái gửi lời chúc. */
+#sec-wishes .wish-status{
+  min-height: 1.2em;
+  margin-top: 12px;
+  font: 400 11px/1.2 var(--mono);
+  letter-spacing: .12em;
+  color: var(--do-mo);
+}
+/* Ô bẫy bot: người thật không thấy. */
+#sec-wishes .wish-hp{
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
 /* Danh sách lời chúc đã gửi. */
 #sec-wishes .wish-list{
   width: 100%;
