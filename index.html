@@ -44,14 +44,26 @@
 
 <main class="thiep">
 
-  <!-- ══ #sec-page-1 · ẢNH THIỆP TRANG 1 + TÊN VIẾT TAY ══════════════════ -->
-  <div id="sec-page-1" class="page-shot">
-    <img data-trang-thiep="1" src="14/invite-1.webp" alt="Thiệp mời ngày 14/11/2026 — trang 1" width="1240" height="1748">
+  <!-- ══ #sec-page-1 · ẢNH NỀN + NỘI DUNG THIỆP BẰNG HTML ════════════════
+       Muốn đổi tên: sửa trực tiếp các dòng chữ bên dưới.
+       Muốn đổi ngày/giờ: sửa ngayCuoi trong js/khach-moi.js để bìa, đếm ngược
+       và lịch tải xuống luôn khớp nhau. Ảnh JPG gốc không chứa chữ. -->
+  <div id="sec-page-1" class="page-shot page-shot--editable">
+    <picture>
+      <source srcset="new-invite-1.webp" type="image/webp">
+      <img src="new-invite-1.jpg" alt="Cô dâu và chú rể nhìn nhau trong ngày cưới"
+           width="1520" height="2280" decoding="async" fetchpriority="high">
+    </picture>
     <div id="ten-co-dau-chu-re" class="hero-names">
       <span class="hn-name">Khánh</span>
       <span class="hn-amp">&amp;</span>
       <span class="hn-name">Nhung</span>
     </div>
+
+    <time class="hero-schedule" datetime="2026-11-14T11:00:00+07:00">
+      <span class="hero-date">14.11.2026</span>
+      <span class="hero-time">AT 11 AM</span>
+    </time>
   </div>
 
   <!-- ══ #sec-page-2 · ẢNH THIỆP TRANG 2 ═════════════════════════════════ -->

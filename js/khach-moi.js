@@ -99,6 +99,18 @@ window.THIEP_CUOI = {
   var ngayHienThi = thiep.ngayCuoi.slice(8, 10) + '/' +
     thiep.ngayCuoi.slice(5, 7) + '/' + thiep.ngayCuoi.slice(0, 4);
   document.title = 'Thiệp cưới Khánh & Nhung | ' + ngayHienThi;
+  var lichBia = document.querySelector('.hero-schedule');
+  if (lichBia) {
+    var gio = Number(thiep.ngayCuoi.slice(11, 13));
+    var phut = thiep.ngayCuoi.slice(14, 16);
+    var buoi = gio >= 12 ? 'PM' : 'AM';
+    var gio12 = gio % 12 || 12;
+    lichBia.dateTime = thiep.ngayCuoi;
+    var ngayBia = lichBia.querySelector('.hero-date');
+    var gioBia = lichBia.querySelector('.hero-time');
+    if (ngayBia) ngayBia.textContent = ngayHienThi.replace(/\//g, '.');
+    if (gioBia) gioBia.textContent = 'AT ' + gio12 + (phut === '00' ? '' : ':' + phut) + ' ' + buoi;
+  }
   var anh = document.querySelectorAll('[data-trang-thiep]');
   for (var i = 0; i < anh.length; i++) {
     var trang = Number(anh[i].getAttribute('data-trang-thiep')) - 1;

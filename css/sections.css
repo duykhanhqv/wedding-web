@@ -29,16 +29,26 @@
   width: 100%;
   overflow: hidden;
 }
-.page-shot > img{
+.page-shot > img,
+.page-shot > picture,
+.page-shot > picture > img{
   display: block;
   width: 100%;
   height: 100%;
+}
+.page-shot > img,
+.page-shot > picture > img{
   object-fit: cover;
 }
 
 #sec-page-1{ aspect-ratio: 3875 / 5463; }
 #sec-page-2{ aspect-ratio: 3875 / 5462; }
 #sec-page-3{ aspect-ratio: 3875 / 5462; }
+
+/* Bìa mới ở index.html dùng ảnh nền sạch tỉ lệ 2:3; toàn bộ chữ nằm trong
+   HTML để có thể thay tên, ngày và giờ mà không cần sửa ảnh. */
+#sec-page-1.page-shot--editable{ aspect-ratio: 2 / 3; }
+#sec-page-1.page-shot--editable > picture > img{ object-position: center; }
 
 
 /* --- Tên viết tay "Khánh & Nhung" đè lên ảnh trang 1 ---------------------
@@ -83,6 +93,24 @@
 #sec-page-1 .hn-name{ font-size: 12cqi; }
 #sec-page-1 .hn-name:first-child{ margin-right: 9cqi; }
 #sec-page-1 .hn-amp{ font-size: 7cqi; margin-right: 12cqi; }
+
+#sec-page-1 .hero-schedule{
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 5.2%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5cqi;
+  color: var(--mau-do-dam);
+  font: 400 3.1cqi/1 var(--mono);
+  letter-spacing: .16em;
+  white-space: nowrap;
+  text-shadow: 0 1px rgba(255,255,255,.65), 0 0 7px rgba(255,255,255,.5);
+  text-decoration: none;
+  pointer-events: none;
+}
 
 /* Trạng thái ẩn khi bìa phong bì còn che. */
 html.env-lock #sec-page-1 .hero-names{
