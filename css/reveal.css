@@ -29,8 +29,8 @@ html.reveal-on #sec-collage .collage-slide .khung-anh,
 html.reveal-on #sec-layer   .layer-slide   .khung-anh{
   opacity: 0;
   transform: translate3d(var(--rv-x, 0), var(--rv-y, 38px), 0) scale(var(--rv-s, .97));
-  transition: opacity   .80s cubic-bezier(.22, .68, .34, 1) var(--rv-d, 0s),
-              transform .95s cubic-bezier(.22, .68, .34, 1) var(--rv-d, 0s);
+  transition: opacity   1.80s cubic-bezier(.22, .68, .34, 1) var(--rv-d, 0s),
+              transform 2.20s cubic-bezier(.22, .68, .34, 1) var(--rv-d, 0s);
 }
 
 
@@ -55,7 +55,7 @@ html.reveal-on .sec-album .nhan-nho{
 html.reveal-on .sec-album .album-stage > .khung-anh{
   --rv-y: 44px;
   --rv-s: 1;
-  --rv-d: .10s;
+  --rv-d: .30s;
 }
 
 
@@ -63,8 +63,8 @@ html.reveal-on .sec-album .album-stage > .khung-anh{
 
 html.reveal-on #sec-strip .strip-item{ --rv-y: 48px; }
 html.reveal-on #sec-strip .strip-item:nth-child(1){ --rv-d: 0s;   }
-html.reveal-on #sec-strip .strip-item:nth-child(2){ --rv-d: .12s; }
-html.reveal-on #sec-strip .strip-item:nth-child(3){ --rv-d: .24s; }
+html.reveal-on #sec-strip .strip-item:nth-child(2){ --rv-d: .30s; }
+html.reveal-on #sec-strip .strip-item:nth-child(3){ --rv-d: .60s; }
 
 
 /* ══ #sec-collage — mỗi ảnh bay vào từ phía của nó ════════════════════════
@@ -72,8 +72,8 @@ html.reveal-on #sec-strip .strip-item:nth-child(3){ --rv-d: .24s; }
    ảnh 3 nằm dưới cùng nên nổi lên. */
 
 html.reveal-on #sec-collage .anh-1{ --rv-x:  34px; --rv-y: 22px; --rv-d: 0s;   }
-html.reveal-on #sec-collage .anh-2{ --rv-x: -34px; --rv-y: 18px; --rv-d: .14s; }
-html.reveal-on #sec-collage .anh-3{ --rv-x:    0;  --rv-y: 46px; --rv-d: .28s; }
+html.reveal-on #sec-collage .anh-2{ --rv-x: -34px; --rv-y: 18px; --rv-d: .35s; }
+html.reveal-on #sec-collage .anh-3{ --rv-x:    0;  --rv-y: 46px; --rv-d: .70s; }
 
 
 /* ══ #sec-layer — ảnh nền thu nhẹ về, ảnh chính nổi lên sau ═══════════════
@@ -81,7 +81,7 @@ html.reveal-on #sec-collage .anh-3{ --rv-x:    0;  --rv-y: 46px; --rv-d: .28s; }
    sẽ hở mép khung. */
 
 html.reveal-on #sec-layer .anh-nen  { --rv-x: 0; --rv-y:  0;   --rv-s: 1.07; --rv-d: 0s;   }
-html.reveal-on #sec-layer .anh-chinh{            --rv-y: 50px; --rv-s: .96;  --rv-d: .18s; }
+html.reveal-on #sec-layer .anh-chinh{            --rv-y: 50px; --rv-s: .96;  --rv-d: .45s; }
 
 
 /* ══ Máy đặt chế độ hạn chế chuyển động ═══════════════════════════════════
@@ -94,7 +94,7 @@ html.reveal-on #sec-layer .anh-chinh{            --rv-y: 50px; --rv-s: .96;  --r
   html.reveal-on #sec-collage .collage-slide .khung-anh,
   html.reveal-on #sec-layer   .layer-slide   .khung-anh{
     transform: none;
-    transition: opacity .30s linear var(--rv-d, 0s);
+    transition: opacity .30s linear;
   }
   html.reveal-on .sec-album.da-hien .nhan-nho,
   html.reveal-on .sec-album.da-hien .album-stage > .khung-anh,
