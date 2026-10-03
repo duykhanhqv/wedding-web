@@ -11,8 +11,8 @@
    Giao diện của bìa: css/envelope.css
    ========================================================================== */
 (function () {
-  var danhSach = window.KHACH_MOI || {};
-  var macDinh = window.KHACH_MAC_DINH || '';
+  var danhSach = window.THIEP_HIEN_TAI.khachMoi;
+  var macDinh = window.THIEP_HIEN_TAI.tenMacDinh;
 
   /* Đọc tham số trên đường dẫn. Tự tách chuỗi thay vì dùng URLSearchParams để
      chạy được cả trên trình duyệt cũ trong ứng dụng nhắn tin. */

@@ -10,6 +10,8 @@
   body{margin:0;background:#f2efe9;color:#3c2828;
        font:400 15px/1.6 Cormorant,Georgia,serif;padding:40px 20px 80px}
   .wrap{max-width:760px;margin:0 auto}
+  .nhom{margin-top:40px}
+  .bang-cuon{overflow-x:auto}
   h1{margin:0;font:300 34px/1.2 Cormorant,Georgia,serif;letter-spacing:.06em;
      text-transform:uppercase;color:#6d0f18}
   .sub{margin:14px 0 0;font:400 12px/1.7 'DM Mono',ui-monospace,monospace;
@@ -49,18 +51,10 @@
 <script src="js/khach-moi.js"></script>
 <script>
 (function () {
-  var ds = window.KHACH_MOI || {};
-  var ma = Object.keys(ds);
   var hop = document.getElementById('bang');
-
-  if (!ma.length) {
-    hop.className = 'trong';
-    hop.textContent = 'Chưa có tên nào trong js/khach-moi.js.';
-    return;
-  }
-
-  function duongDan(k) {
-    return new URL('index.html?k=' + encodeURIComponent(k), location.href).href;
+  function duongDan(thiep, k) {
+    return new URL(encodeURIComponent(thiep) + '/index.html' +
+      (k === undefined ? '' : '?k=' + encodeURIComponent(k)), location.href).href;
   }
 
   // Sao chép: navigator.clipboard không dùng được khi mở bằng file://
@@ -88,6 +82,27 @@
     o.remove();
   }
 
+  Object.keys(window.THIEP_CUOI).forEach(function (maThiep) {
+  var thiep = window.THIEP_CUOI[maThiep];
+  var ds = thiep.khachMoi;
+  var ma = Object.keys(ds);
+  var nhom = document.createElement('section');
+  nhom.className = 'nhom';
+  var tieuDe = document.createElement('h2');
+  tieuDe.textContent = 'Thiệp ' + thiep.ngayCuoi.slice(0, 10).split('-').reverse().join('/');
+  nhom.appendChild(tieuDe);
+  var xem = document.createElement('a');
+  xem.href = duongDan(maThiep);
+  xem.textContent = 'Xem thiệp chung';
+  nhom.appendChild(xem);
+  hop.appendChild(nhom);
+  if (!ma.length) {
+    var trong = document.createElement('p');
+    trong.className = 'trong';
+    trong.textContent = 'Chưa có khách. Thêm tên vào khachMoi của thiệp ' + maThiep + ' trong js/khach-moi.js.';
+    nhom.appendChild(trong);
+    return;
+  }
   var bang = document.createElement('table');
   var thead = document.createElement('thead');
   thead.innerHTML = '<tr><th>Tên trên bìa</th><th>Mã</th><th>Đường dẫn riêng</th><th></th></tr>';
@@ -95,7 +110,7 @@
 
   var tbody = document.createElement('tbody');
   ma.forEach(function (k) {
-    var url = duongDan(k);
+    var url = duongDan(maThiep, k);
     var tr = document.createElement('tr');
 
     var tdTen = document.createElement('td');
@@ -128,7 +143,11 @@
     tbody.appendChild(tr);
   });
   bang.appendChild(tbody);
-  hop.appendChild(bang);
+  var cuon = document.createElement('div');
+  cuon.className = 'bang-cuon';
+  cuon.appendChild(bang);
+  nhom.appendChild(cuon);
+  });
 })();
 </script>
 </body></html>
