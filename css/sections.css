@@ -286,7 +286,10 @@ html.env-lock #sec-page-1 .hero-names{
 }
 /* Ảnh có chủ thể ở xa hơn được đánh dấu để phóng nhẹ, không phụ thuộc vị trí. */
 #sec-strip .strip-anh--zoom{
-  transform: scale(1.12);
+  /* Ưu tiên góc trái dưới để giữ chú chó nằm ở phần đáy ảnh. */
+  object-position: left bottom;
+  transform: scale(1.22);
+  transform-origin: left bottom;
 }
 
 #sec-strip .loi-nhan{
