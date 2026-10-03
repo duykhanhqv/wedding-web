@@ -40,6 +40,8 @@
     return el;
   }
 
+  var tenMoi = tenKhach();
+
   function dungBia() {
     var cover = the('div');
     cover.id = 'env-cover';
@@ -53,8 +55,7 @@
     var duoi = the('div', 'env-bottom');
     duoi.appendChild(the('div', 'env-lead', 'Thân mời'));
 
-    var ten = tenKhach();
-    if (ten) duoi.appendChild(the('div', 'env-guest', ten));
+    if (tenMoi) duoi.appendChild(the('div', 'env-guest', tenMoi));
 
     var mo = the('div', 'env-open');
     mo.appendChild(the('span', null, 'Chạm để mở thiệp'));
@@ -68,15 +69,64 @@
   var cover = dungBia();
   document.body.insertBefore(cover, document.body.firstChild);
 
+  /* Cùng tên khách trên phong bì được đặt vào ô trống của trang thiệp thứ hai. */
+  var trangHai = document.getElementById('sec-page-2');
+  if (trangHai && tenMoi) {
+    trangHai.appendChild(the('div', 'invite-guest-name', tenMoi));
+  }
+
   var root = document.documentElement;
   root.classList.add('env-lock');
   try { window.scrollTo(0, 0); } catch (e) {}
 
   var opened = false;
+  var nhac = new Audio('assets/Ta Là Của Nhau - Đông Nhi, Ông Cao Thắng Lyrics Video.mp3');
+  nhac.loop = true;
+  nhac.preload = 'none';
+
+  var nutNhac = the('button', 'music-toggle');
+  nutNhac.type = 'button';
+  nutNhac.hidden = true;
+  var hinhDia = the('img');
+  hinhDia.src = 'assets/Record.png';
+  hinhDia.alt = '';
+  nutNhac.appendChild(hinhDia);
+  document.body.appendChild(nutNhac);
+
+  function capNhatNutNhac() {
+    var dangPhat = !nhac.paused;
+    nutNhac.classList.toggle('is-playing', dangPhat);
+    nutNhac.setAttribute('aria-pressed', String(dangPhat));
+    nutNhac.setAttribute('aria-label', dangPhat ? 'Dừng nhạc' : 'Phát nhạc');
+    nutNhac.title = dangPhat ? 'Dừng nhạc' : 'Phát nhạc';
+  }
+
+  function phatNhac() {
+    try {
+      var ketQuaPhat = nhac.play();
+      if (ketQuaPhat && typeof ketQuaPhat.catch === 'function') {
+        ketQuaPhat.catch(capNhatNutNhac);
+      }
+    } catch (e) {
+      capNhatNutNhac();
+    }
+  }
+
+  nhac.addEventListener('play', capNhatNutNhac);
+  nhac.addEventListener('pause', capNhatNutNhac);
+  nhac.addEventListener('error', capNhatNutNhac);
+  nutNhac.addEventListener('click', function () {
+    if (nhac.paused) phatNhac();
+    else nhac.pause();
+  });
+  capNhatNutNhac();
 
   function open() {
     if (opened) return;
     opened = true;
+    /* Phát ngay trong thao tác mở để trình duyệt cho phép âm thanh. */
+    phatNhac();
+    nutNhac.hidden = false;
     cover.classList.add('is-open');
     root.classList.remove('env-lock');
     root.classList.add('env-opening');

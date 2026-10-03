@@ -53,7 +53,10 @@ window.THIEP_CUOI = {
     diaDiem: 'Nhà hàng tiệc cưới Tâm Palace, 91 Đ. Vành Đai Trong, An Lạc, Hồ Chí Minh',
     tenMacDinh: '',
     khachMoi: {
-      // Thêm khách ngày 15 ở đây, ví dụ: 'nam': 'Anh Nam',
+      // Khách mẫu — thay bằng tên thật trước khi gửi thiệp.
+      'minh': 'Anh Minh',
+      'huong': 'Chị Hương',
+      'gia-dinh-anh-binh': 'Gia đình anh Bình'
     }
   },
   '28': {
@@ -68,7 +71,10 @@ window.THIEP_CUOI = {
     diaDiem: 'Tư gia, Phúc Tâm, Quảng Ngọc, Thanh Hoá',
     tenMacDinh: '',
     khachMoi: {
-      // Thêm khách ngày 28 ở đây, ví dụ: 'lan': 'Chị Lan',
+      // Khách mẫu — thay bằng tên thật trước khi gửi thiệp.
+      'tuan': 'Anh Tuấn',
+      'mai': 'Chị Mai',
+      'gia-dinh-co-lan': 'Gia đình cô Lan'
     }
   }
 };

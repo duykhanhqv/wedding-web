@@ -45,6 +45,25 @@
 #sec-page-2{ aspect-ratio: 3875 / 5462; }
 #sec-page-3{ aspect-ratio: 3875 / 5462; }
 
+/* Tên khách nằm dưới dòng "THÂN MỜI BẠN" có sẵn trên ảnh trang 2. */
+#sec-page-2{ container-type: inline-size; }
+#sec-page-2 .invite-guest-name{
+  position: absolute;
+  top: 11%;
+  left: 14%;
+  width: 72%;
+  height: 9%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--mau-chu-tren-do);
+  font: italic 400 clamp(16px, 4.6cqi, 42px)/1.1 var(--serif);
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+
 /* Bìa mới ở index.html dùng ảnh nền sạch tỉ lệ 2:3; toàn bộ chữ nằm trong
    HTML để có thể thay tên, ngày và giờ mà không cần sửa ảnh. */
 #sec-page-1.page-shot--editable{ aspect-ratio: 2 / 3; }

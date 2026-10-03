@@ -33,6 +33,35 @@ html.env-lock, html.env-lock body{overflow:hidden !important;height:100%}
 #env-cover.is-open{opacity:0}
 #env-cover.is-done{display:none}
 
+/* Đĩa nhạc nằm ở góc dưới, xoay đúng lúc nhạc đang phát. */
+.music-toggle{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  right:max(16px, env(safe-area-inset-right));
+  bottom:max(16px, env(safe-area-inset-bottom));
+  z-index:9998;
+  width:clamp(54px,6vw,72px);
+  aspect-ratio:1;
+  padding:0;
+  border:0;
+  background:none;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.music-toggle[hidden]{display:none}
+.music-toggle img{
+  display:block;
+  width:100%;
+  height:100%;
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,.3));
+  animation:musicSpin 7s linear infinite;
+  animation-play-state:paused;
+}
+.music-toggle.is-playing img{animation-play-state:running}
+.music-toggle:focus-visible{outline:2px solid #8d2632;outline-offset:4px;border-radius:50%}
+@keyframes musicSpin{to{transform:rotate(360deg)}}
+
 /* Tên cô dâu chú rể nằm trong phần nắp thư, phía trên con dấu sáp. */
 .env-top{
   position:absolute;
@@ -130,5 +159,6 @@ html.env-opening .thiep{animation:envReveal .7s ease backwards}
 
 @media (prefers-reduced-motion:reduce){
   .env-top,.env-bottom,.env-open{animation:none}
+  .music-toggle img{animation:none}
   html.env-opening .thiep{animation:none}
 }
