@@ -49,6 +49,15 @@
    HTML để có thể thay tên, ngày và giờ mà không cần sửa ảnh. */
 #sec-page-1.page-shot--editable{ aspect-ratio: 2 / 3; }
 #sec-page-1.page-shot--editable > picture > img{ object-position: center; }
+/* Lớp phủ lạnh, dịu màu như bìa invite-1.webp cũ; ảnh nền mới vẫn giữ nguyên. */
+#sec-page-1.page-shot--editable::after{
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: rgba(125, 132, 138, .18);
+  pointer-events: none;
+}
 
 
 /* --- Tên viết tay "Khánh & Nhung" đè lên ảnh trang 1 ---------------------
@@ -77,6 +86,7 @@
   color: #7a1220;
   line-height: .78;
   pointer-events: none;
+  z-index: 2;
   opacity: 1;
   -webkit-mask-image: linear-gradient(100deg, #000 0 55%, rgba(0,0,0,.45) 61%, transparent 68%);
           mask-image: linear-gradient(100deg, #000 0 55%, rgba(0,0,0,.45) 61%, transparent 68%);
@@ -110,6 +120,7 @@
   text-shadow: none;
   text-decoration: none;
   pointer-events: none;
+  z-index: 2;
 }
 
 /* Trạng thái ẩn khi bìa phong bì còn che. */
