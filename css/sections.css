@@ -104,10 +104,10 @@
   justify-content: space-between;
   gap: 5cqi;
   color: var(--mau-do-dam);
-  font: 400 3.1cqi/1 var(--mono);
+  font: 300 3.1cqi/1 var(--mono);
   letter-spacing: .16em;
   white-space: nowrap;
-  text-shadow: 0 1px rgba(255,255,255,.65), 0 0 7px rgba(255,255,255,.5);
+  text-shadow: none;
   text-decoration: none;
   pointer-events: none;
 }
