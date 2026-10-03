@@ -18,36 +18,6 @@
   function utc(ngay) {
     return new Date(ngay).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
   }
-  function chuLich(chu) {
-    return chu.replace(/\\/g, '\\\\').replace(/\r\n|\r|\n/g, '\\n')
-      .replace(/;/g, '\\;').replace(/,/g, '\\,');
-  }
-  // RFC 5545 giới hạn mỗi dòng ở 75 byte UTF-8. Dòng tiếp theo bắt đầu bằng
-  // một dấu cách để ứng dụng lịch hiểu đây là phần nối của dòng trước.
-  function soByteKyTu(ma) {
-    if (ma <= 0x7f) return 1;
-    if (ma <= 0x7ff) return 2;
-    return 3;
-  }
-  function gapDongLich(dong) {
-    var ketQua = [];
-    var phan = '';
-    var soByte = 0;
-    for (var i = 0; i < dong.length; i++) {
-      var kyTu = dong.charAt(i);
-      var them = soByteKyTu(dong.charCodeAt(i));
-      if (soByte + them > 75) {
-        ketQua.push(phan);
-        phan = ' ' + kyTu;
-        soByte = 1 + them;
-      } else {
-        phan += kyTu;
-        soByte += them;
-      }
-    }
-    ketQua.push(phan);
-    return ketQua.join('\r\n');
-  }
   var BAT_DAU_UTC = utc(NGAY_CUOI);
   var KET_THUC_UTC = utc(thiep.ketThuc);
   var nhan = document.querySelector('.cd-date');
@@ -95,47 +65,19 @@
 
 
   /* ══ 2. NÚT "THÊM VÀO LỊCH" ═════════════════════════════════════════════
-     Tạo một file .ics ngay trong trình duyệt rồi cho tải về. File .ics là
-     định dạng lịch chuẩn, mở được bằng Lịch của iPhone, Google Calendar,
-     Outlook... nên không cần liên kết riêng cho từng loại. */
+     Mở biểu mẫu Google Calendar với sự kiện đã điền sẵn cho đúng ngày thiệp. */
 
   var nut = document.getElementById('nut-them-lich');
-
-  function taoNoiDungLich() {
-    /* Các dòng của file .ics phải nối bằng \r\n theo đúng chuẩn. */
-    return [
-      'BEGIN:VCALENDAR',
-      'VERSION:2.0',
-      'PRODID:-//wedding//invite//VI',
-      'BEGIN:VEVENT',
-      'UID:khanh-nhung-' + window.MA_THIEP + '-' + BAT_DAU_UTC + '@invite',
-      'DTSTAMP:' + utc(Date.now()),
-      'DTSTART:' + BAT_DAU_UTC,
-      'DTEND:' + KET_THUC_UTC,
-      'SUMMARY:' + chuLich(thiep.tenLe),
-      'LOCATION:' + chuLich(thiep.diaDiem),
-      'DESCRIPTION:' + chuLich('Ngày vui của chúng mình, rất mong có bạn.'),
-      'END:VEVENT',
-      'END:VCALENDAR',
-      ''
-    ].map(gapDongLich).join('\r\n');
+  if (nut) {
+    function thamSoLich(ten, giaTri) {
+      return '&' + ten + '=' + encodeURIComponent(giaTri);
+    }
+    nut.href = 'https://calendar.google.com/calendar/r/eventedit?action=TEMPLATE' +
+      thamSoLich('dates', BAT_DAU_UTC + '/' + KET_THUC_UTC) +
+      thamSoLich('stz', 'Asia/Ho_Chi_Minh') +
+      thamSoLich('etz', 'Asia/Ho_Chi_Minh') +
+      thamSoLich('text', thiep.tenLe) +
+      thamSoLich('location', thiep.diaDiem) +
+      thamSoLich('details', 'Ngày vui của chúng mình, rất mong có bạn.');
   }
-
-  function taiFileLich() {
-    var duLieu = new Blob([taoNoiDungLich()], { type: 'text/calendar;charset=utf-8' });
-    var duongDan = URL.createObjectURL(duLieu);
-
-    /* Cách tải file về: tạo tạm một thẻ <a download>, bấm nó rồi bỏ đi. */
-    var a = document.createElement('a');
-    a.href = duongDan;
-    a.download = 'le-cuoi-khanh-nhung-' + window.MA_THIEP + '.ics';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
-    /* Dọn bộ nhớ sau khi trình duyệt đã tải xong. */
-    setTimeout(function () { URL.revokeObjectURL(duongDan); }, 4000);
-  }
-
-  if (nut) nut.addEventListener('click', taiFileLich);
 })();

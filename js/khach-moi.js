@@ -50,7 +50,7 @@ window.THIEP_CUOI = {
     ngayCuoi: '2026-11-15T11:00:00+07:00',
     ketThuc: '2026-11-15T14:00:00+07:00',
     tenLe: 'Lễ cưới Khánh & Nhung',
-    diaDiem: 'Nhà hàng tiệc cưới Tâm Palace, 91 Đ. Vành Đai Trong, An Lạc, Hồ Chí Minh',
+    diaDiem: 'Nhà hàng tiệc cưới Tâm Palace, 191 Đ. Vành Đai Trong, An Lạc, Hồ Chí Minh',
     tenMacDinh: '',
     khachMoi: {
       // Khách mẫu — thay bằng tên thật trước khi gửi thiệp.

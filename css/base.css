@@ -139,6 +139,7 @@ a:hover{ color: #e6c477; }
 /* Nút bấm (Thêm vào lịch / Gửi lời chúc). */
 .nut{
   appearance: none;
+  display: inline-block;
   cursor: pointer;
   background: var(--mau-do);
   color: var(--mau-chu-tren-do);
@@ -146,12 +147,15 @@ a:hover{ color: #e6c477; }
   padding: 15px 30px;
   font: 500 10.5px/1 var(--mono);
   letter-spacing: .2em;
+  text-align: center;
+  text-decoration: none;
   text-transform: uppercase;
   transition: background .18s ease, border-color .18s ease;
 }
 .nut:hover{
   background: var(--mau-do-dam);
   border-color: var(--mau-do-dam);
+  color: var(--mau-chu-tren-do);
 }
 
 
