@@ -58,7 +58,7 @@
   justify-content: center;
   text-align: center;
   color: var(--mau-chu-tren-do);
-  font: italic 400 clamp(16px, 4.6cqi, 42px)/1.1 var(--serif);
+  font: 400 clamp(21px, 5.2cqi, 48px)/1.1 'Dancing Script', var(--serif);
   text-wrap: balance;
   overflow-wrap: anywhere;
   pointer-events: none;
