@@ -284,6 +284,10 @@ html.env-lock #sec-page-1 .hero-names{
   width: 100%;
   aspect-ratio: 3 / 4;
 }
+/* Ảnh có chủ thể ở xa hơn được đánh dấu để phóng nhẹ, không phụ thuộc vị trí. */
+#sec-strip .strip-anh--zoom{
+  transform: scale(1.12);
+}
 
 #sec-strip .loi-nhan{
   margin-top: 64px;
