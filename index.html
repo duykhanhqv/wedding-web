@@ -183,9 +183,11 @@
     <div class="gach-ngan"></div>
 
     <div class="wish-form">
-      <input type="text" id="wish-ten" placeholder="Tên của bạn">
-      <textarea id="wish-loi" rows="4" placeholder="Lời chúc của bạn…"></textarea>
+      <input type="text" id="wish-ten" maxlength="50" placeholder="Tên của bạn">
+      <textarea id="wish-loi" rows="4" maxlength="400" placeholder="Lời chúc của bạn…"></textarea>
+      <input type="text" id="wish-hp" class="wish-hp" tabindex="-1" autocomplete="off" aria-hidden="true">
       <button type="button" class="nut" id="nut-gui-loi-chuc">Gửi lời chúc</button>
+      <div class="wish-status" id="wish-status" role="status"></div>
     </div>
 
     <!-- Lời chúc mới được js/wishes.js chèn lên ĐẦU danh sách này. -->

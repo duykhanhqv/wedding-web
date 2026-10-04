@@ -51,10 +51,23 @@ window.THIEP_CUOI = {
     diaDiem: 'Nhà hàng tiệc cưới Tâm Palace, 191 Đ. Vành Đai Trong, An Lạc, Hồ Chí Minh',
     tenMacDinh: '',
     khachMoi: {
-      // Khách mẫu — thay bằng tên thật trước khi gửi thiệp.
-      'minh': 'Anh Minh',
-      'huong': 'Chị Hương',
-      'gia-dinh-anh-binh': 'Gia đình anh Bình'
+
+      // Danh sách khách mời ngày 15
+      'hoa-phuong': 'bạn Hoa Phượng + ♥',
+      'khoa': 'bạn Khoa + ♥',
+      'minh-hieu': 'bạn Minh Hiếu + ♥',
+      'khanh-pham': 'bạn Khánh Phạm + ♥',
+      'gia-dinh-ban-duc': 'Gia đình bạn Đức',
+      'minh-duc': 'bạn Minh Đức + ♥',
+      'tam': 'bạn Tâm + ♥',
+      'thuong': 'bạn Thương + ♥',
+      'gia-dinh-ban-viet': 'Gia đình bạn Việt',
+      'gia-dinh-ban-uyen': 'Gia đình bạn Uyên',
+      'gia-dinh-ban-truong': 'Gia đình bạn Trường',
+      'chi-anh': 'Chị Ánh + ♥',
+      'em-phuong': 'Em Phương + ♥',
+      'em-sang': 'Em Sang + ♥',
+      'em-linh': 'Em Linh + ♥'
     }
   },
   '28': {
@@ -69,10 +82,33 @@ window.THIEP_CUOI = {
     diaDiem: 'Tư gia, Phúc Tâm, Quảng Ngọc, Thanh Hoá',
     tenMacDinh: '',
     khachMoi: {
-      // Khách mẫu — thay bằng tên thật trước khi gửi thiệp.
-      'tuan': 'Anh Tuấn',
-      'mai': 'Chị Mai',
-      'gia-dinh-co-lan': 'Gia đình cô Lan'
+      'gia-dinh-ban-huyen-anh': 'Gia đình bạn Huyền Anh',
+      'gia-dinh-ban-dung': 'Gia đình bạn Dung',
+      'thuy': 'Bạn Thuỷ',
+      'gia-dinh-ban-ha': 'Gia đình bạn Hà',
+      'gia-dinh-ban-hong': 'Gia đình bạn Hồng',
+      'gia-dinh-ban-thuong': 'Gia đình bạn Thương',
+      'diem-quynh': 'Diễm Quỳnh + ♥',
+      'quynh-anh': 'Bạn Quỳnh Anh + ♥',
+      'gia-dinh-ban-phuong': 'Gia đình bạn Phương',
+      'gia-dinh-ban-huyen-le': 'Gia đình bạn Huyền Lê',
+      'gia-dinh-ban-bui-huyen': 'Gia đình bạn Bùi Huyền',
+      'ngan': 'Ngân + ♥',
+      'gia-dinh-ban-dung-2': 'Gia đình bạn Dung',
+      'gia-dinh-ban-quan': 'Gia đình bạn Quân',
+      'gia-dinh-ban-hung': 'Gia đình bạn Hùng',
+      'gia-dinh-ban-toan': 'Gia đình bạn Toàn',
+      'ha': 'Hà + ♥',
+      'em-hai': 'Em Hải + ♥',
+      'hoang': 'Hoàng',
+      'gia-dinh-ban-hien': 'Gia đình bạn Hiền',
+      'gia-dinh-ban-le-anh': 'Gia đình bạn Lê Anh',
+      'quy': 'Bạn Quý + ♥',
+      'thuat': 'Bạn Thuật + ♥',
+      'hung': 'Bạn Hùng',
+      'anh': 'Bạn Ánh + ♥',
+      'huy': 'Bạn Huy + ♥',
+      'han-huong': 'Hàn Hương + ♥'
     }
   }
 };

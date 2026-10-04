@@ -55,7 +55,22 @@
     var duoi = the('div', 'env-bottom');
     duoi.appendChild(the('div', 'env-lead', 'Thân mời'));
 
-    if (tenMoi) duoi.appendChild(the('div', 'env-guest', tenMoi));
+    if (tenMoi) {
+      var khach = the('div', 'env-guest');
+      // Tách phần " + ♥" để căn chỉnh khoảng cách, font và vị trí thẳng hàng
+      var phan = tenMoi.split(/\s*\+\s*(.*)$/);
+      if (phan.length > 1) {
+        khach.appendChild(the('span', 'env-guest-name', phan[0]));
+        var extra = the('span', 'env-guest-extra');
+        extra.appendChild(the('span', 'env-guest-plus', '+'));
+        var tim = phan[1] ? phan[1].trim() : '♥';
+        extra.appendChild(the('span', 'env-guest-heart', tim));
+        khach.appendChild(extra);
+      } else {
+        khach.appendChild(the('span', 'env-guest-name', tenMoi));
+      }
+      duoi.appendChild(khach);
+    }
 
     var mo = the('div', 'env-open');
     mo.appendChild(the('span', null, 'Chạm để mở thiệp'));
@@ -72,7 +87,19 @@
   /* Cùng tên khách trên phong bì được đặt vào ô trống của trang thiệp thứ hai. */
   var trangHai = document.getElementById('sec-page-2');
   if (trangHai && tenMoi) {
-    trangHai.appendChild(the('div', 'invite-guest-name', tenMoi));
+    var guestEl = the('div', 'invite-guest-name');
+    var phan2 = tenMoi.split(/\s*\+\s*(.*)$/);
+    if (phan2.length > 1) {
+      guestEl.appendChild(the('span', 'invite-guest-name-text', phan2[0]));
+      var extra2 = the('span', 'invite-guest-extra');
+      extra2.appendChild(the('span', 'invite-guest-plus', '+'));
+      var tim2 = phan2[1] ? phan2[1].trim() : '♥';
+      extra2.appendChild(the('span', 'invite-guest-heart', tim2));
+      guestEl.appendChild(extra2);
+    } else {
+      guestEl.appendChild(the('span', 'invite-guest-name-text', tenMoi));
+    }
+    trangHai.appendChild(guestEl);
   }
 
   var root = document.documentElement;

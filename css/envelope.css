@@ -17,6 +17,15 @@
   src:url('../assets/fonts/Brittany-Signature.ttf') format('truetype');
 }
 
+/* Font viết tay cho tên khách mời ở phong bì (có đủ tiếng Việt). */
+@font-face{
+  font-family:'Fleur De Leah';
+  font-style:normal;
+  font-weight:400;
+  font-display:swap;
+  src:url('../assets/fonts/primary_school/VNI-TRIDICO\ New.ttf') format('truetype');
+}
+
 html.env-lock, html.env-lock body{overflow:hidden !important;height:100%}
 
 #env-cover{
@@ -100,11 +109,37 @@ html.env-lock, html.env-lock body{overflow:hidden !important;height:100%}
    (xem js/envelope.js và danh sách ở js/khach-moi.js). Dùng chữ serif để
    không tranh với chữ ký "Khánh & Nhung" ở nắp thư. */
 .env-guest{
-  margin-top:clamp(8px,1vw,14px);
-  font:400 clamp(19px,2.5vw,34px)/1.25 Cormorant,Georgia,serif;
-  letter-spacing:.04em;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-top:clamp(8px,1.2vw,14px);
+  font:400 clamp(22px,2.6vw,34px)/1.3 'Fleur De Leah','Dancing Script','Brittany Signature',Cormorant,Georgia,serif;
+  letter-spacing:.02em;
   color:#f6ead9;
   text-wrap:balance;
+}
+
+.env-guest-name{display:inline-block}
+.env-guest-extra{
+  display:inline-flex;
+  align-items:center;
+  gap:0.35em;
+  margin-left:0.35em;
+  font-size:0.85em;
+  opacity:0.92;
+}
+.env-guest-plus{
+  font-family:Cormorant,Georgia,serif;
+  font-weight:400;
+  display:inline-block;
+  line-height:1;
+  transform:translateY(-0.06em);
+}
+.env-guest-heart{
+  font-family:'Segoe UI Symbol','Apple Symbols','Arial Unicode MS',sans-serif;
+  font-size:0.92em;
+  display:inline-block;
+  line-height:1;
 }
 
 .env-open{
@@ -139,9 +174,9 @@ html.env-opening .thiep{animation:envReveal .7s ease backwards}
   .env-top{top:13.5%;padding:0 7vw}
   .env-names{font-size:clamp(34px,12.5vw,72px)}
   .env-bottom{bottom:7%;padding:0 8vw}
-  .env-lead{font-size:clamp(11px,3vw,16px);letter-spacing:.2em}
-  .env-guest{font-size:clamp(17px,5.4vw,28px);margin-top:8px}
-  .env-open{margin-top:12px;font-size:clamp(10px,2.7vw,15px);letter-spacing:.18em}
+  .env-lead{font-size:clamp(10px,2.8vw,14px);letter-spacing:.2em}
+  .env-guest{font-size:clamp(20px,5.5vw,28px);margin-top:clamp(8px,1.5vw,12px);line-height:1.3}
+  .env-open{margin-top:12px;font-size:clamp(9px,2.5vw,13px);letter-spacing:.18em}
 }
 
 /* Cửa sổ ngang và thấp: ảnh bị cắt bớt trên dưới nên con dấu tụt xuống gần
@@ -152,9 +187,9 @@ html.env-opening .thiep{animation:envReveal .7s ease backwards}
      (1280×620), mà khối chữ giờ có thêm dòng tên khách — thu chữ và kéo sát
      mép dưới để không đè lên con dấu. */
   .env-bottom{bottom:2.5%}
-  .env-lead{font-size:11px}
-  .env-guest{font-size:clamp(16px,1.7vw,22px);margin-top:5px}
-  .env-open{margin-top:8px;font-size:10.5px}
+  .env-lead{font-size:10px}
+  .env-guest{font-size:clamp(18px,2vw,24px);margin-top:6px;line-height:1.3}
+  .env-open{margin-top:8px;font-size:9.5px}
 }
 
 @media (prefers-reduced-motion:reduce){

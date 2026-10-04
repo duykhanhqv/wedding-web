@@ -63,6 +63,27 @@
   overflow-wrap: anywhere;
   pointer-events: none;
 }
+#sec-page-2 .invite-guest-extra{
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  margin-left: 0.35em;
+  font-size: 0.85em;
+  opacity: 0.95;
+}
+#sec-page-2 .invite-guest-plus{
+  font-family: Cormorant, Georgia, serif;
+  font-weight: 400;
+  display: inline-block;
+  line-height: 1;
+  transform: translateY(-0.05em);
+}
+#sec-page-2 .invite-guest-heart{
+  font-family: 'Segoe UI Symbol', 'Apple Symbols', 'Arial Unicode MS', sans-serif;
+  font-size: 0.9em;
+  display: inline-block;
+  line-height: 1;
+}
 
 /* Bìa mới ở index.html dùng ảnh nền sạch tỉ lệ 2:3; toàn bộ chữ nằm trong
    HTML để có thể thay tên, ngày và giờ mà không cần sửa ảnh. */
