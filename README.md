@@ -109,7 +109,7 @@ Sửa trong khối `:root` ở đầu `css/base.css`. Mọi màu và font khai b
 | Đường dẫn | Ba ảnh trong thư mục | Ngày giờ | Địa điểm |
 |---|---|---|---|
 | `14/` | `invite-1.webp` → `invite-3.webp` | 14/11/2026, 11:00 | Tư gia, Tà Lài, Tân Phú, Đồng Nai |
-| `15/` | `invite-1.png` → `invite-3.png` | 15/11/2026, 11:00 | Tâm Palace, 191 Đ. Vành Đai Trong, An Lạc, Hồ Chí Minh |
+| `15/` | `invite-1.webp` → `invite-3.webp` | 15/11/2026, 11:00 | Tâm Palace, 191 Đ. Vành Đai Trong, An Lạc, Hồ Chí Minh |
 | `28/` | `invite-1.png` → `invite-3.png` | 28/11/2026, 16:00 | Tư gia, Phúc Tâm, Quảng Ngọc, Thanh Hoá |
 
 Mỗi folder có `index.html` riêng và dùng chung `css/`, `js/`, `assets/`

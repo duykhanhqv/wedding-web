@@ -41,9 +41,9 @@ window.THIEP_CUOI = {
   },
   '15': {
     anh: [
-      '15/invite-1.png',
-      '15/invite-2.png',
-      '15/invite-3.png'
+      '15/invite-1.webp',
+      '15/invite-2.webp',
+      '15/invite-3.webp'
     ],
     ngayCuoi: '2026-11-15T11:00:00+07:00',
     ketThuc: '2026-11-15T14:00:00+07:00',
