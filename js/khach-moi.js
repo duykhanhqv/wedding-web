@@ -36,9 +36,7 @@ window.THIEP_CUOI = {
     diaDiem: 'Tư gia, Tà Lài, Tân Phú, Đồng Nai',
     tenMacDinh: '',
     khachMoi: {
-      'nam': 'Anh Nam',
-      'lan': 'Chị Lan',
-      'gia-dinh-cau-tu': 'Gia đình cậu Tư'
+      'nguyen': 'Nguyên iu dấu',
     }
   },
   '15': {
