@@ -107,7 +107,7 @@
   try { window.scrollTo(0, 0); } catch (e) {}
 
   var opened = false;
-  var nhac = new Audio('assets/Ta Là Của Nhau - Đông Nhi, Ông Cao Thắng Lyrics Video.mp3');
+  var nhac = new Audio('assets/LoThuongNhau.mp3');
   nhac.loop = true;
   nhac.preload = 'none';
 
