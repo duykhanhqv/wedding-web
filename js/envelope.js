@@ -40,6 +40,52 @@
     return el;
   }
 
+  /* Font tên khách trên phong bì dùng bảng mã VNI cũ. Giữ dữ liệu và URL ở
+     dạng Unicode, chỉ chuyển mã ngay trước khi hiển thị bằng font đó. */
+  function unicodeSangVni(chu) {
+    var dau = { '\u0300': 'ø', '\u0301': 'ù', '\u0309': 'û', '\u0303': 'õ', '\u0323': 'ï' };
+    var dauI = { '\u0300': 'ì', '\u0301': 'í', '\u0309': 'æ', '\u0303': 'ó', '\u0323': 'ò' };
+    var dauY = { '\u0300': 'yø', '\u0301': 'yù', '\u0309': 'yû', '\u0303': 'yõ', '\u0323': 'î' };
+    var bienThe = {
+      'a\u0302': { '': 'aâ', '\u0300': 'aà', '\u0301': 'aá', '\u0309': 'aå', '\u0303': 'aã', '\u0323': 'aä' },
+      'a\u0306': { '': 'aê', '\u0300': 'aè', '\u0301': 'aé', '\u0309': 'aú', '\u0303': 'aü', '\u0323': 'aë' },
+      'e\u0302': { '': 'eâ', '\u0300': 'eà', '\u0301': 'eá', '\u0309': 'eå', '\u0303': 'eã', '\u0323': 'eä' },
+      'o\u0302': { '': 'oâ', '\u0300': 'oà', '\u0301': 'oá', '\u0309': 'oå', '\u0303': 'oã', '\u0323': 'oä' },
+      'o\u031b': { '': 'ô', '\u0300': 'ôø', '\u0301': 'ôù', '\u0309': 'ôû', '\u0303': 'ôõ', '\u0323': 'ôï' },
+      'u\u031b': { '': 'ö', '\u0300': 'öø', '\u0301': 'öù', '\u0309': 'öû', '\u0303': 'öõ', '\u0323': 'öï' }
+    };
+
+    if (!String.prototype.normalize) return chu;
+    return chu.normalize('NFD').replace(/([A-Za-zĐđ])([\u0300\u0301\u0302\u0303\u0306\u0309\u031b\u0323]{0,2})/g,
+      function (_, goc, cacDau) {
+        if (goc === 'đ') return 'ñ';
+        if (goc === 'Đ') return 'Ñ';
+        var thuong = goc.toLowerCase();
+        var dang = (cacDau.match(/[\u0302\u0306\u031b]/) || [''])[0];
+        var thanh = (cacDau.match(/[\u0300\u0301\u0303\u0309\u0323]/) || [''])[0];
+        var ketQua;
+        if (dang && bienThe[thuong + dang]) ketQua = bienThe[thuong + dang][thanh || ''];
+        else if (thuong === 'i') ketQua = dauI[thanh] || 'i';
+        else if (thuong === 'y') ketQua = dauY[thanh] || 'y';
+        else ketQua = thuong + (dau[thanh] || '');
+        return goc === goc.toUpperCase() ? ketQua.toUpperCase() : ketQua;
+      });
+  }
+
+  function apDungFontVni(el, chuUnicode) {
+    if (!String.prototype.normalize) return;
+    var chuVni = unicodeSangVni(chuUnicode);
+    function apDung() {
+      el.textContent = chuVni;
+      el.classList.add('is-vni');
+    }
+    if (document.fonts && typeof document.fonts.load === 'function') {
+      document.fonts.load("400 34px 'Fleur De Leah'").then(function (fontDaTai) {
+        if (fontDaTai.length) apDung();
+      }).catch(function () {});
+    }
+  }
+
   var tenMoi = tenKhach();
 
   function dungBia() {
@@ -60,14 +106,18 @@
       // Tách phần " + ♥" để căn chỉnh khoảng cách, font và vị trí thẳng hàng
       var phan = tenMoi.split(/\s*\+\s*(.*)$/);
       if (phan.length > 1) {
-        khach.appendChild(the('span', 'env-guest-name', phan[0]));
+        var tenVni = the('span', 'env-guest-name', phan[0]);
+        khach.appendChild(tenVni);
+        apDungFontVni(tenVni, phan[0]);
         var extra = the('span', 'env-guest-extra');
         extra.appendChild(the('span', 'env-guest-plus', '+'));
         var tim = phan[1] ? phan[1].trim() : '♥';
         extra.appendChild(the('span', 'env-guest-heart', tim));
         khach.appendChild(extra);
       } else {
-        khach.appendChild(the('span', 'env-guest-name', tenMoi));
+        var tenVniDayDu = the('span', 'env-guest-name', tenMoi);
+        khach.appendChild(tenVniDayDu);
+        apDungFontVni(tenVniDayDu, tenMoi);
       }
       duoi.appendChild(khach);
     }

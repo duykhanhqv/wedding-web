@@ -17,7 +17,8 @@
   src:url('../assets/fonts/Brittany-Signature.ttf') format('truetype');
 }
 
-/* Font viết tay cho tên khách mời ở phong bì (có đủ tiếng Việt). */
+/* Font VNI cũ chỉ dùng cho tên khách trên phong bì. JavaScript chuyển tên
+   Unicode sang đúng bảng mã VNI trước khi đưa chữ vào phần tử này. */
 @font-face{
   font-family:'Fleur De Leah';
   font-style:normal;
@@ -113,13 +114,14 @@ html.env-lock, html.env-lock body{overflow:hidden !important;height:100%}
   align-items:center;
   justify-content:center;
   margin-top:clamp(8px,1.2vw,14px);
-  font:400 clamp(22px,2.6vw,34px)/1.3 'Fleur De Leah','Dancing Script','Brittany Signature',Cormorant,Georgia,serif;
+  font:400 clamp(22px,2.6vw,34px)/1.3 'Dancing Script','Brittany Signature',Cormorant,Georgia,serif;
   letter-spacing:.02em;
   color:#f6ead9;
   text-wrap:balance;
 }
 
 .env-guest-name{display:inline-block}
+.env-guest-name.is-vni{font-family:'Fleur De Leah','Dancing Script',Cormorant,Georgia,serif}
 .env-guest-extra{
   display:inline-flex;
   align-items:center;
