@@ -119,9 +119,9 @@ gốc, thiếu `thiep` hoặc giá trị không hợp lệ sẽ mở thiệp ng�
 Mỗi thiệp hiển thị theo thứ tự trang 1 → trang 2 → đếm ngược → trang 3 →
 album. Phần album đến cuối vẫn dùng chung từ thư mục gốc.
 
-Sửa `ngayCuoi`, `ketThuc`, `tenLe`, `diaDiem` trong cấu hình tương ứng của
+Sửa `ngayCuoi`, `ketThuc`, `nhac`, `tenLe`, `diaDiem` trong cấu hình tương ứng của
 `window.THIEP_CUOI` ở `js/khach-moi.js`. Giữ đuôi `+07:00` cho giờ Việt Nam.
-Ngày hiển thị, đếm ngược và lịch tải xuống tự lấy từ cấu hình này.
+Ngày hiển thị, đếm ngược, lịch tải xuống và nhạc nền tự lấy từ cấu hình này.
 Chữ/ngày đã in sẵn trong ảnh không đổi theo JavaScript. Khi thay một trang,
 hãy giữ đúng tên `invite-1`, `invite-2` hoặc `invite-3` trong thư mục ngày đó,
 đồng thời cập nhật phần mở rộng trong `js/khach-moi.js` nếu đổi định dạng file.

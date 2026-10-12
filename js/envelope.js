@@ -157,7 +157,7 @@
   try { window.scrollTo(0, 0); } catch (e) {}
 
   var opened = false;
-  var nhac = new Audio('assets/LoThuongNhau.mp3');
+  var nhac = new Audio(window.THIEP_HIEN_TAI.nhac || 'assets/LoThuongNhau.mp3');
   nhac.loop = true;
   nhac.preload = 'none';
 
