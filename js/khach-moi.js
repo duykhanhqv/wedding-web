@@ -58,6 +58,7 @@ window.THIEP_CUOI = {
       'hoa-phuong': 'bạn Hoa Phượng + ♥',
       'khoa': 'bạn Khoa + ♥',
       'minh-hieu': 'bạn Minh Hiếu + ♥',
+      'dang': 'bạn Đăng',
       'khanh-pham': 'bạn Khánh Phạm + ♥',
       'gia-dinh-ban-duc': 'Gia đình bạn Đức',
       'minh-duc': 'bạn Minh Đức + ♥',
