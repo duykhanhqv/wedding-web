@@ -48,7 +48,7 @@ window.THIEP_CUOI = {
     ],
     ngayCuoi: '2026-11-15T11:00:00+07:00',
     ketThuc: '2026-11-15T14:00:00+07:00',
-    nhac: 'assets/LoThuongNhau2.mp3',
+    nhac: 'assets/LoThuongNhau.mp3',
     tenLe: 'Lễ cưới Khánh & Nhung',
     diaDiem: 'Nhà hàng tiệc cưới Tâm Palace, 191 Đ. Vành Đai Trong, An Lạc, Hồ Chí Minh',
     tenMacDinh: '',
@@ -80,7 +80,7 @@ window.THIEP_CUOI = {
     ],
     ngayCuoi: '2026-11-28T16:00:00+07:00',
     ketThuc: '2026-11-28T19:00:00+07:00',
-    nhac: 'assets/LoThuongNhau2.mp3',
+    nhac: 'assets/LoThuongNhau.mp3',
     tenLe: 'Lễ cưới Khánh & Nhung',
     diaDiem: 'Tư gia, Phúc Tâm, Quảng Ngọc, Thanh Hoá',
     tenMacDinh: '',
@@ -96,12 +96,12 @@ window.THIEP_CUOI = {
       'gia-dinh-ban-phuong': 'Gia đình bạn Phương',
       'gia-dinh-ban-huyen-le': 'Gia đình bạn Huyền Lê',
       'gia-dinh-ban-bui-huyen': 'Gia đình bạn Bùi Huyền',
-      'ngan': 'Ngân + ♥',
+      'ngan': 'Bạn Ngân + ♥',
       'gia-dinh-ban-dung-2': 'Gia đình bạn Dung',
       'gia-dinh-ban-quan': 'Gia đình bạn Quân',
       'gia-dinh-ban-hung': 'Gia đình bạn Hùng',
       'gia-dinh-ban-toan': 'Gia đình bạn Toàn',
-      'ha': 'Hà + ♥',
+      'ha': 'Bạn Hà + ♥',
       'em-hai': 'Em Hải + ♥',
       'hoang': 'Hoàng',
       'gia-dinh-ban-hien': 'Gia đình bạn Hiền',
@@ -111,7 +111,7 @@ window.THIEP_CUOI = {
       'hung': 'Bạn Hùng',
       'anh': 'Bạn Ánh + ♥',
       'huy': 'Bạn Huy + ♥',
-      'han-huong': 'Hàn Hương + ♥'
+      'han-huong': 'Bạn íHàn Hương + ♥'
     }
   }
 };
