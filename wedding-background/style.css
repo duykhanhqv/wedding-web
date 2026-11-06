@@ -26,11 +26,7 @@ body {
   min-height: 100svh;
   overflow: hidden;
   isolation: isolate;
-  background-color: #050505;
-  background-image: url("background.png");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  background: #000;
 }
 
 #star-canvas,
@@ -46,9 +42,8 @@ body {
 .ambient-glow {
   z-index: 1;
   background:
-    radial-gradient(circle at 50% 16%, rgb(255 255 255 / 12%), transparent 26%),
-    radial-gradient(circle at 50% 73%, rgb(255 255 255 / 8%), transparent 34%);
-  animation: breathe 6s ease-in-out infinite alternate;
+    radial-gradient(ellipse at 50% 17%, rgb(255 255 255 / 20%), transparent 30%),
+    radial-gradient(ellipse at 50% 76%, rgb(255 255 255 / 17%), transparent 31%);
 }
 
 #star-canvas {
@@ -58,26 +53,4 @@ body {
 .vignette {
   z-index: 3;
   box-shadow: inset 0 0 12vw 2vw rgb(0 0 0 / 46%);
-}
-
-@keyframes breathe {
-  from {
-    opacity: 0.58;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@media (max-aspect-ratio: 3 / 4) {
-  .wedding-background {
-    background-size: auto 100%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ambient-glow {
-    animation: none;
-  }
 }
