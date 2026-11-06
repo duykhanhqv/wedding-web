@@ -16,23 +16,49 @@ let twinkleStars = [];
 let meteors = [];
 
 const random = (min, max) => Math.random() * (max - min) + min;
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+const focusedRandom = () => (Math.random() + Math.random() + Math.random()) / 3;
 
 function createBackdropStar(zone) {
   const top = zone === "top";
   const depth = Math.random();
-  const y = top
-    ? ((depth + Math.random()) / 2) * height * 0.32
-    : height * (0.69 + Math.pow(depth, 2.15) * 0.31);
-  const perspective = top ? y / (height * 0.32) : (y - height * 0.62) / (height * 0.38);
+  const horizon = 0.755;
+
+  if (top) {
+    const normalizedX = Math.random() < 0.18 ? Math.random() : focusedRandom();
+    const distanceFromCenter = Math.abs(normalizedX - 0.5) * 2;
+    const focus = 1 - distanceFromCenter;
+    const band = 0.105 + distanceFromCenter * 0.09;
+    const verticalNoise = (focusedRandom() - 0.5) * 0.12;
+
+    return {
+      x: normalizedX * width,
+      y: clamp(band + verticalNoise, 0.008, 0.29) * height,
+      radius: random(0.35, 1.25) + Math.pow(focus, 2) * random(0.15, 1.35),
+      alpha: random(0.38, 0.82) + focus * random(0.04, 0.18),
+      phase: random(0, Math.PI * 2),
+      speed: random(0.0008, 0.0028),
+      flare: Math.random() < 0.025 + focus * 0.045,
+      glow: focus > 0.62 && Math.random() < 0.12,
+    };
+  }
+
+  const floorDepth = Math.pow(depth, 1.35);
+  const spread = 0.035 + floorDepth * 0.925;
+  const x = width * 0.5 + random(-0.5, 0.5) * width * spread;
+  const bottomInset = Math.min(12, height * 0.014);
+  const floorHeight = height * (1 - horizon) - bottomInset;
+  const y = height * horizon + Math.pow(floorDepth, 1.45) * floorHeight;
 
   return {
-    x: random(0, width),
+    x,
     y,
-    radius: random(0.35, 1.25) + Math.max(0, perspective) * random(0.2, 1.25),
-    alpha: random(0.38, 1),
+    radius: random(0.3, 0.9) + Math.pow(floorDepth, 1.7) * random(0.45, 3.2),
+    alpha: random(0.42, 0.8) + floorDepth * random(0.06, 0.2),
     phase: random(0, Math.PI * 2),
     speed: random(0.0008, 0.0028),
-    flare: Math.random() > 0.91,
+    flare: Math.random() < 0.025 + floorDepth * 0.035,
+    glow: floorDepth > 0.58 && Math.random() < 0.1,
   };
 }
 
@@ -53,6 +79,10 @@ function createMeteor() {
 
 function resizeCanvas() {
   const bounds = canvas.getBoundingClientRect();
+  if (width && Math.abs(bounds.width - width) < 8 && Math.abs(bounds.height - height) < 8) {
+    return;
+  }
+
   width = bounds.width;
   height = bounds.height;
   pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
@@ -65,9 +95,9 @@ function resizeCanvas() {
   staticContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 
   const areaScale = (width * height) / (1100 * 800);
-  const density = Math.max(0.45, Math.min(1.8, areaScale));
-  const topCount = Math.round(1100 * density);
-  const bottomCount = Math.round(850 * density);
+  const density = Math.max(0.32, Math.min(1.5, areaScale));
+  const topCount = Math.round(1800 * density);
+  const bottomCount = Math.round(1400 * density);
   backdropStars = [
     ...Array.from({ length: topCount }, () => createBackdropStar("top")),
     ...Array.from({ length: bottomCount }, () => createBackdropStar("bottom")),
@@ -77,6 +107,11 @@ function resizeCanvas() {
 }
 
 function drawStar(target, star, alpha) {
+  if (star.glow) {
+    target.shadowColor = "rgba(235, 242, 255, 0.9)";
+    target.shadowBlur = star.radius * 3.5;
+  }
+
   target.beginPath();
   target.fillStyle = `rgba(255, 255, 255, ${alpha})`;
   target.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
@@ -92,6 +127,8 @@ function drawStar(target, star, alpha) {
     target.lineTo(star.x, star.y + star.radius * 4.5);
     target.stroke();
   }
+
+  target.shadowBlur = 0;
 }
 
 function renderStaticStars() {
