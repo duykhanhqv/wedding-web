@@ -22,43 +22,54 @@ const focusedRandom = () => (Math.random() + Math.random() + Math.random()) / 3;
 function createBackdropStar(zone) {
   const top = zone === "top";
   const depth = Math.random();
-  const horizon = 0.755;
+  const horizon = 0.72;
 
   if (top) {
-    const normalizedX = Math.random() < 0.18 ? Math.random() : focusedRandom();
+    const normalizedX = Math.random();
     const distanceFromCenter = Math.abs(normalizedX - 0.5) * 2;
     const focus = 1 - distanceFromCenter;
-    const band = 0.105 + distanceFromCenter * 0.09;
-    const verticalNoise = (focusedRandom() - 0.5) * 0.12;
+    const band = 0.115 + distanceFromCenter * 0.045;
+    const verticalNoise = (focusedRandom() - 0.5) * 0.2;
+    const sizeRoll = Math.random();
+    const radius = sizeRoll > 0.965
+      ? random(1.8, 3.1)
+      : sizeRoll > 0.76
+        ? random(0.8, 1.65)
+        : random(0.24, 0.82);
 
     return {
       x: normalizedX * width,
-      y: clamp(band + verticalNoise, 0.008, 0.29) * height,
-      radius: random(0.35, 1.25) + Math.pow(focus, 2) * random(0.15, 1.35),
-      alpha: random(0.38, 0.82) + focus * random(0.04, 0.18),
+      y: clamp(band + verticalNoise, 0.004, 0.275) * height,
+      radius: radius + Math.pow(focus, 3) * random(0.05, 0.45),
+      alpha: clamp(random(0.42, 0.92) + Math.pow(focus, 2) * 0.2, 0, 1),
       phase: random(0, Math.PI * 2),
       speed: random(0.0008, 0.0028),
-      flare: Math.random() < 0.025 + focus * 0.045,
-      glow: focus > 0.62 && Math.random() < 0.12,
+      flare: Math.random() < 0.018 + focus * 0.035,
+      glow: (radius > 1.5 && Math.random() < 0.28) || (focus > 0.7 && Math.random() < 0.06),
     };
   }
 
-  const floorDepth = Math.pow(depth, 1.35);
-  const spread = 0.035 + floorDepth * 0.925;
-  const x = width * 0.5 + random(-0.5, 0.5) * width * spread;
-  const bottomInset = Math.min(12, height * 0.014);
+  const floorDepth = Math.pow(depth, 1.65);
+  const edgeInset = Math.min(18, width * 0.025);
+  const x = random(edgeInset, width - edgeInset);
+  const normalizedX = x / width;
+  const distanceFromCenter = Math.abs(normalizedX - 0.5) * 2;
+  const focus = 1 - distanceFromCenter;
+  const bottomInset = Math.min(26, height * 0.03);
   const floorHeight = height * (1 - horizon) - bottomInset;
-  const y = height * horizon + Math.pow(floorDepth, 1.45) * floorHeight;
+  const y = height * horizon + floorDepth * floorHeight;
+  const sizeRoll = Math.random();
+  const baseRadius = sizeRoll > 0.94 ? random(1.1, 2.1) : random(0.22, 0.9);
 
   return {
     x,
     y,
-    radius: random(0.3, 0.9) + Math.pow(floorDepth, 1.7) * random(0.45, 3.2),
-    alpha: random(0.42, 0.8) + floorDepth * random(0.06, 0.2),
+    radius: baseRadius + Math.pow(floorDepth, 1.8) * random(0.5, 6.8),
+    alpha: clamp(random(0.44, 0.86) + floorDepth * 0.12 + Math.pow(focus, 3) * 0.16, 0, 1),
     phase: random(0, Math.PI * 2),
     speed: random(0.0008, 0.0028),
-    flare: Math.random() < 0.025 + floorDepth * 0.035,
-    glow: floorDepth > 0.58 && Math.random() < 0.1,
+    flare: Math.random() < 0.012 + floorDepth * 0.025,
+    glow: floorDepth > 0.58 && Math.random() < 0.16,
   };
 }
 
@@ -79,13 +90,24 @@ function createMeteor() {
 
 function resizeCanvas() {
   const bounds = canvas.getBoundingClientRect();
-  if (width && Math.abs(bounds.width - width) < 8 && Math.abs(bounds.height - height) < 8) {
+  const nextPixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+
+  if (!bounds.width || !bounds.height) {
+    return;
+  }
+
+  if (
+    width
+    && nextPixelRatio === pixelRatio
+    && Math.abs(bounds.width - width) < 8
+    && Math.abs(bounds.height - height) < 8
+  ) {
     return;
   }
 
   width = bounds.width;
   height = bounds.height;
-  pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+  pixelRatio = nextPixelRatio;
 
   canvas.width = Math.round(width * pixelRatio);
   canvas.height = Math.round(height * pixelRatio);
@@ -94,10 +116,10 @@ function resizeCanvas() {
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
   staticContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
 
-  const areaScale = (width * height) / (1100 * 800);
-  const density = Math.max(0.32, Math.min(1.5, areaScale));
-  const topCount = Math.round(1800 * density);
-  const bottomCount = Math.round(1400 * density);
+  const areaScale = Math.sqrt((width * height) / (1100 * 800));
+  const density = Math.max(0.3, Math.min(1.3, areaScale));
+  const topCount = Math.round(4200 * density);
+  const bottomCount = Math.round(3600 * density);
   backdropStars = [
     ...Array.from({ length: topCount }, () => createBackdropStar("top")),
     ...Array.from({ length: bottomCount }, () => createBackdropStar("bottom")),
@@ -133,9 +155,36 @@ function drawStar(target, star, alpha) {
 
 function renderStaticStars() {
   staticContext.clearRect(0, 0, width, height);
+  drawLightBeams();
   for (const star of backdropStars) {
     drawStar(staticContext, star, star.alpha * 0.82);
   }
+}
+
+function drawLightBeams() {
+  const sources = [0.09, 0.22, 0.37, 0.5, 0.63, 0.78, 0.91];
+  staticContext.save();
+  staticContext.globalCompositeOperation = "screen";
+
+  for (const source of sources) {
+    const sourceX = width * source;
+    const beamWidth = width * (source === 0.5 ? 0.035 : 0.022);
+    const gradient = staticContext.createLinearGradient(0, height * 0.11, 0, height * 0.72);
+    gradient.addColorStop(0, "rgba(210, 225, 248, 0.12)");
+    gradient.addColorStop(0.36, "rgba(190, 210, 240, 0.055)");
+    gradient.addColorStop(1, "rgba(160, 190, 225, 0)");
+
+    staticContext.fillStyle = gradient;
+    staticContext.beginPath();
+    staticContext.moveTo(sourceX - 2, height * 0.1);
+    staticContext.lineTo(sourceX + 2, height * 0.1);
+    staticContext.lineTo(sourceX + beamWidth, height * 0.72);
+    staticContext.lineTo(sourceX - beamWidth, height * 0.72);
+    staticContext.closePath();
+    staticContext.fill();
+  }
+
+  staticContext.restore();
 }
 
 function drawTwinkles(time) {

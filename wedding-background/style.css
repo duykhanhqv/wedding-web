@@ -42,10 +42,11 @@ body {
 .ambient-glow {
   z-index: 1;
   background:
-    radial-gradient(ellipse 20% 6% at 50% 14%, rgb(255 255 255 / 28%), transparent 100%),
-    radial-gradient(ellipse 23% 5% at 50% 76%, rgb(255 255 255 / 24%), transparent 100%),
-    radial-gradient(ellipse at 50% 17%, rgb(196 211 235 / 10%), transparent 29%),
-    radial-gradient(ellipse at 50% 82%, rgb(196 211 235 / 8%), transparent 34%);
+    linear-gradient(to bottom, transparent 68%, rgb(255 255 255 / 5%) 71.5%, transparent 75%),
+    radial-gradient(ellipse 20% 4% at 50% 13%, rgb(255 255 255 / 58%), transparent 100%),
+    radial-gradient(ellipse 24% 3% at 50% 72%, rgb(255 255 255 / 62%), transparent 100%),
+    radial-gradient(ellipse at 50% 16%, rgb(196 211 235 / 11%), transparent 30%),
+    radial-gradient(ellipse at 50% 79%, rgb(196 211 235 / 9%), transparent 36%);
 }
 
 #star-canvas {
