@@ -26,16 +26,17 @@ function createStar() {
 }
 
 function createMeteor() {
-  const travel = random(140, 300);
+  const length = random(90, 190);
+  const speed = random(360, 620);
 
   meteors.push({
-    x: random(-width * 0.05, width * 0.72),
-    y: random(-40, height * 0.3),
-    length: travel,
-    speed: random(620, 980),
+    x: random(width * 0.06, width * 0.94),
+    y: -length,
+    length,
+    speed,
     alpha: random(0.65, 1),
     life: 0,
-    duration: random(0.7, 1.15),
+    duration: (height + length * 2) / speed,
   });
 }
 
@@ -79,13 +80,12 @@ function drawStars(time) {
 function drawMeteors(deltaTime) {
   meteors = meteors.filter((meteor) => {
     meteor.life += deltaTime;
-    meteor.x += meteor.speed * deltaTime;
-    meteor.y += meteor.speed * 0.58 * deltaTime;
+    meteor.y += meteor.speed * deltaTime;
 
     const progress = meteor.life / meteor.duration;
     const opacity = Math.sin(Math.min(progress, 1) * Math.PI) * meteor.alpha;
-    const tailX = meteor.x - meteor.length;
-    const tailY = meteor.y - meteor.length * 0.58;
+    const tailX = meteor.x;
+    const tailY = meteor.y - meteor.length;
     const gradient = context.createLinearGradient(tailX, tailY, meteor.x, meteor.y);
 
     gradient.addColorStop(0, "rgba(255, 255, 255, 0)");
@@ -108,7 +108,7 @@ function drawMeteors(deltaTime) {
     context.fill();
     context.shadowBlur = 0;
 
-    return progress < 1 && meteor.x < width + meteor.length;
+    return progress < 1 && meteor.y < height + meteor.length;
   });
 }
 
@@ -126,7 +126,7 @@ function render(time) {
 
   if (meteorTimer <= 0) {
     createMeteor();
-    meteorTimer = random(1.2, 3.2);
+    meteorTimer = random(0.8, 2.1);
   }
 
   drawMeteors(deltaTime);
