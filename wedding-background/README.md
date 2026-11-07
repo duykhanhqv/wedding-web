@@ -1,27 +1,18 @@
-# Nền cưới chuyển động
+# Wedding Star Studio
 
-Mở [index.html](./index.html) bằng trình duyệt máy tính có WebGL. Không cần cài thư viện hay backend. Trang khởi động ở trạng thái tạm dừng, đúng ảnh gốc. Nhấn **Chạy** để bắt đầu.
+Trang chạy hoàn toàn trong trình duyệt, dựng hai tầng bụi sao bằng WebGL và ghép chữ bằng Canvas 2D. Không cần backend hay kết nối mạng khi sử dụng.
 
-- **Độ rộng quỹ đạo** tính theo độ rộng ảnh 1920 px; mặc định 28 px cho lớp gần. Chấm ở lớp xa tự động chuyển động nhẹ hơn khoảng 2,5–3 lần. Đặt 0 để xem đúng ảnh gốc.
-- **Tốc độ** mặc định 1×, tương ứng vòng 30 giây. Tốc độ 2× cho vòng 15 giây.
-- Mỗi vùng có công tắc riêng và mục **Vị trí & phạm vi mặt nạ**. Tâm, kích thước tính theo phần trăm ảnh; độ mềm là phần chuyển tiếp bên trong mặt nạ. Mặc định khóa cứng vùng giữa khoảng 35–63% chiều cao.
-- **Xem ảnh gốc** chỉ thay đổi bản xem trước. Video luôn ghi chuyển động theo các thông số đã chọn, bắt đầu từ ảnh gốc.
-- **Đặt lại** khôi phục thông số, dừng tại đầu vòng và giữ ảnh hiện tại.
-- **Toàn màn hình** chỉ hiển thị ảnh nền. Nhấn Esc để thoát.
+## Sử dụng
 
-## Ghi video
+Mở `index.html` trực tiếp hoặc qua một static server. Bảng **Không gian** điều chỉnh tốc độ, mật độ, độ lấp lánh, độ sáng và hai chế độ nội dung. Bảng **Chữ** cho sửa riêng sáu lớp: monogram, tiêu đề, tên, ngày, lời nhắn và trái tim. Nút **Lưu cấu hình** ghi thiết lập vào `localStorage` của trình duyệt.
 
-Nút ghi tạo video 1920 × 1080, 30 fps, một vòng chuyển động. Trình duyệt hỗ trợ WebCodecs sẽ mã hóa từng khung hình với thời điểm xác định, nên tốc độ xử lý không làm thay đổi thời lượng video. Trang ưu tiên MP4 khi trình duyệt hỗ trợ; nếu không sẽ dùng WebM. Tên tệp tải về khớp định dạng thực tế. Không ghi âm thanh hoặc giao diện.
+Toàn màn hình chỉ mở khung canvas nên bảng điều khiển tự ẩn. Tab **Xuất video** ghi đúng canvas 1920×1080 ở 30fps, bao gồm cả nền và chữ, với thời lượng 15, 30 hoặc 60 giây. MP4 được ưu tiên; WebM được dùng khi trình duyệt không hỗ trợ H.264.
 
-Giữ tab hiển thị trong lúc tạo video. Thời gian xử lý tùy máy, có thể nhanh hoặc chậm hơn thời lượng video. Nếu trình duyệt không có bộ mã hóa phù hợp, nút xuất bị vô hiệu hóa và trang hướng dẫn dùng trình duyệt hỗ trợ. Có thể hủy; ẩn tab hoặc mất WebGL sẽ hủy ghi để tránh tải video không hoàn chỉnh. Ảnh khác tỷ lệ được giữ nguyên tỷ lệ với phần dư màu đen.
+## Kỹ thuật
 
-## Tệp nguồn
+- `motion-engine.js`: 8.000 hạt xác định, hai mặt phẳng quỹ đạo 3D, lớp gần/xa, twinkle lệch pha, cột sáng và vòng elip shader.
+- `script.js`: trình biên tập trực tiếp, timeline hai cảnh, lưu cấu hình, toàn màn hình và vòng đời xuất video.
+- `video-export.js`: WebCodecs cùng muxer cục bộ, không ghi giao diện.
+- `GreatVibes-Regular.ttf`: font thư pháp Great Vibes có bộ ký tự tiếng Việt, phát hành theo SIL Open Font License trong `GreatVibes-OFL.txt`.
 
-- [background.png](./background.png): ảnh gốc, không thay đổi.
-- [background-source.js](./background-source.js): cùng các byte PNG mã hóa base64, chỉ tải khi trình duyệt chặn texture ảnh khi mở trực tiếp qua `file://`. Nếu thay ảnh mặc định, cần cập nhật cả bản dự phòng này; chọn ảnh trong giao diện không cần cập nhật tệp.
-- [motion-engine.js](./motion-engine.js): phân tích ảnh thành nền tĩnh, 2.800 sprite có danh tính cố định và hai lớp high-pass cho vùng sáng dày. Sprite quay cùng chiều theo quỹ đạo elip phối cảnh; không sinh thêm hạt.
-- [script.js](./script.js): quản lý ảnh, MotionAsset, bảng điều khiển, fullscreen và dùng lại chính MotionAsset đó khi xuất video.
-- [video-export.js](./video-export.js): WebCodecs tạo từng khung hình có timestamp và kiểm tra đủ số khung trước khi tải xuống.
-- [vendor/](./vendor/): bản browser của mp4-muxer 5.2.2 và webm-muxer 5.1.4, kèm giấy phép MIT; tải từ tệp cục bộ, không dùng CDN.
-
-Để kiểm tra kỹ thuật, `window.weddingApp` cung cấp `renderer`, `asset`, `stats`, `state`, `TextureRenderer`, `render()`, `getSprite(id)`, `getSpritePosition(id, phase)` và `recording`. `renderer.render(phase, state)` nhận pha theo số vòng; 0 và 1 cho cùng ảnh. `stats` cho biết số sprite, lượng residual, thời gian phân tích và checksum xác định. Đây là API chẩn đoán, không cần dùng để trình chiếu.
+API chẩn đoán `window.weddingApp` cung cấp state, renderer và trạng thái codec cho kiểm thử trình duyệt.

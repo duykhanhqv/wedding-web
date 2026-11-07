@@ -2,138 +2,71 @@
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#141413" />
-    <title>Nền cưới chuyển động · Wedding Background</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#07080d" />
+    <link rel="icon" href="data:," />
+    <title>Wedding Star Studio</title>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <main class="app">
       <header class="page-header">
-        <div>
-          <p class="eyebrow">WEDDING BACKGROUND</p>
-          <h1>Một chút chuyển động.<br />Một không gian lấp lánh.</h1>
-        </div>
-        <p class="intro">
-          Giữ nguyên ánh sáng, để những dải sao<br />chuyển động thật nhẹ theo
-          thời gian.
-        </p>
+        <div><p class="eyebrow">WEDDING STAR STUDIO</p><h1>Không gian cưới giữa những vì sao</h1></div>
+        <p>Biên tập chữ, ánh sáng và chuyển động ngay trên trình duyệt.</p>
       </header>
       <div class="workspace">
-        <section class="preview-panel" aria-label="Xem trước nền cưới">
-          <div class="section-bar">
-            <span><i class="status-dot"></i> KHUNG HÌNH</span
-            ><span id="preview-state">Đang tải ảnh…</span>
-          </div>
-          <div id="stage" class="stage">
-            <canvas
-              id="background-canvas"
-              aria-label="Ảnh nền cưới chuyển động"
-            ></canvas>
-          </div>
+        <section class="preview-panel" aria-label="Xem trước">
+          <div class="section-bar"><span><i></i> LIVE PREVIEW</span><span id="preview-state">Đang khởi tạo WebGL…</span></div>
+          <div id="stage" class="stage"><canvas id="background-canvas" aria-label="Nền cưới chuyển động"></canvas></div>
           <div class="preview-footer">
-            <span id="image-info">background.png</span
-            ><button id="fullscreen" class="text-button" type="button">
-              ⛶ Toàn màn hình
-            </button>
+            <span>16:9 · WebGL · <strong id="particle-count">0</strong> hạt</span>
+            <button id="fullscreen" class="text-button" type="button">⛶ Trình chiếu toàn màn hình</button>
           </div>
-          <p class="preview-note">
-            Chỉ ảnh nền được trình chiếu và ghi video. Nhấn <kbd>Esc</kbd> để
-            thoát toàn màn hình.
-          </p>
+          <p class="preview-note">Toàn màn hình chỉ hiển thị tác phẩm. Nhấn <kbd>Esc</kbd> để quay lại trình biên tập.</p>
           <div id="error" class="message error" role="alert" hidden></div>
           <div id="notice" class="message" role="status" hidden></div>
         </section>
-        <aside class="controls" aria-label="Điều khiển chuyển động">
-          <div class="control-heading">
-            <h2>Chuyển động</h2>
-            <span id="loop-duration" class="badge">30 giây / vòng</span>
+
+        <aside class="controls" aria-label="Bảng điều khiển">
+          <div class="tabs" role="tablist">
+            <button class="tab active" data-panel="motion-panel" type="button">Không gian</button>
+            <button class="tab" data-panel="text-panel" type="button">Chữ</button>
+            <button class="tab" data-panel="export-panel" type="button">Xuất video</button>
           </div>
-          <fieldset id="settings">
-            <div class="button-row">
-              <button id="play" class="primary" type="button" disabled>
-                ▶ Chạy</button
-              ><button
-                id="original"
-                type="button"
-                aria-pressed="false"
-                disabled
-              >
-                Xem ảnh gốc
-              </button>
+
+          <section id="motion-panel" class="panel active">
+            <div class="button-row"><button id="play" class="primary" type="button">▶ Chạy</button><button id="reset" type="button">↺ Mặc định</button></div>
+            <div id="motion-controls"></div>
+            <div class="section-divider"></div>
+            <label class="field-label" for="mode">Hiển thị nội dung</label>
+            <select id="mode"><option value="fixed">Cố định</option><option value="alternating">Luân phiên như video mẫu</option></select>
+            <div class="two-cols">
+              <label>Cảnh 1 (giây)<input id="scene-one" type="number" min="1" max="30" step="0.5" /></label>
+              <label>Cảnh 2 (giây)<input id="scene-two" type="number" min="1" max="30" step="0.5" /></label>
             </div>
-            <label class="slider-label" for="speed"
-              >Tốc độ <output id="speed-value" for="speed">1×</output></label
-            >
-            <input
-              id="speed"
-              type="range"
-              min="0.5"
-              max="3"
-              step="0.25"
-              value="1"
-            />
-            <div class="range-hints"><span>Chậm</span><span>Nhanh</span></div>
-            <label class="slider-label" for="amplitude"
-              >Độ rộng quỹ đạo
-              <output id="amplitude-value" for="amplitude">28 px</output></label
-            >
-            <input
-              id="amplitude"
-              type="range"
-              min="0"
-              max="48"
-              step="1"
-              value="28"
-            />
-            <p class="field-note">
-              Bán kính lớp gần tại độ rộng 1920. Lớp xa tự động chuyển động nhẹ
-              hơn.
-            </p>
-            <div id="mask-controls"></div>
-            <div class="utility-row">
-              <button id="reset" class="text-button" type="button">
-                ↺ Đặt lại</button
-              ><label class="upload-button" for="image-upload"
-                >↑ Chọn ảnh khác<input
-                  id="image-upload"
-                  type="file"
-                  accept="image/*"
-              /></label>
-            </div>
-          </fieldset>
-          <section class="export-section" aria-label="Xuất video">
-            <div class="control-heading">
-              <h2>Xuất video</h2>
-              <span class="small-label">FULL HD · 30 FPS</span>
-            </div>
-            <p id="export-info" class="field-note">
-              Đang kiểm tra định dạng trình duyệt…
-            </p>
-            <button id="export" type="button" class="export-button" disabled>
-              Ghi một vòng chuyển động
-            </button>
-            <div id="recording-status" hidden>
-              <label for="record-progress" id="record-label"
-                >Đang chuẩn bị…</label
-              ><progress id="record-progress" max="100" value="0"></progress
-              ><button id="cancel-export" type="button" class="text-button">
-                Hủy ghi
-              </button>
-            </div>
+            <label class="field-label" for="fade-seconds">Thời gian chuyển cảnh</label><input id="fade-seconds" type="range" min="0.3" max="3" step="0.1" /><output id="fade-seconds-value"></output>
+            <div class="utility-row"><button id="save" type="button">Lưu cấu hình</button><button id="clear-save" class="text-button" type="button">Xóa bản lưu</button></div>
+          </section>
+
+          <section id="text-panel" class="panel">
+            <p class="panel-intro">Mỗi lớp chữ có nội dung và kiểu riêng. Thay đổi được cập nhật ngay.</p>
+            <div id="text-editors"></div>
+          </section>
+
+          <section id="export-panel" class="panel">
+            <div class="control-heading"><h2>Xuất video</h2><span>FULL HD · 30 FPS</span></div>
+            <label class="field-label" for="export-duration">Thời lượng</label>
+            <select id="export-duration"><option value="15">15 giây</option><option value="30" selected>30 giây</option><option value="60">60 giây</option></select>
+            <p id="export-info" class="field-note">Đang kiểm tra định dạng trình duyệt…</p>
+            <button id="export" class="export-button" type="button" disabled>Ghi nền và chữ</button>
+            <div id="recording-status" hidden><label id="record-label" for="record-progress">Đang chuẩn bị…</label><progress id="record-progress" max="100" value="0"></progress><button id="cancel-export" class="text-button" type="button">Hủy ghi</button></div>
             <a id="download" class="download-button" hidden>Tải video</a>
           </section>
         </aside>
       </div>
-      <footer class="page-footer">
-        <span>ẢNH GỐC. CHUYỂN ĐỘNG TINH TẾ.</span
-        ><span>Xử lý ngay trên máy của bạn</span>
-      </footer>
+      <footer><span>WEBGL PARTICLE SPACE</span><span>Cấu hình lưu ngay trên thiết bị</span></footer>
     </main>
-    <script src="vendor/mp4-muxer.js"></script>
-    <script src="vendor/webm-muxer.js"></script>
-    <script src="video-export.js"></script>
-    <script src="motion-engine.js"></script>
-    <script src="script.js"></script>
+    <script src="vendor/mp4-muxer.js"></script><script src="vendor/webm-muxer.js"></script>
+    <script src="video-export.js"></script><script src="motion-engine.js"></script><script src="script.js"></script>
   </body>
 </html>
