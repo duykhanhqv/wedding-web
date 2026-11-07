@@ -90,6 +90,33 @@ window.WeddingSpace = (() => {
   }
 
   const PARTICLE_SET = createParticles();
+  const eventCache = new Map();
+
+  function timedEvents(kind, frequency) {
+    const amount = Math.max(0, Math.min(1, frequency));
+    const key = `${kind}-${Math.round(amount * 100)}`;
+    if (eventCache.has(key)) return eventCache.get(key);
+    if (amount === 0) { eventCache.set(key, []);return []; }
+    const random = seededRandom(kind === "shooting" ? 90317 : 40711);
+    const shooting = kind === "shooting";
+    const minGap = shooting ? 5 - amount * 3.4 : 8 - amount * 4.5;
+    const maxGap = shooting ? 6.8 - amount * 4.6 : 11.5 - amount * 5.5;
+    const events = [];
+    let start = shooting ? 1.2 + random() * 1.4 : 2.2 + random() * 2;
+    while (start < 60) {
+      events.push({
+        start,
+        duration: shooting ? 0.6 + random() * 0.6 : 0.72 + random() * 0.28,
+        x: shooting ? 0.04 + random() * 0.78 : 0.42 + random() * 0.16,
+        y: shooting ? 0.06 + random() * 0.23 : 0.54 + random() * 0.08,
+        length: shooting ? 72 + random() * 88 : 34 + random() * 24,
+        speed: 0.85 + random() * 0.3,
+      });
+      start += minGap + random() * (maxGap - minGap);
+    }
+    eventCache.set(key, events);
+    return events;
+  }
 
   const FULLSCREEN_VERTEX = `attribute vec2 a_position;varying vec2 v_uv;void main(){v_uv=a_position*.5+.5;gl_Position=vec4(a_position,0.,1.);}`;
   const BACKGROUND_FRAGMENT = `
@@ -107,23 +134,29 @@ window.WeddingSpace = (() => {
       float ring1=exp(-pow((radius-(.62+.035*pulse))/.018,2.));
       float ring2=exp(-pow((radius-(.82-.025*pulse))/.014,2.));float ring3=exp(-pow((radius-1.02)/.012,2.));
       float ringFade=smoothstep(.18,.82,pulse)*exp(-pow(p.x/.62,4.));
-      color+=vec3(.50,.52,.78)*(ring1*.10+ring2*.07+ring3*.04)*ringFade;
+      color+=vec3(.50,.52,.78)*(ring1*.018+ring2*.012+ring3*.008)*ringFade;
       float vignette=smoothstep(1.38,.53,length(p*vec2(.78,1.08)));
       gl_FragColor=vec4(color*mix(.58,1.,vignette)*u_brightness,1.);}`;
   const PARTICLE_VERTEX = `
     precision highp float;attribute float a_angle,a_radius,a_height,a_depth,a_size,a_luma,a_phase,a_speed,a_keep,a_band;
-    uniform float u_time,u_speed,u_density,u_twinkle,u_brightness,u_pixelRatio,u_concentration,u_fineDensity;varying float v_alpha,v_star;
+    uniform float u_time,u_speed,u_density,u_twinkle,u_brightness,u_pixelRatio,u_concentration,u_fineDensity,u_particleScale,u_edgeDensity;
+    uniform vec4 u_ripple;varying float v_alpha,v_star;
     void main(){float layer=mix(1.,2.,step(.58,a_depth));float theta=a_angle+u_time*u_speed*.10472*layer*a_speed;
       float z=sin(theta);float perspective=mix(.72,1.25,(z+1.)*.5);
       float concentration=mix(1.30,.70,u_concentration);float bandWidth=mix(1.06,.94,a_band);
       float orbit=mix(.004,.026,a_depth);float x=a_radius*concentration*bandWidth+cos(theta)*orbit;
       float baseY=mix(.64,-.60,a_band);float y=baseY+a_height+sin(theta)*orbit*mix(.23,.31,a_band);
       float fine=1.-step(1.55,a_size);float visibleLimit=u_density*mix(1.,u_fineDensity,fine);
+      float edge=smoothstep(.62,.92,abs(a_radius));visibleLimit*=mix(1.,mix(.22,1.,u_edgeDensity),edge);
+      float waveRadius=u_ripple.y*.12;float planeDistance=length(vec2(x-u_ripple.x,z*.14));
+      float wave=exp(-pow((planeDistance-waveRadius)/.038,2.))*sin((planeDistance-waveRadius)*70.);
+      y+=wave*.018*u_ripple.z*u_ripple.w*a_band*max(0.,1.-u_ripple.y/3.);
       if(a_keep>visibleLimit){x=3.;y=3.;}gl_Position=vec4(x,y,0.,1.);
       float sparkle=1.+sin(u_time*(.72+a_speed*.55)+a_phase)*u_twinkle*.30;
       float centerGlow=exp(-pow(x/.38,2.));
-      v_alpha=a_luma*sparkle*u_brightness*mix(.58,1.03,a_depth)*(.62+centerGlow*.38);v_star=step(3.2,a_size);
-      gl_PointSize=max(1.,a_size*perspective*u_pixelRatio);}`;
+      float edgeLight=mix(1.,mix(.62,1.18,u_edgeDensity),edge);
+      v_alpha=a_luma*sparkle*u_brightness*mix(.58,1.03,a_depth)*(.68+centerGlow*.50)*edgeLight*mix(.9,1.12,clamp(u_particleScale-0.7,0.,1.));v_star=step(3.2,a_size);
+      gl_PointSize=max(1.,a_size*perspective*u_pixelRatio*u_particleScale);}`;
   const PARTICLE_FRAGMENT = `
     precision highp float;varying float v_alpha,v_star;
     void main(){vec2 p=gl_PointCoord-.5;float d=length(p);float core=exp(-d*d*34.);float halo=exp(-d*d*9.)*.34;
@@ -189,6 +222,75 @@ window.WeddingSpace = (() => {
     context.restore();
   }
 
+  function activeRipple(seconds, state) {
+    if (!state.dropEnabled) return null;
+    let active = null;
+    for (const event of timedEvents("drop", state.dropFrequency)) {
+      const age = seconds - event.start - event.duration;
+      if (age >= 0 && age <= 3) active = { ...event, age };
+    }
+    return active;
+  }
+
+  function drawTransientEffects(context, frame, state, seconds) {
+    context.save();
+    context.beginPath();context.rect(frame.x, frame.y, frame.width, frame.height);context.clip();
+    context.globalCompositeOperation = "lighter";
+    if (state.shootingEnabled) {
+      for (const event of timedEvents("shooting", state.shootingFrequency)) {
+        const progress = (seconds - event.start) / event.duration;
+        if (progress < 0 || progress > 1) continue;
+        const alpha = Math.pow(Math.sin(progress * Math.PI), 0.72);
+        const angle = 0.42 + (event.x % 0.11) * 0.65;
+        const travel = progress * event.speed * frame.width * 0.17;
+        const headX = frame.x + event.x * frame.width + Math.cos(angle) * travel;
+        const headY = frame.y + event.y * frame.height + Math.sin(angle) * travel;
+        const length = event.length * frame.width / 1920;
+        const tailX = headX - Math.cos(angle) * length;
+        const tailY = headY - Math.sin(angle) * length;
+        const gradient = context.createLinearGradient(tailX, tailY, headX, headY);
+        gradient.addColorStop(0, "rgba(120,140,210,0)");gradient.addColorStop(.72, `rgba(190,205,242,${alpha * .26})`);gradient.addColorStop(1, `rgba(245,248,255,${alpha * .9})`);
+        context.strokeStyle = gradient;context.lineWidth = Math.max(.55, frame.width / 1920);context.beginPath();context.moveTo(tailX, tailY);context.lineTo(headX, headY);context.stroke();
+        const head = context.createRadialGradient(headX, headY, 0, headX, headY, 5 * frame.width / 1920);
+        head.addColorStop(0, `rgba(255,255,255,${alpha})`);head.addColorStop(.22, `rgba(220,228,255,${alpha * .65})`);head.addColorStop(1, "rgba(180,195,245,0)");
+        context.fillStyle = head;context.beginPath();context.arc(headX, headY, 5 * frame.width / 1920, 0, TAU);context.fill();
+      }
+    }
+    if (state.dropEnabled) {
+      for (const event of timedEvents("drop", state.dropFrequency)) {
+        const fall = (seconds - event.start) / event.duration;
+        const hitX = frame.x + event.x * frame.width;
+        const hitY = frame.y + frame.height * .8;
+        if (fall >= 0 && fall < 1) {
+          const eased = fall * fall;
+          const y = frame.y + event.y * frame.height + (hitY - frame.y - event.y * frame.height) * eased;
+          const opacity = Math.min(1, fall * 4) * Math.min(1, (1 - fall) * 7);
+          const length = event.length * frame.width / 1920;
+          const gradient = context.createLinearGradient(hitX, y - length, hitX, y);
+          gradient.addColorStop(0, "rgba(175,190,235,0)");gradient.addColorStop(1, `rgba(250,252,255,${opacity})`);
+          context.strokeStyle = gradient;context.lineWidth = Math.max(.65, frame.width / 1920);context.beginPath();context.moveTo(hitX, y - length);context.lineTo(hitX, y);context.stroke();
+        }
+        const age = seconds - event.start - event.duration;
+        if (age < 0 || age > 3) continue;
+        const intensity = state.rippleIntensity;
+        if (age < .22) {
+          const flashAlpha = (1 - age / .22) * intensity;
+          const flash = context.createRadialGradient(hitX, hitY, 0, hitX, hitY, 18 * frame.width / 1920);
+          flash.addColorStop(0, `rgba(255,255,255,${flashAlpha})`);flash.addColorStop(.2, `rgba(205,218,255,${flashAlpha * .5})`);flash.addColorStop(1, "rgba(170,190,245,0)");
+          context.fillStyle = flash;context.beginPath();context.arc(hitX, hitY, 18 * frame.width / 1920, 0, TAU);context.fill();
+        }
+        for (let ring = 0; ring < 3; ring++) {
+          const ringAge = age - ring * .23;if (ringAge < 0 || ringAge > 2.6) continue;
+          const fade = Math.pow(1 - ringAge / 2.6, 1.45) * intensity;
+          const radius = (18 + ringAge * 118) * frame.width / 1920;
+          context.strokeStyle = `rgba(192,205,247,${fade * .42})`;context.lineWidth = Math.max(.55, (1.25 - ringAge * .28) * frame.width / 1920);
+          context.beginPath();context.ellipse(hitX, hitY, radius, radius * .16, 0, 0, TAU);context.stroke();
+        }
+      }
+    }
+    context.restore();
+  }
+
   class SpaceRenderer {
     constructor(canvas, onContextLost = () => {}) {
       this.canvas = canvas;this.context = canvas.getContext("2d", { alpha: false });
@@ -220,11 +322,18 @@ window.WeddingSpace = (() => {
       gl.uniform1f(gl.getUniformLocation(this.backgroundProgram,"u_time"),seconds);gl.uniform1f(gl.getUniformLocation(this.backgroundProgram,"u_brightness"),state.brightness);gl.drawArrays(gl.TRIANGLES,0,6);
       gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE);gl.useProgram(this.particleProgram);gl.bindBuffer(gl.ARRAY_BUFFER,this.particles);
       [["a_angle",0],["a_radius",1],["a_height",2],["a_depth",3],["a_size",4],["a_luma",5],["a_phase",6],["a_speed",7],["a_keep",8],["a_band",9]].forEach(([name,offset])=>setAttribute(gl,this.particleProgram,name,offset));
-      const uniform=(name)=>gl.getUniformLocation(this.particleProgram,name);gl.uniform1f(uniform("u_time"),seconds);gl.uniform1f(uniform("u_speed"),state.speed);gl.uniform1f(uniform("u_density"),state.density);gl.uniform1f(uniform("u_twinkle"),state.twinkle);gl.uniform1f(uniform("u_brightness"),state.brightness);gl.uniform1f(uniform("u_pixelRatio"),frame.height/1080);gl.uniform1f(uniform("u_concentration"),state.centerConcentration);gl.uniform1f(uniform("u_fineDensity"),state.fineDensity);
+      const uniform=(name)=>gl.getUniformLocation(this.particleProgram,name);gl.uniform1f(uniform("u_time"),seconds);gl.uniform1f(uniform("u_speed"),state.speed);gl.uniform1f(uniform("u_density"),state.density);gl.uniform1f(uniform("u_twinkle"),state.twinkle);gl.uniform1f(uniform("u_brightness"),state.brightness);gl.uniform1f(uniform("u_pixelRatio"),frame.height/1080);gl.uniform1f(uniform("u_concentration"),state.centerConcentration);gl.uniform1f(uniform("u_fineDensity"),state.fineDensity);gl.uniform1f(uniform("u_particleScale"),state.particleScale);gl.uniform1f(uniform("u_edgeDensity"),state.edgeDensity);
+      const ripple=activeRipple(seconds,state);gl.uniform4f(uniform("u_ripple"),ripple ? ripple.x*2-1 : 0,ripple?.age||0,state.rippleIntensity,Number(Boolean(ripple)));
       gl.drawArrays(gl.POINTS,0,MAX_PARTICLES);gl.disable(gl.BLEND);
-      this.context.save();this.context.globalCompositeOperation="source-over";this.context.fillStyle="#000";this.context.fillRect(0,0,outputWidth,outputHeight);this.context.drawImage(this.glCanvas,frame.x,frame.y,frame.width,frame.height);drawTextLayer(this.context,frame,state,seconds);this.context.restore();
+      this.context.save();this.context.globalCompositeOperation="source-over";this.context.fillStyle="#000";this.context.fillRect(0,0,outputWidth,outputHeight);this.context.drawImage(this.glCanvas,frame.x,frame.y,frame.width,frame.height);drawTransientEffects(this.context,frame,state,seconds);drawTextLayer(this.context,frame,state,seconds);this.context.restore();
     }
     dispose() {this.glCanvas.removeEventListener("webglcontextlost",this.handleLost);const gl=this.gl;gl.deleteBuffer(this.quad);gl.deleteBuffer(this.particles);gl.deleteProgram(this.backgroundProgram);gl.deleteProgram(this.particleProgram);gl.getExtension("WEBGL_lose_context")?.loseContext();}
   }
-  return { SpaceRenderer, MAX_PARTICLES, FONT_STACKS, distribution: PARTICLE_SET.distribution };
+  return {
+    SpaceRenderer,
+    MAX_PARTICLES,
+    FONT_STACKS,
+    distribution: PARTICLE_SET.distribution,
+    eventsFor: (kind, frequency) => timedEvents(kind, frequency).map((event) => ({ ...event }))
+  };
 })();
