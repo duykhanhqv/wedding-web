@@ -1,238 +1,488 @@
 :root {
   color-scheme: dark;
-  background: #000;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #e6e3dc;
+  background: #141413;
+  font-synthesis: none;
+  --muted: #9a9890;
+  --line: #33332e;
+  --accent: #d8cfb4;
 }
-
-@font-face {
-  font-family: "HLT Bickham";
-  src: url("HLT BicKhamScriptPro_Regular.ttf") format("truetype");
-  font-display: swap;
-  font-style: normal;
-  font-weight: 400;
-}
-
 * {
   box-sizing: border-box;
 }
-
-html,
 body {
-  width: 100%;
-  min-height: 100%;
   margin: 0;
 }
-
-body {
-  overflow: hidden;
+button,
+input,
+a {
+  font: inherit;
+}
+button,
+a,
+label {
+  -webkit-tap-highlight-color: transparent;
+}
+button {
+  cursor: pointer;
+  border: 1px solid #45443c;
+  border-radius: 6px;
+  background: #292924;
+  color: #e8e6de;
+  padding: 11px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+button:hover:not(:disabled) {
+  background: #38382f;
+  border-color: #777363;
+}
+button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+summary:focus-visible,
+.upload-button:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+button[aria-pressed="true"] {
+  background: #484436;
+  border-color: var(--accent);
+}
+[hidden] {
+  display: none !important;
+}
+.app {
+  max-width: 1680px;
+  margin: auto;
+  padding: 44px 48px 24px;
+}
+.page-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin-bottom: 34px;
+  gap: 24px;
+}
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  color: var(--accent);
+  margin: 0 0 17px;
+}
+h1 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+.intro {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.8;
+  margin: 0 0 3px;
+}
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 28px;
+  align-items: start;
+}
+.preview-panel {
+  min-width: 0;
+}
+.section-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0 13px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.section-bar > span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.status-dot {
+  display: inline-block;
+  background: #b9b19c;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+.stage {
+  width: 100%;
+  aspect-ratio: 16/9;
   background: #000;
-}
-
-.wedding-background {
-  position: relative;
-  width: 100vw;
-  height: 100dvh;
-  min-height: 100svh;
+  border: 1px solid #33332d;
   overflow: hidden;
-  background: #000 url("background.png") center / cover no-repeat;
 }
-
-#star-canvas {
-  position: absolute;
-  z-index: 1;
-  inset: 0;
+canvas {
+  display: block;
   width: 100%;
   height: 100%;
-  pointer-events: none;
 }
-
-.wedding-content {
-  position: absolute;
-  z-index: 2;
-  top: 18%;
-  left: 50%;
+.stage:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  aspect-ratio: auto;
+  border: 0;
+  cursor: none;
+  background: #000;
+}
+.preview-footer {
   display: flex;
-  width: min(82vw, 1200px);
-  transform: translateX(-50%);
-  flex-direction: column;
   align-items: center;
-  color: #fff;
-  text-align: center;
-  text-shadow:
-    0 1px 3px rgb(0 0 0 / 95%),
-    0 0 10px rgb(0 0 0 / 80%),
-    0 0 8px rgb(220 232 255 / 24%);
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  gap: 15px;
+  padding: 10px 0;
+  font-size: 11px;
+  color: var(--muted);
 }
-
-.sr-only {
+#image-info {
+  overflow-wrap: anywhere;
+}
+.text-button {
+  border: 0;
+  background: transparent;
+  padding: 8px 0;
+  color: #c5c1b4;
+  font-weight: 400;
+  white-space: nowrap;
+}
+.text-button:hover:not(:disabled) {
+  background: transparent;
+  color: #fff;
+}
+.preview-note {
+  font-size: 11px;
+  line-height: 1.7;
+  color: #84837d;
+  margin-top: 14px;
+}
+kbd {
+  font-family: inherit;
+  font-size: 10px;
+  border: 1px solid #48473f;
+  border-radius: 3px;
+  padding: 1px 4px;
+  color: #bbb8ad;
+}
+.controls {
+  background: #1d1d1a;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 22px;
+}
+.control-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+h2 {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+.badge {
+  font-size: 10px;
+  color: #bdb7a7;
+  background: #303029;
+  padding: 5px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+fieldset {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  min-width: 0;
+}
+.button-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 25px;
+}
+.button-row button {
+  flex: 1;
+  white-space: nowrap;
+  padding-inline: 8px;
+}
+.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #27261f;
+}
+.primary:hover:not(:disabled) {
+  background: #eee4c8;
+  border-color: #eee4c8;
+}
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  margin: 20px 0 10px;
+}
+output {
+  color: #c7bfaa;
+  font-variant-numeric: tabular-nums;
+}
+input[type="range"] {
+  display: block;
+  accent-color: var(--accent);
+  width: 100%;
+  height: 14px;
+  margin: 0;
+  cursor: pointer;
+}
+input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  cursor: pointer;
+}
+.range-hints {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: #797a71;
+  margin-top: 6px;
+}
+.field-note {
+  font-size: 11px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 10px 0 15px;
+}
+.mask {
+  border-top: 1px solid var(--line);
+  padding: 15px 0;
+}
+.mask-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.mask-header label {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 12px;
+}
+.mask-caption {
+  font-size: 10px;
+  color: #89877f;
+}
+.mask details {
+  margin-top: 9px;
+}
+.mask summary {
+  font-size: 11px;
+  color: #a7a293;
+  cursor: pointer;
+  list-style-position: inside;
+}
+.mask .slider-label {
+  font-size: 11px;
+  margin-top: 13px;
+  margin-bottom: 6px;
+}
+.mask-parameters {
+  padding: 2px 0 3px;
+}
+.utility-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 5px;
+  gap: 10px;
+}
+.utility-row .text-button,
+.upload-button {
+  font-size: 11px;
+}
+.upload-button {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  color: #c5c1b4;
+  padding: 8px 0;
+}
+.upload-button:hover {
+  color: #fff;
+}
+.upload-button input {
   position: absolute;
   width: 1px;
   height: 1px;
-  padding: 0;
+  opacity: 0;
   overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }
-
-.ceremony-title {
-  display: grid;
-  width: min(74%, 760px);
-  margin-top: 12px;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: clamp(18px, 2.5vw, 40px);
+.export-section {
+  border-top: 1px solid var(--line);
+  padding-top: 22px;
+  margin-top: 16px;
 }
-
-.ceremony-title p {
-  margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.05rem, 2vw, 1.8rem);
+.export-section .control-heading {
+  margin-bottom: 10px;
+}
+.small-label {
+  font-size: 8px;
+  letter-spacing: 0.07em;
+  color: #939087;
+}
+.export-button {
+  width: 100%;
+  background: transparent;
   font-weight: 400;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  white-space: nowrap;
 }
-
-.ceremony-title > span,
-.couple__connector > span[aria-hidden="true"] {
+.export-section .field-note {
+  margin-bottom: 15px;
+}
+#recording-status {
+  margin-top: 14px;
+  font-size: 11px;
+  color: #c5c1b4;
+}
+progress {
   display: block;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 92%));
-  box-shadow: 0 0 6px rgb(255 255 255 / 55%);
-}
-
-.ceremony-title > span:last-child,
-.couple__connector > span[aria-hidden="true"]:last-child {
-  background: linear-gradient(90deg, rgb(255 255 255 / 92%), transparent);
-}
-
-.couple {
-  --name-size: clamp(5.5rem, min(10vw, 14vh), 10.5rem);
-  display: grid;
   width: 100%;
-  margin: clamp(6px, 1.1vh, 16px) 0 0;
-  grid-template-rows:
-    calc(var(--name-size) * 1.35)
-    calc(var(--name-size) * 0.55)
-    calc(var(--name-size) * 1.35);
-  align-items: center;
-  justify-items: center;
-  font-weight: 400;
+  height: 5px;
+  accent-color: var(--accent);
+  margin: 12px 0 4px;
 }
-
-.couple__name {
+.download-button {
+  display: block;
+  text-decoration: none;
+  text-align: center;
+  background: var(--accent);
+  color: #25251f;
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 12px;
+  margin-top: 12px;
+}
+.message {
+  padding: 12px 14px;
+  background: #26261f;
+  border: 1px solid #575342;
+  color: #ddd3b7;
+  font-size: 12px;
+  line-height: 1.7;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+.error {
+  background: #32231f;
+  border-color: #6d473c;
+  color: #f2c4b6;
+}
+.page-footer {
   display: flex;
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  font-family: "HLT Bickham", cursive;
-  font-size: var(--name-size);
-  font-weight: 400;
-  line-height: 1;
-  white-space: nowrap;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  margin-top: 40px;
+  padding-top: 19px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: #77786f;
 }
-
-.couple__connector {
-  display: grid;
-  width: min(54%, 540px);
-  height: 100%;
-  margin: 0;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: clamp(18px, 2.1vw, 30px);
+.page-footer > span:last-child {
+  letter-spacing: 0;
 }
-
-.couple__ampersand {
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.4rem, 4.4vw, 4.2rem);
-  font-weight: 400;
-  line-height: 0.85;
-}
-
-.ceremony-date {
-  margin-top: -10px;
-  padding: 2px 10px 4px;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.1rem, 2.3vw, 2rem);
-  letter-spacing: 0.32em;
-  white-space: nowrap;
-  text-shadow:
-    0 1px 3px #000,
-    0 0 9px #000,
-    0 0 14px #000;
-}
-
-@media (max-width: 600px) {
-  .wedding-content {
-    top: 24%;
-    width: 94vw;
+@media (min-width: 1700px) {
+  .app {
+    padding-top: 60px;
   }
-
-  .ceremony-title {
-    width: 90%;
-    gap: 10px;
+  .workspace {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    gap: 38px;
   }
-
-  .ceremony-title p {
-    font-size: 0.78rem;
-    letter-spacing: 0.24em;
+  h1 {
+    font-size: 43px;
   }
-
-  .couple {
-    --name-size: clamp(4.1rem, 25vw, 7.2rem);
-    margin-top: 12px;
-  }
-
-  .couple__name {
-    line-height: 1;
-  }
-
-  .couple__connector {
-    width: 66%;
-    margin: 8px 0;
-  }
-
-  .couple__ampersand {
-    font-size: 2.4rem;
-  }
-
-  .ceremony-date {
-    margin-top: 2px;
-    font-size: 0.9rem;
-    letter-spacing: 0.23em;
+  .controls {
+    padding: 26px;
   }
 }
-
-@media (max-height: 600px) {
-  .wedding-content {
-    top: 18%;
-    width: min(88vw, 840px);
+@media (max-width: 1000px) {
+  .app {
+    padding: 28px 24px;
   }
-
-  .ceremony-title p {
-    font-size: clamp(0.66rem, 2.2vh, 0.9rem);
+  .workspace {
+    grid-template-columns: minmax(0, 1fr) 285px;
+    gap: 20px;
   }
-
-  .couple {
-    --name-size: clamp(3.2rem, min(10.5vw, 16vh), 6.4rem);
-    margin-top: 0;
+  h1 {
+    font-size: 29px;
   }
-
-  .couple__name {
-    line-height: 1;
+  .intro {
+    font-size: 11px;
   }
-
-  .couple__connector {
-    margin: 4px 0;
+  .controls {
+    padding: 18px;
   }
-
-  .couple__ampersand {
-    font-size: clamp(1.7rem, 6vh, 2.6rem);
+  .page-header {
+    margin-bottom: 26px;
   }
-
-  .ceremony-date {
-    margin-top: -20px;
-    font-size: clamp(0.75rem, 2.8vh, 1rem);
+}
+@media (max-width: 760px) {
+  .app {
+    padding: 25px 18px;
+  }
+  .workspace {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .page-header {
+    align-items: start;
+  }
+  .intro {
+    display: none;
+  }
+  h1 {
+    font-size: 30px;
+  }
+  .controls {
+    padding: 22px;
+  }
+  .section-bar {
+    font-size: 9px;
+  }
+  .page-footer {
+    gap: 16px;
+    line-height: 1.7;
+  }
+  .preview-footer {
+    font-size: 10px;
+  }
+  .preview-footer button {
+    font-size: 11px;
+  }
+  .preview-note {
+    font-size: 10px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  button {
+    transition: none;
   }
 }
