@@ -71,7 +71,8 @@ window.THIEP_CUOI = {
       'em-phuong': 'Em Phương + ♥',
       'em-sang': 'Em Sang + ♥',
       'em-linh': 'Em Linh + ♥',
-      'chi-nhieu': 'Chị Nhiều'
+      'chi-nhieu': 'Chị Nhiều',
+       'anh-tuan': 'Anh Tuấn'
     }
   },
   '28': {
