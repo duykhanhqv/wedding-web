@@ -1,6 +1,6 @@
 "use strict";
 
-const { SpaceRenderer, MAX_PARTICLES } = window.WeddingSpace;
+const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
 
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -19,7 +19,8 @@ const { SpaceRenderer, MAX_PARTICLES } = window.WeddingSpace;
   });
   const defaults = () => ({
     phase: 0, playing: true, renderDuration: 60,
-    speed: 0.72, density: 0.72, twinkle: 0.45, brightness: 0.92,
+    speed: 0.72, density: 0.86, centerConcentration: 0.5, fineDensity: 0.88,
+    twinkle: 0.38, brightness: 0.94,
     mode: "alternating", sceneOneSeconds: 6, sceneTwoSeconds: 4.5, fadeSeconds: 1.2,
     exportDuration: 30,
     texts: {
@@ -35,7 +36,7 @@ const { SpaceRenderer, MAX_PARTICLES } = window.WeddingSpace;
   function mergeSaved(saved) {
     const base = defaults();
     if (!saved || typeof saved !== "object") return base;
-    for (const key of ["speed","density","twinkle","brightness","mode","sceneOneSeconds","sceneTwoSeconds","fadeSeconds","exportDuration"])
+    for (const key of ["speed","density","centerConcentration","fineDensity","twinkle","brightness","mode","sceneOneSeconds","sceneTwoSeconds","fadeSeconds","exportDuration"])
       if (saved[key] !== undefined) base[key] = saved[key];
     for (const key of Object.keys(base.texts))
       if (saved.texts?.[key]) Object.assign(base.texts[key], saved.texts[key]);
@@ -59,7 +60,9 @@ const { SpaceRenderer, MAX_PARTICLES } = window.WeddingSpace;
 
   const motionFields = [
     ["speed", "Tốc độ hạt", 0.2, 1.6, 0.05, "×"],
-    ["density", "Mật độ", 0.25, 1, 0.01, "%"],
+    ["density", "Mật độ tổng", 0.25, 1, 0.01, "%"],
+    ["centerConcentration", "Độ tập trung vào tâm", 0, 1, 0.01, "%"],
+    ["fineDensity", "Mật độ bụi mịn", 0.15, 1, 0.01, "%"],
     ["twinkle", "Độ lấp lánh", 0, 1, 0.01, "%"],
     ["brightness", "Độ sáng", 0.45, 1.35, 0.01, "%"],
   ];
@@ -114,7 +117,8 @@ const { SpaceRenderer, MAX_PARTICLES } = window.WeddingSpace;
         if (output) output.value = ["x","y"].includes(prop) ? `${item[prop]}%` : item[prop];
       }
     }
-    $("particle-count").textContent = Math.round(MAX_PARTICLES * state.density).toLocaleString("vi-VN");
+    const visibleParticles = MAX_PARTICLES * state.density * (0.06 + 0.94 * state.fineDensity);
+    $("particle-count").textContent = Math.round(visibleParticles).toLocaleString("vi-VN");
     $("preview-state").textContent = recording ? "Đang xuất video" : state.playing ? "Đang chuyển động" : "Tạm dừng";
     $("export").disabled = !renderer || !frameSupport || Boolean(recording);
     $("export-info").textContent = frameSupport ? `1920 × 1080 · ${frameSupport.extension.toUpperCase()} · ${state.exportDuration} giây · nền và chữ` : "Trình duyệt này chưa hỗ trợ WebCodecs. Hãy dùng Chrome hoặc Edge bản mới.";
@@ -182,6 +186,7 @@ const { SpaceRenderer, MAX_PARTICLES } = window.WeddingSpace;
         render,
         SpaceRenderer,
         get exportSupport() { return frameSupport; },
+        distribution,
       };
       frameSupport = await WeddingVideoExport.getSupport();resize();updateUI();requestAnimationFrame(tick);
     } catch (error) { showError(error.message || "Không thể khởi tạo không gian WebGL.");updateUI(); }
