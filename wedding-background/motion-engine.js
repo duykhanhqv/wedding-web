@@ -2,7 +2,7 @@
 
 window.WeddingSpace = (() => {
   const TAU = Math.PI * 2;
-  const MAX_PARTICLES = 16000;
+  const MAX_PARTICLES = 20000;
   const FONT_STACKS = {
     script: '"Great Vibes", cursive',
     serif: 'Georgia, "Times New Roman", serif',
@@ -65,19 +65,24 @@ window.WeddingSpace = (() => {
       const type = random();
       const bright = type > 0.992;
       const medium = !bright && type > 0.94;
-      let horizontal;
+      const component = random();
+      const verticalLimit = band ? 0.22 : 0.30;
+      const horizontalSigma = component < 0.80 ? 0.16 : component < 0.95 ? 0.46 : 0.78;
+      const verticalSigma = component < 0.80 ? (band ? 0.06 : 0.075) : component < 0.95 ? (band ? 0.115 : 0.15) : (band ? 0.18 : 0.23);
+      let horizontal, vertical, ellipseDistance;
       do {
-        horizontal = gaussian() * (random() < 0.699 ? 0.231 : 0.665);
-      } while (Math.abs(horizontal) > 0.98);
-      const distance = Math.abs(horizontal);
-      if (distance <= 0.3) distribution.central++;
-      else if (distance <= 0.7) distribution.transition++;
+        horizontal = gaussian() * horizontalSigma;
+        vertical = gaussian() * verticalSigma;
+        ellipseDistance = Math.hypot(horizontal / 0.98, vertical / verticalLimit);
+      } while (ellipseDistance > 1);
+      if (ellipseDistance <= 0.34) distribution.central++;
+      else if (ellipseDistance <= 0.72) distribution.transition++;
       else distribution.edge++;
-      const core = Math.exp(-Math.pow(horizontal / 0.34, 2));
+      const core = Math.exp(-Math.pow(ellipseDistance / 0.42, 2));
       const offset = index * stride;
       data[offset] = random() * TAU;
       data[offset + 1] = horizontal;
-      data[offset + 2] = (random() + random() + random() - 1.5) * (band ? 0.065 : 0.105);
+      data[offset + 2] = vertical;
       data[offset + 3] = depth;
       data[offset + 4] = bright ? 3.4 + random() * 3.2 : medium ? 1.45 + random() * 1.2 : 0.5 + random();
       data[offset + 5] = (bright ? 0.9 + random() * 0.35 : 0.22 + random() * 0.58) * (0.5 + core * 0.62);
@@ -97,20 +102,22 @@ window.WeddingSpace = (() => {
     const key = `${kind}-${Math.round(amount * 100)}`;
     if (eventCache.has(key)) return eventCache.get(key);
     if (amount === 0) { eventCache.set(key, []);return []; }
-    const random = seededRandom(kind === "shooting" ? 90317 : 40711);
-    const shooting = kind === "shooting";
-    const minGap = shooting ? 5 - amount * 3.4 : 8 - amount * 4.5;
-    const maxGap = shooting ? 6.8 - amount * 4.6 : 11.5 - amount * 5.5;
+    const falling = kind === "falling";
+    const random = seededRandom(falling ? 90317 : 40711);
+    const minGap = falling ? 1.3 - amount * 0.7 : 8 - amount * 4.5;
+    const maxGap = falling ? 2.2 - amount * 1.1 : 11.5 - amount * 5.5;
     const events = [];
-    let start = shooting ? 1.2 + random() * 1.4 : 2.2 + random() * 2;
+    let start = falling ? 0.4 + random() * 0.9 : 2.2 + random() * 2;
     while (start < 60) {
+      const side = random() < 0.5 ? 0 : 1;
       events.push({
         start,
-        duration: shooting ? 0.6 + random() * 0.6 : 0.72 + random() * 0.28,
-        x: shooting ? 0.04 + random() * 0.78 : 0.42 + random() * 0.16,
-        y: shooting ? 0.06 + random() * 0.23 : 0.54 + random() * 0.08,
-        length: shooting ? 72 + random() * 88 : 34 + random() * 24,
-        speed: 0.85 + random() * 0.3,
+        duration: falling ? 2.1 + random() * 1.7 : 0.82 + random() * 0.42,
+        x: falling ? (side ? 0.67 : 0.06) + random() * 0.27 : 0.42 + random() * 0.16,
+        y: falling ? 0.03 + random() * 0.24 : 0.55 + random() * 0.07,
+        distance: falling ? 0.12 + random() * 0.2 : 0.8,
+        drift: (random() - 0.5) * (falling ? 0.035 : 0.012),
+        size: falling ? 0.8 + random() * 1.7 : 1.1 + random() * 1.4,
       });
       start += minGap + random() * (maxGap - minGap);
     }
@@ -145,15 +152,16 @@ window.WeddingSpace = (() => {
       float z=sin(theta);float perspective=mix(.72,1.25,(z+1.)*.5);
       float concentration=mix(1.30,.70,u_concentration);float bandWidth=mix(1.06,.94,a_band);
       float orbit=mix(.004,.026,a_depth);float x=a_radius*concentration*bandWidth+cos(theta)*orbit;
-      float baseY=mix(.64,-.60,a_band);float y=baseY+a_height+sin(theta)*orbit*mix(.23,.31,a_band);
+      float baseY=mix(.64,-.64,a_band);float y=baseY+a_height+sin(theta)*orbit*mix(.23,.31,a_band);
       float fine=1.-step(1.55,a_size);float visibleLimit=u_density*mix(1.,u_fineDensity,fine);
-      float edge=smoothstep(.62,.92,abs(a_radius));visibleLimit*=mix(1.,mix(.22,1.,u_edgeDensity),edge);
+      float verticalLimit=mix(.30,.22,a_band);float ellipseDistance=length(vec2(a_radius/.98,a_height/verticalLimit));
+      float edge=smoothstep(.62,.94,ellipseDistance);visibleLimit*=mix(1.,mix(.22,1.,u_edgeDensity),edge);
       float waveRadius=u_ripple.y*.12;float planeDistance=length(vec2(x-u_ripple.x,z*.14));
       float wave=exp(-pow((planeDistance-waveRadius)/.038,2.))*sin((planeDistance-waveRadius)*70.);
       y+=wave*.018*u_ripple.z*u_ripple.w*a_band*max(0.,1.-u_ripple.y/3.);
       if(a_keep>visibleLimit){x=3.;y=3.;}gl_Position=vec4(x,y,0.,1.);
       float sparkle=1.+sin(u_time*(.72+a_speed*.55)+a_phase)*u_twinkle*.30;
-      float centerGlow=exp(-pow(x/.38,2.));
+      float centerGlow=exp(-pow(length(vec2(x/.40,a_height/mix(.14,.11,a_band))),2.));
       float edgeLight=mix(1.,mix(.62,1.18,u_edgeDensity),edge);
       v_alpha=a_luma*sparkle*u_brightness*mix(.58,1.03,a_depth)*(.68+centerGlow*.50)*edgeLight*mix(.9,1.12,clamp(u_particleScale-0.7,0.,1.));v_star=step(3.2,a_size);
       gl_PointSize=max(1.,a_size*perspective*u_pixelRatio*u_particleScale);}`;
@@ -236,24 +244,17 @@ window.WeddingSpace = (() => {
     context.save();
     context.beginPath();context.rect(frame.x, frame.y, frame.width, frame.height);context.clip();
     context.globalCompositeOperation = "lighter";
-    if (state.shootingEnabled) {
-      for (const event of timedEvents("shooting", state.shootingFrequency)) {
+    if (state.fallingEnabled) {
+      for (const event of timedEvents("falling", state.fallingFrequency)) {
         const progress = (seconds - event.start) / event.duration;
         if (progress < 0 || progress > 1) continue;
-        const alpha = Math.pow(Math.sin(progress * Math.PI), 0.72);
-        const angle = 0.42 + (event.x % 0.11) * 0.65;
-        const travel = progress * event.speed * frame.width * 0.17;
-        const headX = frame.x + event.x * frame.width + Math.cos(angle) * travel;
-        const headY = frame.y + event.y * frame.height + Math.sin(angle) * travel;
-        const length = event.length * frame.width / 1920;
-        const tailX = headX - Math.cos(angle) * length;
-        const tailY = headY - Math.sin(angle) * length;
-        const gradient = context.createLinearGradient(tailX, tailY, headX, headY);
-        gradient.addColorStop(0, "rgba(120,140,210,0)");gradient.addColorStop(.72, `rgba(190,205,242,${alpha * .26})`);gradient.addColorStop(1, `rgba(245,248,255,${alpha * .9})`);
-        context.strokeStyle = gradient;context.lineWidth = Math.max(.55, frame.width / 1920);context.beginPath();context.moveTo(tailX, tailY);context.lineTo(headX, headY);context.stroke();
-        const head = context.createRadialGradient(headX, headY, 0, headX, headY, 5 * frame.width / 1920);
-        head.addColorStop(0, `rgba(255,255,255,${alpha})`);head.addColorStop(.22, `rgba(220,228,255,${alpha * .65})`);head.addColorStop(1, "rgba(180,195,245,0)");
-        context.fillStyle = head;context.beginPath();context.arc(headX, headY, 5 * frame.width / 1920, 0, TAU);context.fill();
+        const alpha = Math.pow(Math.sin(progress * Math.PI), 0.62);
+        const x = frame.x + (event.x + event.drift * Math.sin(progress * Math.PI)) * frame.width;
+        const y = frame.y + (event.y + event.distance * progress) * frame.height;
+        const radius = event.size * frame.width / 1920;
+        const dot = context.createRadialGradient(x, y, 0, x, y, radius * 2.8);
+        dot.addColorStop(0, `rgba(255,255,255,${alpha * .95})`);dot.addColorStop(.32, `rgba(215,225,252,${alpha * .5})`);dot.addColorStop(1, "rgba(175,190,235,0)");
+        context.fillStyle = dot;context.beginPath();context.arc(x, y, radius * 2.8, 0, TAU);context.fill();
       }
     }
     if (state.dropEnabled) {
@@ -263,12 +264,13 @@ window.WeddingSpace = (() => {
         const hitY = frame.y + frame.height * .8;
         if (fall >= 0 && fall < 1) {
           const eased = fall * fall;
+          const x = hitX + event.drift * Math.sin(fall * Math.PI) * frame.width;
           const y = frame.y + event.y * frame.height + (hitY - frame.y - event.y * frame.height) * eased;
           const opacity = Math.min(1, fall * 4) * Math.min(1, (1 - fall) * 7);
-          const length = event.length * frame.width / 1920;
-          const gradient = context.createLinearGradient(hitX, y - length, hitX, y);
-          gradient.addColorStop(0, "rgba(175,190,235,0)");gradient.addColorStop(1, `rgba(250,252,255,${opacity})`);
-          context.strokeStyle = gradient;context.lineWidth = Math.max(.65, frame.width / 1920);context.beginPath();context.moveTo(hitX, y - length);context.lineTo(hitX, y);context.stroke();
+          const radius = event.size * frame.width / 1920;
+          const dot = context.createRadialGradient(x, y, 0, x, y, radius * 3);
+          dot.addColorStop(0, `rgba(255,255,255,${opacity})`);dot.addColorStop(.35, `rgba(215,226,255,${opacity * .48})`);dot.addColorStop(1, "rgba(175,190,235,0)");
+          context.fillStyle = dot;context.beginPath();context.arc(x, y, radius * 3, 0, TAU);context.fill();
         }
         const age = seconds - event.start - event.duration;
         if (age < 0 || age > 3) continue;

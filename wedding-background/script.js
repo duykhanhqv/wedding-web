@@ -21,7 +21,7 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
     phase: 0, playing: true, renderDuration: 60,
     speed: 0.72, density: 0.86, centerConcentration: 0.5, fineDensity: 0.88,
     particleScale: 1.35, edgeDensity: 0.78, twinkle: 0.38, brightness: 0.98,
-    shootingEnabled: true, shootingFrequency: 0.62,
+    fallingEnabled: true, fallingFrequency: 0.62,
     dropEnabled: true, dropFrequency: 0.85, rippleIntensity: 0.72,
     mode: "alternating", sceneOneSeconds: 6, sceneTwoSeconds: 4.5, fadeSeconds: 1.2,
     exportDuration: 30,
@@ -38,8 +38,10 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
   function mergeSaved(saved) {
     const base = defaults();
     if (!saved || typeof saved !== "object") return base;
-    for (const key of ["speed","density","centerConcentration","fineDensity","particleScale","edgeDensity","twinkle","brightness","shootingEnabled","shootingFrequency","dropEnabled","dropFrequency","rippleIntensity","mode","sceneOneSeconds","sceneTwoSeconds","fadeSeconds","exportDuration"])
+    for (const key of ["speed","density","centerConcentration","fineDensity","particleScale","edgeDensity","twinkle","brightness","fallingEnabled","fallingFrequency","dropEnabled","dropFrequency","rippleIntensity","mode","sceneOneSeconds","sceneTwoSeconds","fadeSeconds","exportDuration"])
       if (saved[key] !== undefined) base[key] = saved[key];
+    if (saved.fallingEnabled === undefined && saved.shootingEnabled !== undefined) base.fallingEnabled = saved.shootingEnabled;
+    if (saved.fallingFrequency === undefined && saved.shootingFrequency !== undefined) base.fallingFrequency = saved.shootingFrequency;
     for (const key of Object.keys(base.texts))
       if (saved.texts?.[key]) Object.assign(base.texts[key], saved.texts[key]);
     return base;
@@ -69,8 +71,8 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
     ["edgeDensity", "Mật độ hạt ở rìa", 0, 1, 0.01, "%"],
     ["twinkle", "Độ lấp lánh", 0, 1, 0.01, "%"],
     ["brightness", "Độ sáng", 0.45, 1.35, 0.01, "%"],
-    ["shootingFrequency", "Tần suất sao băng", 0, 1, 0.01, "%"],
-    ["dropFrequency", "Tần suất giọt sáng", 0, 1, 0.01, "%"],
+    ["fallingFrequency", "Tần suất hạt rơi", 0, 1, 0.01, "%"],
+    ["dropFrequency", "Tần suất chạm tạo gợn", 0, 1, 0.01, "%"],
     ["rippleIntensity", "Cường độ gợn sóng", 0, 1.4, 0.01, "%"],
   ];
   for (const [key, label, min, max, step] of motionFields) {
@@ -81,9 +83,9 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
   }
   const effectToggles = document.createElement("div");
   effectToggles.className = "effect-toggles";
-  effectToggles.innerHTML = `<label><input id="shooting-enabled" type="checkbox"> Sao băng</label><label><input id="drop-enabled" type="checkbox"> Giọt sáng & gợn sóng</label>`;
+  effectToggles.innerHTML = `<label><input id="falling-enabled" type="checkbox"> Hạt rơi</label><label><input id="drop-enabled" type="checkbox"> Chạm & gợn sóng</label>`;
   $("motion-controls").append(effectToggles);
-  for (const [id, key] of [["shooting-enabled","shootingEnabled"],["drop-enabled","dropEnabled"]])
+  for (const [id, key] of [["falling-enabled","fallingEnabled"],["drop-enabled","dropEnabled"]])
     $(id).addEventListener("change", (event) => { state[key] = event.target.checked;changed(); });
 
   function createTextEditors() {
@@ -119,7 +121,7 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
       $(`${key}-value`).value = value;
     }
     $("mode").value = state.mode;$("scene-one").value = state.sceneOneSeconds;$("scene-two").value = state.sceneTwoSeconds;
-    $("shooting-enabled").checked = state.shootingEnabled;$("drop-enabled").checked = state.dropEnabled;
+    $("falling-enabled").checked = state.fallingEnabled;$("drop-enabled").checked = state.dropEnabled;
     $("fade-seconds").value = state.fadeSeconds;$("fade-seconds-value").value = `${state.fadeSeconds.toLocaleString("vi-VN")} giây`;
     $("export-duration").value = state.exportDuration;
     for (const [key, item] of Object.entries(state.texts)) {
