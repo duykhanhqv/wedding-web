@@ -2,7 +2,7 @@
 
 window.WeddingSpace = (() => {
   const TAU = Math.PI * 2;
-  const MAX_PARTICLES = 20000;
+  const MAX_PARTICLES = 100000;
   const FONT_STACKS = {
     bickham: '"HLT Bickham Script Pro", cursive',
   };
@@ -58,31 +58,41 @@ window.WeddingSpace = (() => {
     for (let index = 0; index < MAX_PARTICLES; index++) {
       const band = index < MAX_PARTICLES / 2 ? 0 : 1;
       const local = index % (MAX_PARTICLES / 2);
-      const depth = random();
+      // The lower plane is deliberately biased toward its distant horizon. This
+      // keeps that area dense while leaving fewer, larger particles near camera.
+      const depth = band ? Math.pow(random(), 1.75) : random();
       const type = random();
-      const bright = type > 0.992;
-      const medium = !bright && type > 0.94;
+      const bright = type > 0.994;
+      const medium = !bright && type > 0.92;
       const component = random();
-      const verticalLimit = band ? 0.22 : 0.30;
-      const horizontalSigma = component < 0.80 ? 0.16 : component < 0.95 ? 0.46 : 0.78;
-      const verticalSigma = component < 0.80 ? (band ? 0.06 : 0.075) : component < 0.95 ? (band ? 0.115 : 0.15) : (band ? 0.18 : 0.23);
+      const horizontalSigma = component < 0.56 ? 0.34 : component < 0.90 ? 0.62 : 0.96;
       let horizontal, vertical, ellipseDistance;
       do {
-        horizontal = gaussian() * horizontalSigma;
-        vertical = gaussian() * verticalSigma;
-        ellipseDistance = Math.hypot(horizontal / 0.98, vertical / verticalLimit);
-      } while (ellipseDistance > 1);
+        const depthWidth = band ? 0.82 + depth * 0.28 : 1;
+        horizontal = gaussian() * horizontalSigma * depthWidth;
+        if (band) {
+          // A receding floor: its horizon starts at 70% of the frame and its
+          // foreground reaches the bottom edge instead of forming a thin strip.
+          vertical = -depth * 0.54 + gaussian() * (0.017 + depth * 0.027);
+          ellipseDistance = Math.max(Math.abs(horizontal) / 1.04, depth);
+        } else {
+          const verticalSigma = component < 0.56 ? 0.115 : component < 0.90 ? 0.205 : 0.32;
+          vertical = gaussian() * verticalSigma;
+          ellipseDistance = Math.hypot(horizontal / 1.04, vertical / 0.36);
+        }
+      } while (Math.abs(horizontal) > 1.04 || (band ? vertical > 0.055 || vertical < -0.58 : Math.abs(vertical) > 0.36));
       if (ellipseDistance <= 0.34) distribution.central++;
       else if (ellipseDistance <= 0.72) distribution.transition++;
       else distribution.edge++;
-      const core = Math.exp(-Math.pow(ellipseDistance / 0.42, 2));
+      const horizontalCore = Math.exp(-Math.pow(horizontal / 0.52, 2));
+      const core = band ? horizontalCore * (1 - depth * 0.28) : horizontalCore * Math.exp(-Math.pow(vertical / 0.20, 2));
       const offset = index * stride;
       data[offset] = random() * TAU;
       data[offset + 1] = horizontal;
       data[offset + 2] = vertical;
       data[offset + 3] = depth;
-      data[offset + 4] = bright ? 3.4 + random() * 3.2 : medium ? 1.45 + random() * 1.2 : 0.5 + random();
-      data[offset + 5] = (bright ? 0.9 + random() * 0.35 : 0.22 + random() * 0.58) * (0.5 + core * 0.62);
+      data[offset + 4] = bright ? 3.2 + random() * 3.4 : medium ? 1.35 + random() * 1.45 : 0.46 + random() * 0.78;
+      data[offset + 5] = (bright ? 0.88 + random() * 0.30 : 0.34 + random() * 0.62) * (0.68 + core * 0.55);
       data[offset + 6] = random() * TAU;
       data[offset + 7] = 0.72 + random() * 0.56;
       data[offset + 8] = (local + random()) / (MAX_PARTICLES / 2);
@@ -147,26 +157,28 @@ window.WeddingSpace = (() => {
     uniform vec4 u_ripple;varying float v_alpha,v_star;
     void main(){float layer=mix(1.,2.,step(.58,a_depth));float theta=a_angle+u_time*u_speed*.10472*layer*a_speed;
       float z=sin(theta);float perspective=mix(.72,1.25,(z+1.)*.5);
-      float concentration=mix(1.30,.70,u_concentration);float bandWidth=mix(1.06,.94,a_band);
+      float concentration=mix(1.20,.72,u_concentration);float bandWidth=mix(1.02,1.00,a_band);
       float orbit=mix(.004,.026,a_depth);float x=a_radius*concentration*bandWidth+cos(theta)*orbit;
-      float baseY=mix(.64,-.64,a_band);float y=baseY+a_height+sin(theta)*orbit*mix(.23,.31,a_band);
+      float baseY=mix(.68,-.40,a_band);float y=baseY+a_height+sin(theta)*orbit*mix(.23,.31,a_band);
       float fine=1.-step(1.55,a_size);float visibleLimit=u_density*mix(1.,u_fineDensity,fine);
-      float verticalLimit=mix(.30,.22,a_band);float ellipseDistance=length(vec2(a_radius/.98,a_height/verticalLimit));
-      float edge=smoothstep(.62,.94,ellipseDistance);visibleLimit*=mix(1.,mix(.22,1.,u_edgeDensity),edge);
+      float topDistance=length(vec2(a_radius/1.04,a_height/.36));float bottomDistance=max(abs(a_radius)/1.04,clamp(-a_height/.54,0.,1.));
+      float ellipseDistance=mix(topDistance,bottomDistance,a_band);float edge=smoothstep(.66,.98,ellipseDistance);
+      visibleLimit*=mix(1.,mix(.55,1.,u_edgeDensity),edge);
       float waveRadius=u_ripple.y*.12;float planeDistance=length(vec2(x-u_ripple.x,z*.14));
       float wave=exp(-pow((planeDistance-waveRadius)/.038,2.))*sin((planeDistance-waveRadius)*70.);
       y+=wave*.018*u_ripple.z*u_ripple.w*a_band*max(0.,1.-u_ripple.y/3.);
       if(a_keep>visibleLimit){x=3.;y=3.;}gl_Position=vec4(x,y,0.,1.);
       float sparkle=1.+sin(u_time*(.72+a_speed*.55)+a_phase)*u_twinkle*.30;
-      float centerGlow=exp(-pow(length(vec2(x/.40,a_height/mix(.14,.11,a_band))),2.));
-      float edgeLight=mix(1.,mix(.62,1.18,u_edgeDensity),edge);
-      v_alpha=a_luma*sparkle*u_brightness*mix(.58,1.03,a_depth)*(.68+centerGlow*.50)*edgeLight*mix(.9,1.12,clamp(u_particleScale-0.7,0.,1.));v_star=step(3.2,a_size);
-      gl_PointSize=max(1.,a_size*perspective*u_pixelRatio*u_particleScale);}`;
+      float topGlow=exp(-pow(length(vec2(x/.54,a_height/.20)),2.));
+      float bottomGlow=exp(-pow(x/.58,2.))*mix(1.,.64,clamp(-a_height/.54,0.,1.));float centerGlow=mix(topGlow,bottomGlow,a_band);
+      float edgeLight=mix(1.,mix(.78,1.10,u_edgeDensity),edge);float depthScale=mix(1.,mix(.74,1.88,a_depth),a_band);
+      v_alpha=a_luma*sparkle*u_brightness*mix(.72,1.02,a_depth)*(.78+centerGlow*.38)*edgeLight*mix(.9,1.12,clamp(u_particleScale-0.7,0.,1.));v_star=step(3.2,a_size);
+      gl_PointSize=max(1.,a_size*perspective*depthScale*u_pixelRatio*u_particleScale);}`;
   const PARTICLE_FRAGMENT = `
     precision highp float;varying float v_alpha,v_star;
-    void main(){vec2 p=gl_PointCoord-.5;float d=length(p);float core=exp(-d*d*34.);float halo=exp(-d*d*9.)*.34;
+    void main(){vec2 p=gl_PointCoord-.5;float d=length(p);float core=exp(-d*d*38.);float halo=exp(-d*d*10.)*.25;
       float cross=(exp(-abs(p.x)*35.)+exp(-abs(p.y)*35.))*v_star*.16;float alpha=(core+halo+cross)*v_alpha;
-      if(alpha<.008)discard;gl_FragColor=vec4(vec3(.83,.87,1.)*alpha,alpha);}`;
+      if(alpha<.008)discard;gl_FragColor=vec4(vec3(.96,.97,1.)*alpha,alpha);}`;
 
   function setAttribute(gl, target, name, offset) {
     const location = gl.getAttribLocation(target, name);

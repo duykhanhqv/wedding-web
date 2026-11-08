@@ -15,8 +15,8 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
   });
   const defaults = () => ({
     phase: 0, playing: true, renderDuration: 60,
-    speed: 0.72, density: 0.86, centerConcentration: 0.5, fineDensity: 0.88,
-    particleScale: 1.35, edgeDensity: 0.78, twinkle: 0.38, brightness: 0.98,
+    speed: 0.72, density: 0.95, centerConcentration: 0.25, fineDensity: 0.96,
+    particleScale: 1.25, edgeDensity: 0.94, twinkle: 0.36, brightness: 1.10,
     fallingEnabled: true, fallingFrequency: 0.62,
     dropEnabled: true, dropFrequency: 0.85, rippleIntensity: 0.72,
     exportDuration: 30,
