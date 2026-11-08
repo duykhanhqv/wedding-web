@@ -17,7 +17,7 @@
       <div class="workspace">
         <section class="preview-panel" aria-label="Xem trước">
           <div class="section-bar"><span><i></i> LIVE PREVIEW</span><span id="preview-state">Đang khởi tạo WebGL…</span></div>
-          <div id="stage" class="stage"><canvas id="background-canvas" aria-label="Nền cưới chuyển động"></canvas></div>
+          <div id="stage" class="stage"><canvas id="background-canvas" aria-label="Nền cưới chuyển động"></canvas><div id="text-overlay" class="text-overlay" aria-label="Kéo chữ để thay đổi vị trí"><i class="guide guide-x"></i><i class="guide guide-y"></i><i class="center-mark"></i><div id="selection-box" class="selection-box"><span id="selection-label"></span></div></div></div>
           <div class="preview-footer">
             <span>16:9 · WebGL · <strong id="particle-count">0</strong> hạt</span>
             <button id="fullscreen" class="text-button" type="button">⛶ Trình chiếu toàn màn hình</button>
@@ -41,7 +41,14 @@
           </section>
 
           <section id="text-panel" class="panel">
-            <p class="panel-intro">Chỉ hiển thị tên cặp đôi và ngày cưới bằng font HLT Bickham Script Pro. Thay đổi được cập nhật ngay.</p>
+            <p class="panel-intro">Chọn một thành phần rồi kéo trực tiếp trên khung xem trước. Khung căn chỉnh không xuất hiện khi trình chiếu hoặc xuất video.</p>
+            <div class="text-layout-controls">
+              <label class="field-label" for="name-layout">Bố cục hai tên</label>
+              <select id="name-layout"><option value="inline">Cùng một dòng</option><option value="stacked">Xuống dòng</option></select>
+              <label class="group-toggle"><input id="group-names" type="checkbox"> Nhóm hai tên và dấu nối khi di chuyển</label>
+              <label class="font-upload">Tải font từ máy<input id="font-upload" type="file" accept=".ttf,.otf,.woff2,font/ttf,font/otf,font/woff2"></label>
+              <small id="font-status">Hỗ trợ TTF, OTF và WOFF2.</small>
+            </div>
             <div id="text-editors"></div>
           </section>
 

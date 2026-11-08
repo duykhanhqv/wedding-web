@@ -1,199 +1,107 @@
 "use strict";
 
-const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
+const { SpaceRenderer, MAX_PARTICLES, FONT_STACKS, distribution } = window.WeddingSpace;
 
 (() => {
   const $ = (id) => document.getElementById(id);
   const STORAGE_KEY = "wedding-star-studio-v1";
-  const TEXT_LABELS = {
-    names: "Tên cô dâu & chú rể",
-    date: "Ngày cưới",
-  };
-  const textItem = (content, font, size, x, y, spacing = 0) => ({
-    content, font, size, color: "#e9e9f2", brightness: 0.92, glow: 7,
-    spacing, x, y, visible: true,
-  });
+  const FONT_DB = "wedding-star-fonts";
+  const NAME_KEYS = ["bride", "connector", "groom"];
+  const TEXT_KEYS = ["title", ...NAME_KEYS, "date"];
+  const TEXT_LABELS = { title:"Tiêu đề phía trên",bride:"Tên cô dâu",connector:"Dấu nối",groom:"Tên chú rể",date:"Ngày cưới" };
+  const BUILTIN_FONTS = [["bickham","HLT Bickham Script Pro"],["serif","Georgia Serif"],["elegant","Times New Roman"],["sans","Arial / Helvetica"]];
+  const DEFAULT_POSITIONS = { title:{x:50,y:37},bride:{x:39,y:49},connector:{x:50,y:49},groom:{x:61,y:49},date:{x:50,y:60} };
+  const textItem = (content,font,size,x,y,spacing=0,weight=400) => ({ content,font,fontFamily:"",size,color:"#e9e9f2",brightness:.92,glow:7,weight,italic:false,spacing,x,y,visible:true });
   const defaults = () => ({
-    phase: 0, playing: true, renderDuration: 60,
-    speed: 0.72, density: 0.95, centerConcentration: 0.25, fineDensity: 0.96,
-    particleScale: 1.25, edgeDensity: 0.94, twinkle: 0.36, brightness: 1.10,
-    fallingEnabled: true, fallingFrequency: 0.62,
-    dropEnabled: true, dropFrequency: 0.85, rippleIntensity: 0.72,
-    exportDuration: 30,
-    texts: {
-      names: textItem("Hồng Nhung & Duy Khánh", "bickham", 82, 50, 48),
-      date: textItem("15.11.2026", "bickham", 42, 50, 59, 2),
+    phase:0,playing:true,renderDuration:60,speed:.72,density:.95,centerConcentration:.25,fineDensity:.96,particleScale:1.25,edgeDensity:.94,twinkle:.36,brightness:1.10,
+    fallingEnabled:true,fallingFrequency:.62,dropEnabled:true,dropFrequency:.85,rippleIntensity:.72,exportDuration:30,
+    nameLayout:"inline",groupNames:true,nameGroupX:50,nameGroupY:49,customFonts:[],
+    texts:{
+      title:textItem("LỄ THÀNH HÔN","serif",38,50,37,6,500),bride:textItem("Hồng Nhung","bickham",82,39,49),
+      connector:textItem("&","bickham",58,50,49),groom:textItem("Duy Khánh","bickham",82,61,49),date:textItem("15.11.2026","bickham",42,50,60,2),
     },
   });
 
   function mergeSaved(saved) {
-    const base = defaults();
-    if (!saved || typeof saved !== "object") return base;
-    for (const key of ["speed","density","centerConcentration","fineDensity","particleScale","edgeDensity","twinkle","brightness","fallingEnabled","fallingFrequency","dropEnabled","dropFrequency","rippleIntensity","exportDuration"])
-      if (saved[key] !== undefined) base[key] = saved[key];
-    if (saved.fallingEnabled === undefined && saved.shootingEnabled !== undefined) base.fallingEnabled = saved.shootingEnabled;
-    if (saved.fallingFrequency === undefined && saved.shootingFrequency !== undefined) base.fallingFrequency = saved.shootingFrequency;
-    for (const key of Object.keys(base.texts))
-      if (saved.texts?.[key]) Object.assign(base.texts[key], saved.texts[key]);
-    for (const item of Object.values(base.texts)) item.font = "bickham";
-    return base;
-  }
-
-  let saved = null;
-  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { localStorage.removeItem(STORAGE_KEY); }
-  const state = mergeSaved(saved);
-  let renderer = null, previousTime = 0, frameSupport = null, recording = null, downloadURL = null;
-  const canvas = $("background-canvas");
-  const showError = (message) => { $("error").textContent = message; $("error").hidden = !message; };
-  const notice = (message) => { $("notice").textContent = message; $("notice").hidden = !message; };
-  const render = () => renderer?.render(state.phase, state);
-
-  function revokeDownload() {
-    if (downloadURL) URL.revokeObjectURL(downloadURL);
-    downloadURL = null;$("download").removeAttribute("href");$("download").hidden = true;
-  }
-  function changed() { revokeDownload(); updateUI(); render(); }
-
-  const motionFields = [
-    ["speed", "Tốc độ hạt", 0.2, 1.6, 0.05, "×"],
-    ["density", "Mật độ tổng", 0.25, 1, 0.01, "%"],
-    ["centerConcentration", "Độ tập trung vào tâm", 0, 1, 0.01, "%"],
-    ["fineDensity", "Mật độ bụi mịn", 0.15, 1, 0.01, "%"],
-    ["particleScale", "Kích thước & độ sáng hạt", 0.7, 1.7, 0.01, "×"],
-    ["edgeDensity", "Mật độ hạt ở rìa", 0, 1, 0.01, "%"],
-    ["twinkle", "Độ lấp lánh", 0, 1, 0.01, "%"],
-    ["brightness", "Độ sáng", 0.45, 1.35, 0.01, "%"],
-    ["fallingFrequency", "Tần suất hạt rơi", 0, 1, 0.01, "%"],
-    ["dropFrequency", "Tần suất chạm tạo gợn", 0, 1, 0.01, "%"],
-    ["rippleIntensity", "Cường độ gợn sóng", 0, 1.4, 0.01, "%"],
-  ];
-  for (const [key, label, min, max, step] of motionFields) {
-    const wrapper = document.createElement("div");
-    wrapper.innerHTML = `<label class="slider-label" for="${key}">${label}<output id="${key}-value"></output></label><input id="${key}" type="range" min="${min}" max="${max}" step="${step}">`;
-    $("motion-controls").append(wrapper);
-    $(key).addEventListener("input", (event) => { state[key] = Number(event.target.value); changed(); });
-  }
-  const effectToggles = document.createElement("div");
-  effectToggles.className = "effect-toggles";
-  effectToggles.innerHTML = `<label><input id="falling-enabled" type="checkbox"> Hạt rơi</label><label><input id="drop-enabled" type="checkbox"> Chạm & gợn sóng</label>`;
-  $("motion-controls").append(effectToggles);
-  for (const [id, key] of [["falling-enabled","fallingEnabled"],["drop-enabled","dropEnabled"]])
-    $(id).addEventListener("change", (event) => { state[key] = event.target.checked;changed(); });
-
-  function createTextEditors() {
-    for (const [key, label] of Object.entries(TEXT_LABELS)) {
-      const details = document.createElement("details");
-      details.className = "text-editor";details.open = key === "names";
-      details.innerHTML = `<summary><span>${label}</span><label class="visibility"><input type="checkbox" data-key="${key}" data-prop="visible"> Hiện</label></summary>
-        <div class="editor-body">
-          <label>Nội dung<input type="text" data-key="${key}" data-prop="content"></label>
-          <label>Màu<input type="color" data-key="${key}" data-prop="color"></label>
-          <div class="editor-ranges"></div>
-        </div>`;
-      const ranges = details.querySelector(".editor-ranges");
-      for (const [prop, caption, min, max, step] of [
-        ["size","Cỡ chữ",12,150,1],["brightness","Độ sáng",.2,1.4,.01],["glow","Quầng sáng",0,30,1],
-        ["spacing","Khoảng cách chữ",-3,24,.5],["x","Vị trí ngang",0,100,.5],["y","Vị trí dọc",0,100,.5],
-      ]) ranges.insertAdjacentHTML("beforeend", `<label class="slider-label">${caption}<output data-output="${key}-${prop}"></output></label><input type="range" min="${min}" max="${max}" step="${step}" data-key="${key}" data-prop="${prop}">`);
-      $("text-editors").append(details);
+    const base=defaults();if(!saved||typeof saved!=="object")return base;
+    for(const key of ["speed","density","centerConcentration","fineDensity","particleScale","edgeDensity","twinkle","brightness","fallingEnabled","fallingFrequency","dropEnabled","dropFrequency","rippleIntensity","exportDuration","nameLayout","groupNames","nameGroupX","nameGroupY"])if(saved[key]!==undefined)base[key]=saved[key];
+    if(saved.fallingEnabled===undefined&&saved.shootingEnabled!==undefined)base.fallingEnabled=saved.shootingEnabled;
+    if(saved.fallingFrequency===undefined&&saved.shootingFrequency!==undefined)base.fallingFrequency=saved.shootingFrequency;
+    if(Array.isArray(saved.customFonts))base.customFonts=saved.customFonts;
+    for(const key of TEXT_KEYS)if(saved.texts?.[key])Object.assign(base.texts[key],saved.texts[key]);
+    if(saved.texts?.names&&!saved.texts?.bride){
+      const parts=String(saved.texts.names.content||"").split(/\s*(?:&|và|–|—)\s*/i);if(parts[0])base.texts.bride.content=parts[0];if(parts[1])base.texts.groom.content=parts.slice(1).join(" ");
+      for(const key of NAME_KEYS)for(const prop of ["font","size","color","brightness","glow","spacing","weight","italic"])if(saved.texts.names[prop]!==undefined)base.texts[key][prop]=saved.texts.names[prop];
     }
-    $("text-editors").addEventListener("input", (event) => {
-      const { key, prop } = event.target.dataset;if (!key || !prop) return;
-      state.texts[key][prop] = event.target.type === "checkbox" ? event.target.checked : ["content","color"].includes(prop) ? event.target.value : Number(event.target.value);
-      changed();
-    });
+    if(saved.texts?.date)Object.assign(base.texts.date,saved.texts.date);return base;
+  }
+
+  let saved=null;try{saved=JSON.parse(localStorage.getItem(STORAGE_KEY));}catch{localStorage.removeItem(STORAGE_KEY);}
+  const state=mergeSaved(saved);let renderer=null,previousTime=0,frameSupport=null,recording=null,downloadURL=null,selectedText="bride",drag=null;
+  const canvas=$("background-canvas"),overlay=$("text-overlay"),measureContext=document.createElement("canvas").getContext("2d"),loadedCustomFonts=new Map();
+  const showError=(message)=>{$("error").textContent=message;$("error").hidden=!message;};const notice=(message)=>{$("notice").textContent=message;$("notice").hidden=!message;};
+  const fontFamily=(item)=>item.fontFamily?`"${item.fontFamily}"`:FONT_STACKS[item.font]||FONT_STACKS.bickham;
+  const fontDeclaration=(item,scale=1)=>`${item.italic?"italic":"normal"} ${item.weight||400} ${Math.max(8,item.size*scale)}px ${fontFamily(item)}`;
+  function measuredWidth(item){measureContext.font=fontDeclaration(item);const chars=Array.from(String(item.content||""));return chars.reduce((sum,char)=>sum+measureContext.measureText(char).width,0)+Math.max(0,chars.length-1)*item.spacing;}
+  function reflowNames(){
+    const items=NAME_KEYS.map(key=>state.texts[key]);
+    if(state.nameLayout==="stacked"){const heights=items.map(item=>Math.max(18,item.size*1.08)),gap=7,total=heights.reduce((a,b)=>a+b,0)+gap*2;let cursor=state.nameGroupY*10.8-total/2;items.forEach((item,index)=>{item.x=state.nameGroupX;item.y=(cursor+heights[index]/2)/10.8;cursor+=heights[index]+gap;});return;}
+    const widths=items.map(measuredWidth),gap=24,total=widths.reduce((a,b)=>a+b,0)+gap*2;let cursor=state.nameGroupX*19.2-total/2;items.forEach((item,index)=>{item.x=(cursor+widths[index]/2)/19.2;item.y=state.nameGroupY;cursor+=widths[index]+gap;});
+  }
+  function render(){renderer?.render(state.phase,state);updateOverlay();}
+  function revokeDownload(){if(downloadURL)URL.revokeObjectURL(downloadURL);downloadURL=null;$("download").removeAttribute("href");$("download").hidden=true;}
+  function changed(){revokeDownload();updateUI();render();}
+
+  function openFontDB(){return new Promise((resolve,reject)=>{if(!window.indexedDB)return reject(new Error("Trình duyệt không hỗ trợ lưu font cục bộ."));const request=indexedDB.open(FONT_DB,1);request.onupgradeneeded=()=>request.result.createObjectStore("fonts",{keyPath:"id"});request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error);});}
+  async function fontRecords(){const db=await openFontDB();return new Promise((resolve,reject)=>{const request=db.transaction("fonts","readonly").objectStore("fonts").getAll();request.onsuccess=()=>{db.close();resolve(request.result||[]);};request.onerror=()=>{db.close();reject(request.error);};});}
+  async function storeFont(record){const db=await openFontDB();return new Promise((resolve,reject)=>{const tx=db.transaction("fonts","readwrite");tx.objectStore("fonts").put(record);tx.oncomplete=()=>{db.close();resolve();};tx.onerror=()=>{db.close();reject(tx.error);};});}
+  async function registerFont(record){if(loadedCustomFonts.has(record.id))return;const face=new FontFace(record.family,record.data);await face.load();document.fonts.add(face);loadedCustomFonts.set(record.id,face);}
+  async function ensureFontsReady(){await document.fonts.ready;await Promise.all(TEXT_KEYS.filter(key=>state.texts[key].visible).map(key=>document.fonts.load(fontDeclaration(state.texts[key]))));}
+
+  const motionFields=[["speed","Tốc độ hạt",.2,1.6,.05,"×"],["density","Mật độ tổng",.25,1,.01,"%"],["centerConcentration","Độ tập trung vào tâm",0,1,.01,"%"],["fineDensity","Mật độ bụi mịn",.15,1,.01,"%"],["particleScale","Kích thước & độ sáng hạt",.7,1.7,.01,"×"],["edgeDensity","Mật độ hạt ở rìa",0,1,.01,"%"],["twinkle","Độ lấp lánh",0,1,.01,"%"],["brightness","Độ sáng",.45,1.35,.01,"%"],["fallingFrequency","Tần suất hạt rơi",0,1,.01,"%"],["dropFrequency","Tần suất chạm tạo gợn",0,1,.01,"%"],["rippleIntensity","Cường độ gợn sóng",0,1.4,.01,"%"]];
+  for(const [key,label,min,max,step]of motionFields){const wrapper=document.createElement("div");wrapper.innerHTML=`<label class="slider-label" for="${key}">${label}<output id="${key}-value"></output></label><input id="${key}" type="range" min="${min}" max="${max}" step="${step}">`;$("motion-controls").append(wrapper);$(key).addEventListener("input",event=>{state[key]=Number(event.target.value);changed();});}
+  const toggles=document.createElement("div");toggles.className="effect-toggles";toggles.innerHTML=`<label><input id="falling-enabled" type="checkbox"> Hạt rơi</label><label><input id="drop-enabled" type="checkbox"> Chạm & gợn sóng</label>`;$("motion-controls").append(toggles);
+  for(const [id,key]of[["falling-enabled","fallingEnabled"],["drop-enabled","dropEnabled"]])$(id).addEventListener("change",event=>{state[key]=event.target.checked;changed();});
+
+  function fontOptions(selected){const builtins=BUILTIN_FONTS.map(([value,label])=>`<option value="${value}"${selected===value?" selected":""}>${label}</option>`).join("");const custom=state.customFonts.map(font=>`<option value="${font.id}"${selected===font.id?" selected":""}>${font.name}</option>`).join("");return `${builtins}${custom?`<optgroup label="Font đã tải">${custom}</optgroup>`:""}`;}
+  function createTextEditors(){
+    $("text-editors").innerHTML="";
+    for(const key of TEXT_KEYS){const item=state.texts[key],details=document.createElement("details");details.className="text-editor";details.dataset.editorKey=key;details.open=key===selectedText;
+      details.innerHTML=`<summary><span>${TEXT_LABELS[key]}</span><label class="visibility"><input type="checkbox" data-key="${key}" data-prop="visible"> Hiện</label></summary><div class="editor-body"><label>Nội dung<input type="text" data-key="${key}" data-prop="content"></label><div class="font-row"><label>Font<select data-key="${key}" data-prop="font">${fontOptions(item.font)}</select></label><label>Độ đậm<select data-key="${key}" data-prop="weight"><option value="300">Mảnh</option><option value="400">Thường</option><option value="500">Vừa</option><option value="600">Đậm</option><option value="700">Rất đậm</option></select></label></div><div class="editor-grid"><label>Màu<input type="color" data-key="${key}" data-prop="color"></label><label class="italic-toggle"><input type="checkbox" data-key="${key}" data-prop="italic"> Chữ nghiêng</label></div><div class="editor-ranges"></div><div class="coordinate-row"><label>Tọa độ X (%)<input type="number" min="0" max="100" step="0.1" data-key="${key}" data-prop="x"></label><label>Tọa độ Y (%)<input type="number" min="0" max="100" step="0.1" data-key="${key}" data-prop="y"></label></div><div class="editor-actions"><button type="button" data-action="center" data-key="${key}">Căn giữa ngang</button><button type="button" data-action="reset-position" data-key="${key}">Đặt lại vị trí</button></div></div>`;
+      const ranges=details.querySelector(".editor-ranges");for(const [prop,caption,min,max,step]of[["size","Cỡ chữ",12,160,1],["brightness","Độ sáng",.2,1.4,.01],["glow","Quầng sáng",0,30,1],["spacing","Khoảng cách chữ",-3,30,.5]])ranges.insertAdjacentHTML("beforeend",`<label class="slider-label">${caption}<output data-output="${key}-${prop}"></output></label><input type="range" min="${min}" max="${max}" step="${step}" data-key="${key}" data-prop="${prop}">`);$("text-editors").append(details);
+    }
   }
   createTextEditors();
+  const isName=key=>NAME_KEYS.includes(key);
+  function selectText(key){if(!TEXT_KEYS.includes(key))return;selectedText=key;for(const details of document.querySelectorAll(".text-editor")){details.classList.toggle("selected",details.dataset.editorKey===key);if(details.dataset.editorKey===key)details.open=true;}updateOverlay();}
+  function moveTo(key,x,y){const item=state.texts[key];x=Math.max(0,Math.min(100,x));y=Math.max(0,Math.min(100,y));if(state.groupNames&&isName(key)){state.nameGroupX=Math.max(0,Math.min(100,state.nameGroupX+x-item.x));state.nameGroupY=Math.max(0,Math.min(100,state.nameGroupY+y-item.y));reflowNames();}else{item.x=x;item.y=y;}}
+  $("text-editors").addEventListener("pointerdown",event=>{const details=event.target.closest(".text-editor");if(details)selectText(details.dataset.editorKey);});
+  $("text-editors").addEventListener("input",event=>{const{key,prop}=event.target.dataset;if(!key||!prop)return;const item=state.texts[key];if(prop==="visible"||prop==="italic")item[prop]=event.target.checked;else if(["content","color"].includes(prop))item[prop]=event.target.value;else if(prop==="font"){item.font=event.target.value;const custom=state.customFonts.find(font=>font.id===item.font);item.fontFamily=custom?.family||"";}else if(["x","y"].includes(prop)){const value=Number(event.target.value);moveTo(key,prop==="x"?value:item.x,prop==="y"?value:item.y);}else item[prop]=Number(event.target.value);if(isName(key)&&["content","font","size","spacing","weight","italic"].includes(prop))reflowNames();changed();});
+  $("text-editors").addEventListener("click",event=>{const{action,key}=event.target.dataset;if(!action||!key)return;if(action==="center"){if(state.groupNames&&isName(key)){state.nameGroupX=50;reflowNames();}else state.texts[key].x=50;}else if(action==="reset-position"){if(state.groupNames&&isName(key)){state.nameGroupX=50;state.nameGroupY=49;reflowNames();}else Object.assign(state.texts[key],DEFAULT_POSITIONS[key]);}changed();});
+  $("name-layout").addEventListener("change",event=>{state.nameLayout=event.target.value;reflowNames();changed();});$("group-names").addEventListener("change",event=>{state.groupNames=event.target.checked;if(state.groupNames)reflowNames();changed();});
+  $("font-upload").addEventListener("change",async event=>{const file=event.target.files?.[0];event.target.value="";if(!file)return;const extension=file.name.split(".").pop()?.toLowerCase();if(!["ttf","otf","woff2"].includes(extension))return showError("Chỉ hỗ trợ font TTF, OTF hoặc WOFF2.");const id=`custom-${Date.now()}`,family=`WeddingCustom${Date.now()}`;try{$("font-status").textContent=`Đang tải ${file.name}…`;const data=await file.arrayBuffer(),record={id,family,name:file.name.replace(/\.[^.]+$/, ""),data};await registerFont(record);await storeFont(record);state.customFonts.push({id,family,name:record.name});const item=state.texts[selectedText];item.font=id;item.fontFamily=family;createTextEditors();selectText(selectedText);if(isName(selectedText))reflowNames();$("font-status").textContent=`Đã tải và lưu font ${record.name}.`;changed();}catch(error){showError(`Không thể tải font: ${error.message}`);$("font-status").textContent="Hỗ trợ TTF, OTF và WOFF2.";}});
 
-  function updateUI() {
-    $("play").textContent = state.playing ? "Ⅱ Tạm dừng" : "▶ Chạy";
-    for (const [key,,, , ,suffix] of motionFields) {
-      $(key).value = state[key];
-      const value = suffix === "%" ? `${Math.round(state[key] * 100)}%` : `${state[key].toLocaleString("vi-VN")}${suffix}`;
-      $(`${key}-value`).value = value;
-    }
-    $("falling-enabled").checked = state.fallingEnabled;$("drop-enabled").checked = state.dropEnabled;
-    $("export-duration").value = state.exportDuration;
-    for (const [key, item] of Object.entries(state.texts)) {
-      for (const element of document.querySelectorAll(`[data-key="${key}"][data-prop]`)) {
-        const prop = element.dataset.prop;element.type === "checkbox" ? element.checked = item[prop] : element.value = item[prop];
-      }
-      for (const prop of ["size","brightness","glow","spacing","x","y"]) {
-        const output = document.querySelector(`[data-output="${key}-${prop}"]`);
-        if (output) output.value = ["x","y"].includes(prop) ? `${item[prop]}%` : item[prop];
-      }
-    }
-    const visibleParticles = MAX_PARTICLES * state.density * (0.06 + 0.94 * state.fineDensity);
-    $("particle-count").textContent = Math.round(visibleParticles).toLocaleString("vi-VN");
-    $("preview-state").textContent = recording ? "Đang xuất video" : state.playing ? "Đang chuyển động" : "Tạm dừng";
-    $("export").disabled = !renderer || !frameSupport || Boolean(recording);
-    $("export-info").textContent = frameSupport ? `1920 × 1080 · ${frameSupport.extension.toUpperCase()} · ${state.exportDuration} giây · nền và chữ` : "Trình duyệt này chưa hỗ trợ WebCodecs. Hãy dùng Chrome hoặc Edge bản mới.";
-  }
+  function updateOverlay(){const active=Boolean($("text-panel").classList.contains("active")&&renderer?.textBounds?.[selectedText]&&state.texts[selectedText]?.visible&&!recording&&!document.fullscreenElement);overlay.classList.toggle("active",active);if(!active)return;const bound=renderer.textBounds[selectedText],box=$("selection-box");box.style.left=`${bound.x/canvas.width*100}%`;box.style.top=`${bound.y/canvas.height*100}%`;box.style.width=`${bound.width/canvas.width*100}%`;box.style.height=`${bound.height/canvas.height*100}%`;$("selection-label").textContent=TEXT_LABELS[selectedText];}
+  overlay.addEventListener("pointerdown",event=>{if(!renderer)return;const rect=canvas.getBoundingClientRect(),point={x:(event.clientX-rect.left)*canvas.width/rect.width,y:(event.clientY-rect.top)*canvas.height/rect.height};const hit=[...TEXT_KEYS].reverse().find(key=>{const b=renderer.textBounds?.[key];return b&&point.x>=b.x-8&&point.x<=b.x+b.width+8&&point.y>=b.y-8&&point.y<=b.y+b.height+8;});if(!hit)return;selectText(hit);event.preventDefault();overlay.setPointerCapture(event.pointerId);drag={pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,positions:Object.fromEntries(TEXT_KEYS.map(key=>[key,{x:state.texts[key].x,y:state.texts[key].y}])),groupX:state.nameGroupX,groupY:state.nameGroupY};overlay.classList.add("dragging");});
+  overlay.addEventListener("pointermove",event=>{if(!drag||event.pointerId!==drag.pointerId)return;const rect=canvas.getBoundingClientRect(),dx=(event.clientX-drag.startX)/rect.width*100,dy=(event.clientY-drag.startY)/rect.height*100;if(state.groupNames&&isName(selectedText)){state.nameGroupX=Math.max(0,Math.min(100,drag.groupX+dx));state.nameGroupY=Math.max(0,Math.min(100,drag.groupY+dy));reflowNames();}else{state.texts[selectedText].x=Math.max(0,Math.min(100,drag.positions[selectedText].x+dx));state.texts[selectedText].y=Math.max(0,Math.min(100,drag.positions[selectedText].y+dy));}changed();});
+  function endDrag(event){if(!drag||event.pointerId!==drag.pointerId)return;drag=null;overlay.classList.remove("dragging");updateUI();}overlay.addEventListener("pointerup",endDrag);overlay.addEventListener("pointercancel",endDrag);
 
-  function resize() {
-    if (!renderer) return;
-    const bounds = canvas.getBoundingClientRect();const ratio = Math.min(devicePixelRatio || 1, 2);
-    const width = Math.max(1, Math.round(bounds.width * ratio));const height = Math.max(1, Math.round(bounds.height * ratio));
-    if (canvas.width !== width || canvas.height !== height) renderer.resize(width, height);render();
+  function updateUI(){
+    $("play").textContent=state.playing?"Ⅱ Tạm dừng":"▶ Chạy";for(const[key,,,,,suffix]of motionFields){$(key).value=state[key];$(`${key}-value`).value=suffix==="%"?`${Math.round(state[key]*100)}%`:`${state[key].toLocaleString("vi-VN")}${suffix}`;}
+    $("falling-enabled").checked=state.fallingEnabled;$("drop-enabled").checked=state.dropEnabled;$("export-duration").value=state.exportDuration;$("name-layout").value=state.nameLayout;$("group-names").checked=state.groupNames;
+    for(const[key,item]of Object.entries(state.texts)){for(const element of document.querySelectorAll(`[data-key="${key}"][data-prop]`)){const prop=element.dataset.prop;if(element.type==="checkbox")element.checked=item[prop];else element.value=["x","y"].includes(prop)?Number(item[prop].toFixed(2)):item[prop];}for(const prop of["size","brightness","glow","spacing"]){const output=document.querySelector(`[data-output="${key}-${prop}"]`);if(output)output.value=item[prop];}}
+    $("particle-count").textContent=Math.round(MAX_PARTICLES*state.density*(.06+.94*state.fineDensity)).toLocaleString("vi-VN");$("preview-state").textContent=recording?"Đang xuất video":state.playing?"Đang chuyển động":"Tạm dừng";$("export").disabled=!renderer||!frameSupport||Boolean(recording);$("export-info").textContent=frameSupport?`1920 × 1080 · ${frameSupport.extension.toUpperCase()} · ${state.exportDuration} giây · nền và chữ`:"Trình duyệt này chưa hỗ trợ WebCodecs. Hãy dùng Chrome hoặc Edge bản mới.";selectText(selectedText);
   }
-  function tick(time) {
-    if (state.playing && !document.hidden && !recording && previousTime) state.phase = (state.phase + (time - previousTime) / 60000) % 1;
-    if (state.playing && !document.hidden && !recording) render();previousTime = time;requestAnimationFrame(tick);
-  }
+  function resize(){if(!renderer)return;const bounds=canvas.getBoundingClientRect(),ratio=Math.min(devicePixelRatio||1,2),width=Math.max(1,Math.round(bounds.width*ratio)),height=Math.max(1,Math.round(bounds.height*ratio));if(canvas.width!==width||canvas.height!==height)renderer.resize(width,height);render();}
+  function tick(time){if(state.playing&&!document.hidden&&!recording&&previousTime)state.phase=(state.phase+(time-previousTime)/60000)%1;if(state.playing&&!document.hidden&&!recording)render();previousTime=time;requestAnimationFrame(tick);}
+  $("play").addEventListener("click",()=>{state.playing=!state.playing;previousTime=0;updateUI();});$("reset").addEventListener("click",()=>{const fonts=state.customFonts,fresh=defaults();fresh.customFonts=fonts;Object.assign(state,fresh);state.texts=fresh.texts;reflowNames();selectedText="bride";createTextEditors();changed();notice("Đã khôi phục cấu hình mặc định.");});$("export-duration").addEventListener("change",event=>{state.exportDuration=Number(event.target.value);changed();});
+  $("save").addEventListener("click",()=>{const stored=JSON.parse(JSON.stringify(state));delete stored.phase;delete stored.playing;delete stored.renderDuration;localStorage.setItem(STORAGE_KEY,JSON.stringify(stored));notice("Đã lưu nội dung, font và vị trí trên trình duyệt này.");});$("clear-save").addEventListener("click",()=>{localStorage.removeItem(STORAGE_KEY);notice("Đã xóa cấu hình đã lưu.");});$("fullscreen").addEventListener("click",async()=>{try{await $("stage").requestFullscreen();}catch(error){showError(`Không mở được toàn màn hình: ${error.message}`);}});
+  document.addEventListener("fullscreenchange",()=>{resize();updateOverlay();});new ResizeObserver(resize).observe($("stage"));window.addEventListener("resize",resize);for(const tab of document.querySelectorAll(".tab"))tab.addEventListener("click",()=>{document.querySelectorAll(".tab,.panel").forEach(element=>element.classList.remove("active"));tab.classList.add("active");$(tab.dataset.panel).classList.add("active");updateOverlay();});
 
-  $("play").addEventListener("click", () => { state.playing = !state.playing;previousTime = 0;updateUI(); });
-  $("reset").addEventListener("click", () => { const fresh = defaults();Object.assign(state, fresh);state.texts = fresh.texts;changed();notice("Đã khôi phục cấu hình mặc định."); });
-  $("export-duration").addEventListener("change", (event) => { state.exportDuration = Number(event.target.value);changed(); });
-  $("save").addEventListener("click", () => {
-    const stored = JSON.parse(JSON.stringify(state));delete stored.phase;delete stored.playing;delete stored.renderDuration;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(stored));notice("Đã lưu cấu hình trên trình duyệt này.");
-  });
-  $("clear-save").addEventListener("click", () => { localStorage.removeItem(STORAGE_KEY);notice("Đã xóa cấu hình đã lưu."); });
-  $("fullscreen").addEventListener("click", async () => { try { await $("stage").requestFullscreen(); } catch (error) { showError(`Không mở được toàn màn hình: ${error.message}`); } });
-  document.addEventListener("fullscreenchange", resize);new ResizeObserver(resize).observe($("stage"));window.addEventListener("resize", resize);
-  for (const tab of document.querySelectorAll(".tab")) tab.addEventListener("click", () => {
-    document.querySelectorAll(".tab,.panel").forEach((element) => element.classList.remove("active"));tab.classList.add("active");$(tab.dataset.panel).classList.add("active");
-  });
+  function finishRecording(job){job.renderer?.dispose();if(recording!==job)return;recording=null;document.body.classList.remove("recording");$("recording-status").hidden=true;if(job.aborted){updateUI();render();return;}const extension=job.result.extension;revokeDownload();downloadURL=URL.createObjectURL(job.result.blob);$("download").href=downloadURL;$("download").download=`wedding-star-background-${job.duration}s.${extension}`;$("download").textContent=`↓ Tải ${extension.toUpperCase()} · ${(job.result.blob.size/1048576).toFixed(1)} MB`;$("download").hidden=false;notice(`Đã xuất ${job.duration} giây, 1920 × 1080, 30fps gồm nền và chữ.`);updateUI();render();}
+  function abortRecording(){if(!recording)return;recording.aborted=true;recording.controller.abort();notice("Đã hủy xuất video.");}$("cancel-export").addEventListener("click",abortRecording);
+  $("export").addEventListener("click",async()=>{if(!renderer||!frameSupport||recording)return;revokeDownload();showError("");notice("");const duration=state.exportDuration,job={duration,aborted:false,controller:new AbortController()};recording=job;document.body.classList.add("recording");updateUI();$("recording-status").hidden=false;$("record-progress").value=0;$("record-label").textContent="Đang chờ tải font…";try{await ensureFontsReady();const exportCanvas=document.createElement("canvas");exportCanvas.width=1920;exportCanvas.height=1080;job.renderer=new SpaceRenderer(exportCanvas,()=>job.controller.abort());const settings=JSON.parse(JSON.stringify(state));settings.renderDuration=duration;settings.playing=false;WeddingVideoExport.encode({renderer:job.renderer,settings,frames:duration*30,support:frameSupport,signal:job.controller.signal,onProgress(progress){if(job.aborted)return;$("record-progress").value=progress*100;$("record-label").textContent=`Đang mã hóa ${Math.round(progress*100)}% · ${Math.round(progress*duration*30)} / ${duration*30} khung hình`;}}).then(result=>{job.result=result;finishRecording(job);}).catch(error=>{const aborted=job.aborted;job.aborted=true;finishRecording(job);if(!aborted)showError(`Không thể xuất video: ${error.message}`);});}catch(error){job.aborted=true;finishRecording(job);showError(`Không thể xuất video: ${error.message}`);}});
 
-  function finishRecording(job) {
-    job.renderer?.dispose();if (recording !== job) return;recording = null;$("recording-status").hidden = true;
-    if (job.aborted) { updateUI();render();return; }
-    const extension = job.result.extension;revokeDownload();downloadURL = URL.createObjectURL(job.result.blob);
-    $("download").href = downloadURL;$("download").download = `wedding-star-background-${job.duration}s.${extension}`;
-    $("download").textContent = `↓ Tải ${extension.toUpperCase()} · ${(job.result.blob.size / 1048576).toFixed(1)} MB`;$("download").hidden = false;
-    notice(`Đã xuất ${job.duration} giây, 1920 × 1080, 30fps gồm nền và chữ.`);updateUI();render();
-  }
-  function abortRecording() { if (!recording) return;recording.aborted = true;recording.controller.abort();notice("Đã hủy xuất video."); }
-  $("cancel-export").addEventListener("click", abortRecording);
-  $("export").addEventListener("click", () => {
-    if (!renderer || !frameSupport || recording) return;revokeDownload();showError("");notice("");
-    const duration = state.exportDuration;const job = { duration, aborted: false, controller: new AbortController() };recording = job;updateUI();
-    $("recording-status").hidden = false;$("record-progress").value = 0;$("record-label").textContent = "Đang chuẩn bị video…";
-    try {
-      const exportCanvas = document.createElement("canvas");exportCanvas.width = 1920;exportCanvas.height = 1080;
-      job.renderer = new SpaceRenderer(exportCanvas, () => job.controller.abort());
-      const settings = JSON.parse(JSON.stringify(state));settings.renderDuration = duration;settings.playing = false;
-      WeddingVideoExport.encode({ renderer: job.renderer, settings, frames: duration * 30, support: frameSupport, signal: job.controller.signal,
-        onProgress(progress) { if (job.aborted) return;$("record-progress").value = progress * 100;$("record-label").textContent = `Đang mã hóa ${Math.round(progress * 100)}% · ${Math.round(progress * duration * 30)} / ${duration * 30} khung hình`; },
-      }).then((result) => { job.result = result;finishRecording(job); }).catch((error) => { const aborted = job.aborted;job.aborted = true;finishRecording(job);if (!aborted) showError(`Không thể xuất video: ${error.message}`); });
-    } catch (error) { job.aborted = true;finishRecording(job);showError(`Không thể xuất video: ${error.message}`); }
-  });
-
-  async function start() {
-    try {
-      const loadedFonts = await document.fonts.load('64px "HLT Bickham Script Pro"');
-      if (!loadedFonts.length) throw new Error("Không tải được font HLT Bickham Script Pro.");
-      renderer = new SpaceRenderer(canvas, () => showError("WebGL bị gián đoạn. Hãy tải lại trang."));
-      window.weddingApp = {
-        state,
-        get renderer() { return renderer; },
-        render,
-        SpaceRenderer,
-        get exportSupport() { return frameSupport; },
-        distribution,
-      };
-      frameSupport = await WeddingVideoExport.getSupport();resize();updateUI();requestAnimationFrame(tick);
-    } catch (error) { showError(error.message || "Không thể khởi tạo không gian WebGL.");updateUI(); }
-  }
+  async function start(){try{const builtIn=await document.fonts.load('64px "HLT Bickham Script Pro"');if(!builtIn.length)throw new Error("Không tải được font HLT Bickham Script Pro.");try{for(const record of await fontRecords())await registerFont(record);}catch(error){$("font-status").textContent=`Không thể khôi phục font cục bộ: ${error.message}`;}for(const item of Object.values(state.texts)){const custom=state.customFonts.find(font=>font.id===item.font);item.fontFamily=custom?.family||"";}if(state.groupNames)reflowNames();await ensureFontsReady();renderer=new SpaceRenderer(canvas,()=>showError("WebGL bị gián đoạn. Hãy tải lại trang."));window.weddingApp={state,get renderer(){return renderer;},render,SpaceRenderer,get exportSupport(){return frameSupport;},distribution,reflowNames};frameSupport=await WeddingVideoExport.getSupport();resize();updateUI();requestAnimationFrame(tick);}catch(error){showError(error.message||"Không thể khởi tạo không gian WebGL.");updateUI();}}
   start();
 })();

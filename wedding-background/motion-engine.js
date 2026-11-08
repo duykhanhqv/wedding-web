@@ -5,6 +5,9 @@ window.WeddingSpace = (() => {
   const MAX_PARTICLES = 100000;
   const FONT_STACKS = {
     bickham: '"HLT Bickham Script Pro", cursive',
+    serif: 'Georgia, "Times New Roman", serif',
+    sans: 'Arial, "Helvetica Neue", sans-serif',
+    elegant: '"Times New Roman", Georgia, serif',
   };
 
   function seededRandom(seed = 20261115) {
@@ -201,21 +204,28 @@ window.WeddingSpace = (() => {
 
   function drawTextLayer(context, frame, state, seconds) {
     const scale = frame.width / 1920;
+    const bounds = {};
     context.save();context.beginPath();context.rect(frame.x, frame.y, frame.width, frame.height);context.clip();context.textBaseline = "middle";
-    for (const key of ["names", "date"]) {
+    for (const key of ["title", "bride", "connector", "groom", "date"]) {
       const item = state.texts[key];const opacity = itemOpacity(key, state, seconds);
       if (!item || opacity <= 0.001 || !item.content) continue;
       const x = frame.x + frame.width * item.x / 100;const y = frame.y + frame.height * item.y / 100;
-      context.font = `${Math.max(8, item.size * scale)}px ${FONT_STACKS[item.font] || FONT_STACKS.bickham}`;
+      const family = item.fontFamily ? `"${item.fontFamily}"` : FONT_STACKS[item.font] || FONT_STACKS.bickham;
+      context.font = `${item.italic ? "italic" : "normal"} ${item.weight || 400} ${Math.max(8, item.size * scale)}px ${family}`;
       context.fillStyle = item.color;context.globalAlpha = Math.min(1, opacity * item.brightness);
       context.shadowColor = item.color;context.shadowBlur = item.glow * scale;
       const spacing = item.spacing * scale;const lines = String(item.content).split("\n");const lineHeight = item.size * 1.18 * scale;
+      let maxWidth = 0;
       lines.forEach((line, lineIndex) => {
         const lineY = y + (lineIndex - (lines.length - 1) / 2) * lineHeight;
+        maxWidth = Math.max(maxWidth, measureSpaced(context, line, spacing));
         context.textAlign = "left";drawSpaced(context, line, x, lineY, spacing);
       });
+      const height = Math.max(item.size * 1.12 * scale, lineHeight * lines.length);
+      bounds[key] = { x: x - maxWidth / 2, y: y - height / 2, width: maxWidth, height, centerX: x, centerY: y };
     }
     context.restore();
+    return bounds;
   }
 
   function activeRipple(seconds, state) {
@@ -331,7 +341,7 @@ window.WeddingSpace = (() => {
       const ripple=activeRipple(seconds,state);const rippleDepth=ripple ? Math.max(0,Math.min(1,.5+(ripple.hitY-.82)/.31)) : .5;
       gl.uniform4f(uniform("u_ripple"),ripple ? ripple.x*2-1 : 0,rippleDepth,ripple ? ripple.age : -1,ripple ? state.rippleIntensity : 0);
       gl.drawArrays(gl.POINTS,0,MAX_PARTICLES);gl.disable(gl.BLEND);
-      this.context.save();this.context.globalCompositeOperation="source-over";this.context.fillStyle="#000";this.context.fillRect(0,0,outputWidth,outputHeight);this.context.drawImage(this.glCanvas,frame.x,frame.y,frame.width,frame.height);drawTransientEffects(this.context,frame,state,seconds);drawTextLayer(this.context,frame,state,seconds);this.context.restore();
+      this.context.save();this.context.globalCompositeOperation="source-over";this.context.fillStyle="#000";this.context.fillRect(0,0,outputWidth,outputHeight);this.context.drawImage(this.glCanvas,frame.x,frame.y,frame.width,frame.height);drawTransientEffects(this.context,frame,state,seconds);this.textBounds=drawTextLayer(this.context,frame,state,seconds);this.context.restore();
     }
     dispose() {this.glCanvas.removeEventListener("webglcontextlost",this.handleLost);const gl=this.gl;gl.deleteBuffer(this.quad);gl.deleteBuffer(this.particles);gl.deleteProgram(this.backgroundProgram);gl.deleteProgram(this.particleProgram);gl.getExtension("WEBGL_lose_context")?.loseContext();}
   }
