@@ -6,12 +6,8 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
   const $ = (id) => document.getElementById(id);
   const STORAGE_KEY = "wedding-star-studio-v1";
   const TEXT_LABELS = {
-    monogram: "Monogram",
-    title: "Tiêu đề nhỏ",
-    names: "Tên cặp đôi",
+    names: "Tên cô dâu & chú rể",
     date: "Ngày cưới",
-    message: "Lời nhắn",
-    heart: "Biểu tượng trái tim",
   };
   const textItem = (content, font, size, x, y, spacing = 0) => ({
     content, font, size, color: "#e9e9f2", brightness: 0.92, glow: 7,
@@ -23,27 +19,23 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
     particleScale: 1.35, edgeDensity: 0.78, twinkle: 0.38, brightness: 0.98,
     fallingEnabled: true, fallingFrequency: 0.62,
     dropEnabled: true, dropFrequency: 0.85, rippleIntensity: 0.72,
-    mode: "alternating", sceneOneSeconds: 6, sceneTwoSeconds: 4.5, fadeSeconds: 1.2,
     exportDuration: 30,
     texts: {
-      monogram: textItem("HD", "script", 92, 50, 34),
-      title: textItem("SAVE THE DATE", "serif", 20, 50, 42, 8),
-      names: textItem("Hồng Nhung & Duy Khánh", "script", 68, 50, 50),
-      date: textItem("15.11.2026", "serif", 19, 50, 58, 4),
-      message: textItem("Cảm ơn bạn đã đến\nchung vui cùng chúng tôi", "serif", 32, 50, 49, 1),
-      heart: textItem("♥", "serif", 30, 50, 59),
+      names: textItem("Hồng Nhung & Duy Khánh", "bickham", 82, 50, 48),
+      date: textItem("15.11.2026", "bickham", 42, 50, 59, 2),
     },
   });
 
   function mergeSaved(saved) {
     const base = defaults();
     if (!saved || typeof saved !== "object") return base;
-    for (const key of ["speed","density","centerConcentration","fineDensity","particleScale","edgeDensity","twinkle","brightness","fallingEnabled","fallingFrequency","dropEnabled","dropFrequency","rippleIntensity","mode","sceneOneSeconds","sceneTwoSeconds","fadeSeconds","exportDuration"])
+    for (const key of ["speed","density","centerConcentration","fineDensity","particleScale","edgeDensity","twinkle","brightness","fallingEnabled","fallingFrequency","dropEnabled","dropFrequency","rippleIntensity","exportDuration"])
       if (saved[key] !== undefined) base[key] = saved[key];
     if (saved.fallingEnabled === undefined && saved.shootingEnabled !== undefined) base.fallingEnabled = saved.shootingEnabled;
     if (saved.fallingFrequency === undefined && saved.shootingFrequency !== undefined) base.fallingFrequency = saved.shootingFrequency;
     for (const key of Object.keys(base.texts))
       if (saved.texts?.[key]) Object.assign(base.texts[key], saved.texts[key]);
+    for (const item of Object.values(base.texts)) item.font = "bickham";
     return base;
   }
 
@@ -94,8 +86,8 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
       details.className = "text-editor";details.open = key === "names";
       details.innerHTML = `<summary><span>${label}</span><label class="visibility"><input type="checkbox" data-key="${key}" data-prop="visible"> Hiện</label></summary>
         <div class="editor-body">
-          <label>Nội dung${key === "message" ? `<textarea rows="3" data-key="${key}" data-prop="content"></textarea>` : `<input type="text" data-key="${key}" data-prop="content">`}</label>
-          <div class="two-cols"><label>Font<select data-key="${key}" data-prop="font"><option value="script">Great Vibes</option><option value="serif">Georgia</option><option value="classic">Times</option><option value="sans">Arial</option></select></label><label>Màu<input type="color" data-key="${key}" data-prop="color"></label></div>
+          <label>Nội dung<input type="text" data-key="${key}" data-prop="content"></label>
+          <label>Màu<input type="color" data-key="${key}" data-prop="color"></label>
           <div class="editor-ranges"></div>
         </div>`;
       const ranges = details.querySelector(".editor-ranges");
@@ -107,7 +99,7 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
     }
     $("text-editors").addEventListener("input", (event) => {
       const { key, prop } = event.target.dataset;if (!key || !prop) return;
-      state.texts[key][prop] = event.target.type === "checkbox" ? event.target.checked : ["content","font","color"].includes(prop) ? event.target.value : Number(event.target.value);
+      state.texts[key][prop] = event.target.type === "checkbox" ? event.target.checked : ["content","color"].includes(prop) ? event.target.value : Number(event.target.value);
       changed();
     });
   }
@@ -120,9 +112,7 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
       const value = suffix === "%" ? `${Math.round(state[key] * 100)}%` : `${state[key].toLocaleString("vi-VN")}${suffix}`;
       $(`${key}-value`).value = value;
     }
-    $("mode").value = state.mode;$("scene-one").value = state.sceneOneSeconds;$("scene-two").value = state.sceneTwoSeconds;
     $("falling-enabled").checked = state.fallingEnabled;$("drop-enabled").checked = state.dropEnabled;
-    $("fade-seconds").value = state.fadeSeconds;$("fade-seconds-value").value = `${state.fadeSeconds.toLocaleString("vi-VN")} giây`;
     $("export-duration").value = state.exportDuration;
     for (const [key, item] of Object.entries(state.texts)) {
       for (const element of document.querySelectorAll(`[data-key="${key}"][data-prop]`)) {
@@ -153,9 +143,6 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
 
   $("play").addEventListener("click", () => { state.playing = !state.playing;previousTime = 0;updateUI(); });
   $("reset").addEventListener("click", () => { const fresh = defaults();Object.assign(state, fresh);state.texts = fresh.texts;changed();notice("Đã khôi phục cấu hình mặc định."); });
-  $("mode").addEventListener("change", (event) => { state.mode = event.target.value;changed(); });
-  for (const [id, key] of [["scene-one","sceneOneSeconds"],["scene-two","sceneTwoSeconds"],["fade-seconds","fadeSeconds"]])
-    $(id).addEventListener("input", (event) => { state[key] = Number(event.target.value);changed(); });
   $("export-duration").addEventListener("change", (event) => { state.exportDuration = Number(event.target.value);changed(); });
   $("save").addEventListener("click", () => {
     const stored = JSON.parse(JSON.stringify(state));delete stored.phase;delete stored.playing;delete stored.renderDuration;
@@ -194,7 +181,8 @@ const { SpaceRenderer, MAX_PARTICLES, distribution } = window.WeddingSpace;
 
   async function start() {
     try {
-      await document.fonts.load('64px "Great Vibes"');
+      const loadedFonts = await document.fonts.load('64px "HLT Bickham Script Pro"');
+      if (!loadedFonts.length) throw new Error("Không tải được font HLT Bickham Script Pro.");
       renderer = new SpaceRenderer(canvas, () => showError("WebGL bị gián đoạn. Hãy tải lại trang."));
       window.weddingApp = {
         state,

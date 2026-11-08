@@ -4,10 +4,7 @@ window.WeddingSpace = (() => {
   const TAU = Math.PI * 2;
   const MAX_PARTICLES = 20000;
   const FONT_STACKS = {
-    script: '"Great Vibes", cursive',
-    serif: 'Georgia, "Times New Roman", serif',
-    classic: '"Times New Roman", Times, serif',
-    sans: 'Arial, Helvetica, sans-serif',
+    bickham: '"HLT Bickham Script Pro", cursive',
   };
 
   function seededRandom(seed = 20261115) {
@@ -179,20 +176,7 @@ window.WeddingSpace = (() => {
 
   function itemOpacity(key, state, seconds) {
     const item = state.texts[key];
-    if (!item?.visible) return 0;
-    if (state.mode === "fixed") return ["message", "heart"].includes(key) ? 0 : 1;
-    if (key === "monogram") return 1;
-    const fade = Math.max(0.2, state.fadeSeconds);
-    const first = Math.max(1, state.sceneOneSeconds);
-    const second = Math.max(1, state.sceneTwoSeconds);
-    const total = first + second + fade * 2;
-    const time = ((seconds % total) + total) % total;
-    let sceneOne;
-    if (time < first) sceneOne = 1;
-    else if (time < first + fade) sceneOne = 1 - (time - first) / fade;
-    else if (time < first + fade + second) sceneOne = 0;
-    else sceneOne = (time - first - fade - second) / fade;
-    return ["title", "names", "date"].includes(key) ? sceneOne : 1 - sceneOne;
+    return item?.visible ? 1 : 0;
   }
 
   function measureSpaced(context, text, spacing) {
@@ -211,20 +195,17 @@ window.WeddingSpace = (() => {
   function drawTextLayer(context, frame, state, seconds) {
     const scale = frame.width / 1920;
     context.save();context.beginPath();context.rect(frame.x, frame.y, frame.width, frame.height);context.clip();context.textBaseline = "middle";
-    for (const key of ["monogram", "title", "names", "date", "message", "heart"]) {
+    for (const key of ["names", "date"]) {
       const item = state.texts[key];const opacity = itemOpacity(key, state, seconds);
       if (!item || opacity <= 0.001 || !item.content) continue;
       const x = frame.x + frame.width * item.x / 100;const y = frame.y + frame.height * item.y / 100;
-      context.font = `${Math.max(8, item.size * scale)}px ${FONT_STACKS[item.font] || FONT_STACKS.sans}`;
+      context.font = `${Math.max(8, item.size * scale)}px ${FONT_STACKS[item.font] || FONT_STACKS.bickham}`;
       context.fillStyle = item.color;context.globalAlpha = Math.min(1, opacity * item.brightness);
       context.shadowColor = item.color;context.shadowBlur = item.glow * scale;
       const spacing = item.spacing * scale;const lines = String(item.content).split("\n");const lineHeight = item.size * 1.18 * scale;
       lines.forEach((line, lineIndex) => {
         const lineY = y + (lineIndex - (lines.length - 1) / 2) * lineHeight;
-        if (key === "monogram" && Array.from(line.replace(/\s/g, "")).length === 2) {
-          const [left, right] = Array.from(line.replace(/\s/g, ""));context.textAlign = "center";
-          context.fillText(left, x - item.size * scale * .13, lineY);context.fillText(right, x + item.size * scale * .13, lineY + item.size * scale * .05);
-        } else {context.textAlign = "left";drawSpaced(context, line, x, lineY, spacing);}
+        context.textAlign = "left";drawSpaced(context, line, x, lineY, spacing);
       });
     }
     context.restore();
