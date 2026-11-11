@@ -6,20 +6,21 @@ const { SpaceRenderer, MAX_PARTICLES, FONT_STACKS, distribution } = window.Weddi
   const $ = (id) => document.getElementById(id);
   const STORAGE_KEY = "wedding-star-studio-v1";
   const FONT_DB = "wedding-star-fonts";
-  const NAME_KEYS = ["bride", "connector", "groom"];
+  const NAME_KEYS = ["groom", "connector", "bride"];
   const TEXT_KEYS = ["title", ...NAME_KEYS, "date"];
   const TEXT_LABELS = { title:"Tiêu đề phía trên",bride:"Tên cô dâu",connector:"Dấu nối",groom:"Tên chú rể",date:"Ngày cưới" };
   const BUILTIN_FONTS = [["bickham","HLT Bickham Script Pro"],["serif","Georgia Serif"],["elegant","Times New Roman"],["sans","Arial / Helvetica"]];
   const BUNDLED_FONTS = Array.isArray(window.WEDDING_BUNDLED_FONTS) ? window.WEDDING_BUNDLED_FONTS : [];
-  const DEFAULT_POSITIONS = { title:{x:50,y:37},bride:{x:39,y:49},connector:{x:50,y:49},groom:{x:61,y:49},date:{x:50,y:60} };
+  const DEFAULT_POSITIONS = { title:{x:50,y:37},groom:{x:38.54,y:49},connector:{x:49.33,y:49},bride:{x:60.79,y:49},date:{x:49.89,y:68.24} };
   const textItem = (content,font,size,x,y,spacing=0,weight=400) => ({ content,font,fontFamily:"",size,color:"#e9e9f2",brightness:.92,glow:7,weight,italic:false,spacing,x,y,visible:true });
   const defaults = () => ({
-    phase:0,playing:true,renderDuration:60,speed:.72,density:.95,centerConcentration:.25,fineDensity:.96,particleScale:1.25,edgeDensity:.94,twinkle:.36,brightness:1.10,
-    fallingEnabled:true,fallingFrequency:.62,dropEnabled:true,dropFrequency:.85,rippleIntensity:.72,exportDuration:30,
+    phase:0,playing:true,renderDuration:60,speed:.72,density:.95,centerConcentration:.09,fineDensity:.62,particleScale:1.38,edgeDensity:.94,twinkle:.82,brightness:1.10,
+    fallingEnabled:true,fallingFrequency:.81,dropEnabled:true,dropFrequency:.79,rippleIntensity:1.24,exportDuration:30,
     nameLayout:"inline",groupNames:true,nameGroupX:50,nameGroupY:49,customFonts:[],
     texts:{
-      title:textItem("LỄ THÀNH HÔN","serif",38,50,37,6,500),bride:textItem("Hồng Nhung","bickham",82,39,49),
-      connector:textItem("&","bickham",58,50,49),groom:textItem("Duy Khánh","bickham",82,61,49),date:textItem("15.11.2026","bickham",42,50,60,2),
+      title:textItem("LỄ THÀNH HÔN","serif",38,50,37,6,500),groom:textItem("Duy Khánh","bickham",105,38.54,49),
+      connector:textItem("&","serif",34,49.33,49),bride:textItem("Hồng Nhung","bickham",105,60.79,49),
+      date:Object.assign(textItem("15.11.2026","elegant",42,49.89,68.24,11),{brightness:.87,glow:6}),
     },
   });
 
@@ -38,7 +39,7 @@ const { SpaceRenderer, MAX_PARTICLES, FONT_STACKS, distribution } = window.Weddi
   }
 
   let saved=null;try{saved=JSON.parse(localStorage.getItem(STORAGE_KEY));}catch{localStorage.removeItem(STORAGE_KEY);}
-  const state=mergeSaved(saved);let renderer=null,previousTime=0,frameSupport=null,recording=null,downloadURL=null,selectedText="bride",drag=null;
+  const state=mergeSaved(saved);let renderer=null,previousTime=0,frameSupport=null,recording=null,downloadURL=null,selectedText="groom",drag=null;
   const canvas=$("background-canvas"),overlay=$("text-overlay"),measureContext=document.createElement("canvas").getContext("2d"),loadedCustomFonts=new Map();
   const showError=(message)=>{$("error").textContent=message;$("error").hidden=!message;};const notice=(message)=>{$("notice").textContent=message;$("notice").hidden=!message;};
   const fontFamily=(item)=>item.fontFamily?`"${item.fontFamily}"`:FONT_STACKS[item.font]||FONT_STACKS.bickham;
@@ -95,7 +96,7 @@ const { SpaceRenderer, MAX_PARTICLES, FONT_STACKS, distribution } = window.Weddi
   }
   function resize(){if(!renderer)return;const bounds=canvas.getBoundingClientRect(),ratio=Math.min(devicePixelRatio||1,2),width=Math.max(1,Math.round(bounds.width*ratio)),height=Math.max(1,Math.round(bounds.height*ratio));if(canvas.width!==width||canvas.height!==height)renderer.resize(width,height);render();}
   function tick(time){if(state.playing&&!document.hidden&&!recording&&previousTime)state.phase=(state.phase+(time-previousTime)/60000)%1;if(state.playing&&!document.hidden&&!recording)render();previousTime=time;requestAnimationFrame(tick);}
-  $("play").addEventListener("click",()=>{state.playing=!state.playing;previousTime=0;updateUI();});$("reset").addEventListener("click",()=>{const fonts=state.customFonts,fresh=defaults();fresh.customFonts=fonts;Object.assign(state,fresh);state.texts=fresh.texts;reflowNames();selectedText="bride";createTextEditors();changed();notice("Đã khôi phục cấu hình mặc định.");});$("export-duration").addEventListener("change",event=>{state.exportDuration=Number(event.target.value);changed();});
+  $("play").addEventListener("click",()=>{state.playing=!state.playing;previousTime=0;updateUI();});$("reset").addEventListener("click",()=>{const fonts=state.customFonts,fresh=defaults();fresh.customFonts=fonts;Object.assign(state,fresh);state.texts=fresh.texts;reflowNames();selectedText="groom";createTextEditors();changed();notice("Đã khôi phục cấu hình mặc định.");});$("export-duration").addEventListener("change",event=>{state.exportDuration=Number(event.target.value);changed();});
   $("save").addEventListener("click",()=>{const stored=JSON.parse(JSON.stringify(state));delete stored.phase;delete stored.playing;delete stored.renderDuration;localStorage.setItem(STORAGE_KEY,JSON.stringify(stored));notice("Đã lưu nội dung, font và vị trí trên trình duyệt này.");});$("clear-save").addEventListener("click",()=>{localStorage.removeItem(STORAGE_KEY);notice("Đã xóa cấu hình đã lưu.");});$("fullscreen").addEventListener("click",async()=>{try{await $("stage").requestFullscreen();}catch(error){showError(`Không mở được toàn màn hình: ${error.message}`);}});
   document.addEventListener("fullscreenchange",()=>{resize();updateOverlay();});new ResizeObserver(resize).observe($("stage"));window.addEventListener("resize",resize);for(const tab of document.querySelectorAll(".tab"))tab.addEventListener("click",()=>{document.querySelectorAll(".tab,.panel").forEach(element=>element.classList.remove("active"));tab.classList.add("active");$(tab.dataset.panel).classList.add("active");updateOverlay();});
 
