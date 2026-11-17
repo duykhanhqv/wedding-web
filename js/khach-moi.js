@@ -90,7 +90,7 @@ window.THIEP_CUOI = {
     khachMoi: {
       'gia-dinh-ban-huyen-anh': 'Gia đình bạn Huyền Anh',
       'gia-dinh-ban-dung': 'Gia đình bạn Dung',
-      'thuy': 'Bạn Thuỷ',
+      'thuy': 'Gia đình bạn Thuỷ',
       'gia-dinh-ban-ha': 'Gia đình bạn Hà',
       'gia-dinh-ban-hong': 'Gia đình bạn Hồng',
       'gia-dinh-ban-thuong': 'Gia đình bạn Thương',
@@ -104,9 +104,9 @@ window.THIEP_CUOI = {
       'gia-dinh-ban-quan': 'Gia đình bạn Quân',
       'gia-dinh-ban-hung': 'Gia đình bạn Hùng',
       'gia-dinh-ban-toan': 'Gia đình bạn Toàn',
-      'ha': 'Bạn Hà + ♥',
+      'ha': 'Gia đình em Hà + ♥',
+       'anh': 'Anh Hiếu + ♥',
       'em-hai': 'Em Hải + ♥',
-      'hoang': 'Hoàng',
       'gia-dinh-ban-hien': 'Gia đình bạn Hiền',
       'gia-dinh-ban-le-anh': 'Gia đình bạn Lê Anh',
       'quy': 'Bạn Quý + ♥',
@@ -114,7 +114,7 @@ window.THIEP_CUOI = {
       'hung': 'Bạn Hùng',
       'anh': 'Bạn Ánh + ♥',
       'huy': 'Bạn Huy + ♥',
-      'han-huong': 'Bạn íHàn Hương + ♥'
+      'han-huong': 'Bạn Hàn Hương + ♥'
     }
   }
 };
