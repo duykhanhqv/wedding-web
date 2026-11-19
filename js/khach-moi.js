@@ -100,7 +100,7 @@ window.THIEP_CUOI = {
       'gia-dinh-ban-huyen-le': 'Gia đình bạn Huyền Lê',
       'gia-dinh-ban-bui-huyen': 'Gia đình bạn Bùi Huyền',
       'ngan': 'Bạn Ngân + ♥',
-      'gia-dinh-ban-dung-2': 'Gia đình bạn Dung',
+      'gia-dinh-ban-dung-2': 'Gia đình bạn Kim Dung',
       'gia-dinh-ban-quan': 'Gia đình bạn Quân',
       'gia-dinh-ban-hung': 'Gia đình bạn Hùng',
       'gia-dinh-ban-toan': 'Gia đình bạn Toàn',
