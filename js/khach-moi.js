@@ -114,7 +114,8 @@ window.THIEP_CUOI = {
       'hung': 'Bạn Hùng',
       'anh': 'Bạn Ánh + ♥',
       'huy': 'Bạn Huy + ♥',
-      'han-huong': 'Bạn Hàn Hương + ♥'
+      'han-huong': 'Bạn Hàn Hương + ♥',
+       'gd-em-nhung': 'Gia đình em Nhung';
     }
   }
 };
